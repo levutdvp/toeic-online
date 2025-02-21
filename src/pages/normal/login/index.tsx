@@ -6,8 +6,8 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const navigate = useNavigate();
-  const handleSignup = () => {
-    navigate("/auth/sign-up");
+  const handleForgotPassword = () => {
+    navigate("/auth/forgot-password");
   };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -51,13 +51,10 @@ const LoginPage = () => {
         </div>
 
         <div className="flex justify-between text-sm text-blue-500 mb-4">
-          <div className="flex">
-            <p className="mr-2 text-gray-400">Bạn chưa có tài khoản?</p>
-            <a onClick={handleSignup} className="hover:underline">
-              Đăng ký
-            </a>
-          </div>
-          <a href="#" className="hover:underline">
+          <a
+            onClick={handleForgotPassword}
+            className="hover:underline cursor-pointer"
+          >
             Quên mật khẩu?
           </a>
         </div>
