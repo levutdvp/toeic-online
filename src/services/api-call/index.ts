@@ -2,8 +2,8 @@ import { NEVER, throwError } from "rxjs";
 import { ajax, AjaxConfig, AjaxResponse } from "rxjs/ajax";
 import { catchError, map } from "rxjs/operators";
 import jstz from "jstz";
-import { showToast } from "../toast";
 import { getAccessToken, isLogged } from "../auth";
+import { showToast } from "../toast";
 export type CustomErrorOption = "throwOnly" | "notifyOnly" | "throwAndNotify";
 
 export interface Response<Data> {

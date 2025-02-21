@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSubscription } from "../../../hooks/use-subscription.hook";
-import { forgotPassword } from "../../../api/auth/forgot-password.api";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Button, Form, Input } from "antd";
+import { forgotPassword } from "@/api/auth/forgot-password.api";
+import { useSubscription } from "@/hooks/use-subscription.hook";
 const ForgotPassword = () => {
   const subscription = useSubscription();
   const [isSent, setIsSent] = useState<boolean>(false);

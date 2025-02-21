@@ -1,5 +1,5 @@
+import { ACCESS_TOKEN } from "@/consts/common.const";
 import Cookies from "js-cookie";
-import { ACCESS_TOKEN } from "../../consts/common.const";
 
 interface UserCredential {
   accessToken: string;

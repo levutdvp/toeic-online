@@ -1,12 +1,12 @@
+import HomePage from "@/pages/client/homepage";
+import ForgotPassword from "@/pages/normal/forgot-password";
+import LoginPage from "@/pages/normal/login";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Login from "../pages/normal/login";
-import HomePage from "../pages/client/homepage";
-import ForgotPassword from "../pages/normal/forgot-password";
 export const AllRoutes = () => {
   const router = createBrowserRouter([
     {
       path: "/auth/login",
-      element: <Login />,
+      element: <LoginPage />,
     },
     {
       path: "/auth/forgot-password",

@@ -1,5 +1,6 @@
 // import { API_URL } from "../../consts/common.const";
-import { apiCall } from "../../services/api-call";
+
+import { apiCall } from "@/services/api-call";
 
 export interface IPrams {
   email: string;

@@ -1,5 +1,3 @@
-import React from "react";
-
 const exams = [
   { title: "Đề 2024 Test 1", category: "ĐỀ 2024" },
   { title: "Đề 2023 Test 2", category: "ĐỀ 2023" },

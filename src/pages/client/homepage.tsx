@@ -1,6 +1,6 @@
-import Footer from "../../components/Footer";
-import Header from "../../components/Header";
-import ListExam from "../../components/ListExam";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import ListExam from "@/components/ListExam";
 
 const HomePage = () => {
   return (

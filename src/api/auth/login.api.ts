@@ -1,6 +1,6 @@
 // import { API_URL } from 'consts/common.const';
+import { apiCall } from "@/services/api-call";
 import { map } from "rxjs";
-import { apiCall } from "../../services/api-call";
 
 export interface ILoginReq {
   username: string;
