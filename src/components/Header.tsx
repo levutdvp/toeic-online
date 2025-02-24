@@ -51,6 +51,7 @@ const Header = () => {
             variant="solid"
             onClick={handleLoginClick}
             size="large"
+            shape="round"
             icon={<FaUser />}
             className="cursor-pointer text-center flex"
           >

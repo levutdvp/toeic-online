@@ -1,0 +1,125 @@
+import { Button } from "antd";
+import React from "react";
+
+interface TestProps {
+  title: string;
+  duration: number;
+  parts: number;
+  questions: number;
+  maxScore: number;
+  label: string;
+  isFree?: boolean;
+}
+
+const testData: TestProps[] = [
+  {
+    title: "Đề 2024 Test 1",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ 2024",
+    isFree: true,
+  },
+  {
+    title: "Đề 2023 Test 2",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ 2023",
+  },
+  {
+    title: "Đề ALL NEW Test 1",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ ALL NEW",
+    isFree: true,
+  },
+  {
+    title: "Đề 2020 Test 1",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ 2020",
+    isFree: true,
+  },
+  {
+    title: "Đề ACTUAL TEST 1",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ ACTUAL TESTS",
+  },
+  {
+    title: "Đề 2024 Test 2",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ 2024",
+  },
+];
+
+const TestCard: React.FC<TestProps> = ({
+  title,
+  duration,
+  parts,
+  questions,
+  maxScore,
+  label,
+  isFree,
+}) => (
+  <div className="relative bg-white border border-gray-300 rounded-lg p-5 transition-all duration-300 hover:border-blue-500 shadow-sm w-full max-w-[700px] cursor-pointer">
+    {isFree && (
+      <span className="absolute top-2 right-2 bg-[#A98472] text-white text-xs px-2 py-1 rounded">
+        Free
+      </span>
+    )}
+    <h3 className="font-bold text-lg">{title}</h3>
+
+    <div className="grid grid-cols-2 gap-4 text-sm mt-2">
+      <div>
+        <p>
+          Thời gian: <b>{duration}</b> phút
+        </p>
+        <p>
+          Phần thi: <b>{parts}</b> phần
+        </p>
+      </div>
+      <div>
+        <p>
+          Câu hỏi: <b>{questions}</b> câu
+        </p>
+        <p>
+          Điểm tối đa: <b>{maxScore}</b> điểm
+        </p>
+      </div>
+    </div>
+    <div className="flex flex-col items-start">
+      <div className="inline-block bg-gray-200 text-gray-700 px-3 py-1 text-xs rounded mb-3 font-bold">
+        {label}
+      </div>
+      <Button
+        shape="round"
+        style={{ backgroundColor: "#404040", color: "#fff" }}
+      >
+        Làm bài
+      </Button>
+    </div>
+  </div>
+);
+
+const ListExam: React.FC = () => (
+  <div className="p-5 grid grid-cols-2 gap-6 place-items-center">
+    {testData.map((test, index) => (
+      <TestCard key={index} {...test} />
+    ))}
+  </div>
+);
+
+export default ListExam;
