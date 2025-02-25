@@ -28,6 +28,7 @@ const testData: TestProps[] = [
     questions: 200,
     maxScore: 990,
     label: "ĐỀ 2023",
+    isFree: true,
   },
   {
     title: "Đề ALL NEW Test 1",
@@ -54,6 +55,7 @@ const testData: TestProps[] = [
     questions: 200,
     maxScore: 990,
     label: "ĐỀ ACTUAL TESTS",
+    isFree: true,
   },
   {
     title: "Đề 2024 Test 2",
@@ -62,6 +64,7 @@ const testData: TestProps[] = [
     questions: 200,
     maxScore: 990,
     label: "ĐỀ 2024",
+    isFree: true,
   },
 ];
 
@@ -76,10 +79,11 @@ const TestCard: React.FC<TestProps> = ({
 }) => (
   <div className="relative bg-white border border-gray-300 rounded-lg p-5 transition-all duration-300 hover:border-blue-500 shadow-sm w-full max-w-[700px] cursor-pointer">
     {isFree && (
-      <span className="absolute top-2 right-2 bg-[#A98472] text-white text-xs px-2 py-1 rounded">
+      <span className="absolute top-2 right-[-15px] bg-[#A98472] text-white text-center px-2 py-1 rounded-[3px] w-[60px] shadow-md ">
         Free
       </span>
     )}
+    <div className=" absolute w-0 h-0 border-t-[12px] border-t-[#7F6355] border-r-[12px] border-r-transparent top-[34px] right-[-13px]"></div>
     <h3 className="font-bold text-lg">{title}</h3>
 
     <div className="grid grid-cols-2 gap-4 text-sm mt-2">
@@ -115,7 +119,7 @@ const TestCard: React.FC<TestProps> = ({
 );
 
 const ListExam: React.FC = () => (
-  <div className="p-5 grid grid-cols-2 gap-6 place-items-center">
+  <div className="p-5 grid grid-cols-2 gap-6 place-items-center mr-[200px] ml-[200px]">
     {testData.map((test, index) => (
       <TestCard key={index} {...test} />
     ))}

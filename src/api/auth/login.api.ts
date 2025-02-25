@@ -1,23 +1,23 @@
-// import { API_URL } from 'consts/common.const';
+import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 import { map } from "rxjs";
 
 export interface ILoginReq {
   username: string;
-  email?: string;
   password: string;
 }
 
 export interface ILoginRes {
   username: string;
-  email?: string;
   id: number;
+  token: string;
+  expired: number;
 }
 
-export const login = (params: ILoginReq) => {
+export const loginApi = (params: ILoginReq) => {
   return apiCall<ILoginRes>(
     {
-      url: `localhost/api/auth/signin`,
+      url: `${API_URL}/api/auth/login`,
       method: "POST",
       body: params,
     },

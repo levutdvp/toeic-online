@@ -3,15 +3,40 @@ import { UserOutlined } from "@ant-design/icons";
 import { CiLock } from "react-icons/ci";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { ILoginReq, loginApi } from "@/api/auth/login.api";
+import { useSubscription } from "@/hooks/use-subscription.hook";
+import { removeLoading } from "@/services/loading";
+import { saveAccessToken } from "@/services/auth";
 const LoginPage = () => {
   const navigate = useNavigate();
+  const subscription = useSubscription();
   const handleForgotPassword = () => {
     navigate("/auth/forgot-password");
   };
+
+  const onFinish = (values: ILoginReq) => {
+    const loginSub = loginApi(values).subscribe({
+      next: (res) => {
+        removeLoading();
+        saveAccessToken({
+          accessToken: res.data["token"],
+          expiredTime: res.data["expired"]
+            ? Number(res.data["expired"]) / 60 / 60 / 24
+            : 9999,
+        });
+      },
+      error: () => {
+        removeLoading();
+      },
+    });
+
+    subscription.add(loginSub);
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 w-[600px]">
-        <Form>
+        <Form onFinish={onFinish}>
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold mt-2">Thông tin đăng nhập</h2>
           </div>
@@ -33,19 +58,19 @@ const LoginPage = () => {
             />
           </Form.Item>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-medium mb-1">
-              Mật khẩu
-            </label>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+          >
             <Input.Password
-              size="large"
               placeholder="Nhập mật khẩu"
+              size="large"
               prefix={<CiLock />}
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
             />
-          </div>
+          </Form.Item>
 
           <div className="flex justify-between text-sm text-blue-500 mb-4">
             <a
@@ -56,7 +81,18 @@ const LoginPage = () => {
             </a>
           </div>
           <div className="flex justify-center">
-            <Button type="default" size="large" color="default" variant="solid">
+            <Button
+              style={{
+                backgroundColor: "#0097b2",
+                color: "#0c046d",
+              }}
+              shape="round"
+              type="default"
+              size="large"
+              color="default"
+              variant="solid"
+              htmlType="submit"
+            >
               Đăng nhập
             </Button>
           </div>

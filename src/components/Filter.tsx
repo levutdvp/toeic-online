@@ -28,6 +28,7 @@ const Filter: React.FC = () => {
       <div className="flex items-center gap-4 flex-wrap mb-4">
         {filters.map((filter) => (
           <Button
+            shape="round"
             key={filter}
             type={activeFilter === filter ? "primary" : "default"}
             className={`rounded-full ${
