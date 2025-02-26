@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 interface UserCredential {
   accessToken: string;
-  expiredTime: number; // day
+  expiredTime: number; 
 }
 
 export const isLogged = () => {

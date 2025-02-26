@@ -1,14 +1,63 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useReducer, useContext, ReactNode } from "react";
 
-interface AuthContextType {
+interface User {
+  username: string;
+}
+
+interface AuthState {
+  user: User | null;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+}
+
+interface AuthAction {
+  type: "LOGIN" | "LOGOUT";
+  payload?: User;
+}
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  switch (action.type) {
+    case "LOGIN":
+      return { user: action.payload || null, isAuthenticated: true };
+    case "LOGOUT":
+      return { user: null, isAuthenticated: false };
+    default:
+      return state;
+  }
+};
+
+interface AuthContextProps {
+  state: AuthState;
+  login: (username: string, password: string) => void;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const useAuth = () => {
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, {
+    user: null,
+    isAuthenticated: false,
+  });
+
+  const login = (username: string, password: string) => {
+    if (username && password) {
+      dispatch({ type: "LOGIN", payload: { username } });
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    dispatch({ type: "LOGOUT" });
+  };
+
+  return (
+    <AuthContext.Provider value={{ state, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
@@ -16,31 +65,4 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const login = (token: string) => {
-    localStorage.setItem("authToken", token);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    setIsAuthenticated(false);
-  };
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+export { AuthProvider, useAuth, authReducer };

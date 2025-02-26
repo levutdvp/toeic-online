@@ -6,10 +6,18 @@ import { useNavigate } from "react-router-dom";
 import { ILoginReq, loginApi } from "@/api/auth/login.api";
 import { useSubscription } from "@/hooks/use-subscription.hook";
 import { removeLoading } from "@/services/loading";
+// import { saveAccessToken } from "@/services/auth";
+import { authReducer } from "@/contexts/auth.context";
+import { useReducer } from "react";
 import { saveAccessToken } from "@/services/auth";
 const LoginPage = () => {
   const navigate = useNavigate();
   const subscription = useSubscription();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, dispatch] = useReducer(authReducer, {
+    isAuthenticated: false,
+    user: null,
+  });
   const handleForgotPassword = () => {
     navigate("/auth/forgot-password");
   };
@@ -17,14 +25,22 @@ const LoginPage = () => {
   const onFinish = (values: ILoginReq) => {
     const loginSub = loginApi(values).subscribe({
       next: (res) => {
-        removeLoading();
-        saveAccessToken({
-          accessToken: res.data["token"],
-          expiredTime: res.data["expired"]
-            ? Number(res.data["expired"]) / 60 / 60 / 24
-            : 9999,
-        });
+        if (res) {
+          removeLoading();
+          dispatch({ type: "LOGIN", payload: { username: values.username } });
+          saveAccessToken({
+            accessToken: res.data["token"],
+            expiredTime: res.data["expires_in"]
+              ? Number(res.data["expires_in"]) / 60 / 60 / 24
+              : 9999,
+          });
+          navigate("/");
+        } else {
+          alert("Invalid username or password");
+        }
+        // saveAccessToken(res.accessToken);
       },
+
       error: () => {
         removeLoading();
       },
@@ -40,12 +56,6 @@ const LoginPage = () => {
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold mt-2">Thông tin đăng nhập</h2>
           </div>
-
-          {/* <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-2 rounded-lg shadow-sm hover:bg-gray-100">
-          <img src="/google-icon.png" alt="Google" className="h-5" />
-          Đăng nhập bằng Google
-        </button> */}
-
           <Form.Item
             name="username"
             className="mb-4"

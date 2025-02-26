@@ -1,8 +1,45 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Dropdown, Space } from "antd";
 import { FaUser } from "react-icons/fa";
+import {
+  ContactsOutlined,
+  DownOutlined,
+  IdcardOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 const Header = () => {
   const navigate = useNavigate();
+
+  const items = [
+    {
+      key: "1",
+      label: (
+        <div>
+          <ContactsOutlined className="mr-2" />
+          Thông tin tài khoản
+        </div>
+      ),
+    },
+
+    {
+      key: "2",
+      label: (
+        <div>
+          <IdcardOutlined className="mr-2" />
+          Lớp học của tôi
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <div>
+          <LogoutOutlined className="mr-2" />
+          Logout
+        </div>
+      ),
+    },
+  ];
 
   const handleLoginClick = () => {
     navigate("/auth/login");
@@ -43,7 +80,20 @@ const Header = () => {
             Góp ý
           </a>
         </div>
-        <div>
+        <div className="flex items-center mr-4">
+          <Dropdown menu={{ items }} placement="bottomLeft">
+            <a
+              style={{ color: "#000000", fontWeight: "bold" }}
+              onClick={(e) => e.preventDefault()}
+            >
+              <Space>
+                vu.letruong
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
+        </div>
+        {/* <div>
           {" "}
           <Button
             type="text"
@@ -57,7 +107,7 @@ const Header = () => {
           >
             Đăng nhập
           </Button>
-        </div>
+        </div> */}
       </div>
     </header>
   );
