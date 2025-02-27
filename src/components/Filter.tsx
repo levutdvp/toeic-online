@@ -23,16 +23,18 @@ const Filter: React.FC = () => {
   const handleSearch = () => {};
 
   return (
-    <div className="bg-gray-100 p-4 rounded-md shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Tổng hợp đề thi</h1>
-      <div className="flex items-center gap-4 flex-wrap mb-4">
+    <div className="bg-gray-100 p-6">
+      <h1 className="text-5xl font-sans ml-[200px]">Tổng hợp đề thi</h1>
+      <div className="flex ml-[200px] gap-6 flex-wrap mb-6">
         {filters.map((filter) => (
           <Button
             shape="round"
             key={filter}
             type={activeFilter === filter ? "primary" : "default"}
-            className={`rounded-full ${
-              activeFilter === filter ? "bg-blue-500 text-white" : ""
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              activeFilter === filter
+                ? "bg-blue-500 text-white"
+                : "text-gray-700"
             }`}
             onClick={() => handleFilterClick(filter)}
           >
@@ -40,14 +42,20 @@ const Filter: React.FC = () => {
           </Button>
         ))}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex gap-2 max-w-[1000px] ml-[200px]">
         <Input
           placeholder="Nhập tên đề muốn tìm..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           className="flex-1"
+          size="large"
         />
-        <Button type="primary" onClick={handleSearch}>
+        <Button
+          size="large"
+          type="primary"
+          className="px-6 py-2 rounded-md"
+          onClick={handleSearch}
+        >
           Tìm kiếm
         </Button>
       </div>

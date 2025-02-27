@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { ILoginReq, loginApi } from "@/api/auth/login.api";
 import { useSubscription } from "@/hooks/use-subscription.hook";
 import { removeLoading } from "@/services/loading";
-// import { saveAccessToken } from "@/services/auth";
 import { authReducer } from "@/contexts/auth.context";
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { saveAccessToken } from "@/services/auth";
+import { useForm } from "antd/es/form/Form";
 const LoginPage = () => {
   const navigate = useNavigate();
   const subscription = useSubscription();
@@ -18,27 +18,28 @@ const LoginPage = () => {
     isAuthenticated: false,
     user: null,
   });
+  const [form] = useForm();
+
+  console.log(form.getFieldValue(["username"]));
   const handleForgotPassword = () => {
     navigate("/auth/forgot-password");
   };
 
+  useEffect(() => {
+    subscription.unsubscribe();
+  }, []);
+
   const onFinish = (values: ILoginReq) => {
     const loginSub = loginApi(values).subscribe({
       next: (res) => {
-        if (res) {
-          removeLoading();
-          dispatch({ type: "LOGIN", payload: { username: values.username } });
-          saveAccessToken({
-            accessToken: res.data["token"],
-            expiredTime: res.data["expires_in"]
-              ? Number(res.data["expires_in"]) / 60 / 60 / 24
-              : 9999,
-          });
-          navigate("/");
-        } else {
-          alert("Invalid username or password");
-        }
-        // saveAccessToken(res.accessToken);
+        removeLoading();
+        dispatch({ type: "LOGIN", payload: { username: values.username } });
+        saveAccessToken({
+          accessToken: res.data["token"],
+          expiredTime: res.data["expires_in"]
+            ? Number(res.data["expires_in"]) / 60 / 60 / 24
+            : 9999,
+        });
       },
 
       error: () => {
@@ -49,10 +50,12 @@ const LoginPage = () => {
     subscription.add(loginSub);
   };
 
+  const onFinishFailed = () => {};
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 w-[600px]">
-        <Form onFinish={onFinish}>
+        <Form onFinish={onFinish} onFinishFailed={onFinishFailed} form={form}>
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold mt-2">Thông tin đăng nhập</h2>
           </div>
@@ -91,10 +94,13 @@ const LoginPage = () => {
             </a>
           </div>
           <div className="flex justify-center">
+            {/* <button onClick={handleLoginClick} type="button">
+              Đăng nhập
+            </button> */}
             <Button
               style={{
                 backgroundColor: "#0097b2",
-                color: "#0c046d",
+                color: "#fff",
               }}
               shape="round"
               type="default"

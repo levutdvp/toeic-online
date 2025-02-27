@@ -1,6 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import { Button, Dropdown, Space } from "antd";
-import { FaUser } from "react-icons/fa";
+import { Dropdown, Space } from "antd";
 import {
   ContactsOutlined,
   DownOutlined,
@@ -8,8 +6,6 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 const Header = () => {
-  const navigate = useNavigate();
-
   const items = [
     {
       key: "1",
@@ -40,10 +36,6 @@ const Header = () => {
       ),
     },
   ];
-
-  const handleLoginClick = () => {
-    navigate("/auth/login");
-  };
 
   return (
     <header className="bg-white shadow p-4">
@@ -93,21 +85,6 @@ const Header = () => {
             </a>
           </Dropdown>
         </div>
-        {/* <div>
-          {" "}
-          <Button
-            type="text"
-            color="default"
-            variant="solid"
-            onClick={handleLoginClick}
-            size="large"
-            shape="round"
-            icon={<FaUser />}
-            className="cursor-pointer text-center flex"
-          >
-            Đăng nhập
-          </Button>
-        </div> */}
       </div>
     </header>
   );

@@ -48,30 +48,34 @@ const ForgotPassword = () => {
           <Form onFinish={onFinish}>
             <h2 className="text-2xl font-semibold mb-2">Quên mật khẩu</h2>
             <p className="text-gray-600 mb-4">
-              Vui lòng nhập địa chỉ email nhận Thư quên mật khẩu.
+              Vui lòng nhập username nhận Thư quên mật khẩu.
             </p>
 
             <Form.Item
-              name="email"
-              rules={[{ required: true, message: "Vui lòng nhập email" }]}
+              name="username"
+              rules={[{ required: true, message: "Vui lòng nhập username" }]}
             >
-              <Input placeholder="Email" size="large" />
+              <Input placeholder="Username" size="large" />
             </Form.Item>
             <Form.Item>
               <Button
+                style={{
+                  backgroundColor: "#0097b2",
+                  color: "#fff",
+                }}
                 size="large"
                 block
                 type="primary"
                 htmlType="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
               >
                 Gửi email
               </Button>
             </Form.Item>
             <div className="mt-3">
               <Link
+                style={{ color: "#0097b2" }}
                 to="/auth/login"
-                className="flex items-center justify-center text-blue-500 hover:underline"
+                className="flex items-center justify-center"
               >
                 <FaArrowLeftLong className="mr-1" />
                 Quay lại

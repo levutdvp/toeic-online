@@ -2,6 +2,7 @@ import HomePage from "@/pages/client/homepage";
 import ForgotPassword from "@/pages/normal/forgot-password";
 import LoginPage from "@/pages/normal/login";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
 export const AllRoutes = () => {
   const router = createBrowserRouter([
     {
@@ -14,7 +15,7 @@ export const AllRoutes = () => {
     },
     {
       path: "/",
-      element: <HomePage />,
+      element: <PrivateRoute element={<HomePage />} />,
     },
   ]);
   return <RouterProvider router={router} />;
