@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 interface UserCredential {
   accessToken: string;
-  expiredTime: number; 
+  expiredTime: number;
 }
 
 export const isLogged = () => {
@@ -11,6 +11,7 @@ export const isLogged = () => {
 };
 
 export const saveAccessToken = (userCredential: UserCredential) => {
+  console.log(userCredential);
   Cookies.set(ACCESS_TOKEN, userCredential.accessToken, {
     expires: userCredential.expiredTime,
   });

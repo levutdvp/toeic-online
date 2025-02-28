@@ -1,11 +1,12 @@
-import { AuthProvider } from "./contexts/auth.context";
+import { ThemeProvider } from "@aws-amplify/ui-react";
 import AllRoutes from "./routes/AllRoutes";
+import theme from "./pages/admin/theme";
 
 function App() {
   return (
-    <AuthProvider>
+    <ThemeProvider theme={theme}>
       <AllRoutes />
-    </AuthProvider>
+    </ThemeProvider>
   );
 }
 

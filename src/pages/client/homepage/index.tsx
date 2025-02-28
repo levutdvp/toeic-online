@@ -1,7 +1,7 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import Footer from "@/components/client/Footer";
+import Header from "@/components/client/Header";
+import Filter from "@/components/client/Filter";
 import ListExam from "../ListExam";
-import Filter from "@/components/Filter";
 
 const HomePage = () => {
   return (

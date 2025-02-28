@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Button, Form, Input } from "antd";
 import { forgotPassword } from "@/api/auth/forgot-password.api";
-import { useSubscription } from "@/hooks/use-subscription.hook";
 const ForgotPassword = () => {
-  const subscription = useSubscription();
   const [isSent, setIsSent] = useState<boolean>(false);
   const [mailName, setMailName] = useState<string>("");
 
@@ -18,16 +16,11 @@ const ForgotPassword = () => {
       error: () => {},
     });
 
-    subscription.add(forgotPwSub);
+    forgotPwSub.add();
   };
 
   return (
-    <div
-      className="flex justify-center items-center h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url(https://source.unsplash.com/random/1920x1080)",
-      }}
-    >
+    <div className="flex justify-center items-center h-screen bg-cover bg-center">
       <div className="bg-white p-8 rounded-2xl shadow-lg  text-center">
         {isSent ? (
           <div>
@@ -48,14 +41,14 @@ const ForgotPassword = () => {
           <Form onFinish={onFinish}>
             <h2 className="text-2xl font-semibold mb-2">Quên mật khẩu</h2>
             <p className="text-gray-600 mb-4">
-              Vui lòng nhập username nhận Thư quên mật khẩu.
+              Vui lòng nhập email nhận Thư quên mật khẩu.
             </p>
 
             <Form.Item
-              name="username"
-              rules={[{ required: true, message: "Vui lòng nhập username" }]}
+              name="email"
+              rules={[{ required: true, message: "Vui lòng nhập email" }]}
             >
-              <Input placeholder="Username" size="large" />
+              <Input placeholder="Email" size="large" />
             </Form.Item>
             <Form.Item>
               <Button

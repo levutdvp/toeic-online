@@ -1,5 +1,6 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
+import { UserRole } from "@/types/permission.type";
 import { map } from "rxjs";
 
 interface Account {
@@ -19,6 +20,7 @@ export interface ILoginRes {
   expires_in: number;
   refresh_token?: string;
   account?: Account[];
+  role: UserRole[];
 }
 
 export const loginApi = (params: ILoginReq) => {

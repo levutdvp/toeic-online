@@ -5,7 +5,15 @@ import {
   IdcardOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { clearAccessToken } from "@/services/auth";
+import { useNavigate } from "react-router-dom";
+
 const Header = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    clearAccessToken();
+    navigate("/auth/login");
+  };
   const items = [
     {
       key: "1",
@@ -29,7 +37,7 @@ const Header = () => {
     {
       key: "3",
       label: (
-        <div>
+        <div onClick={handleLogout}>
           <LogoutOutlined className="mr-2" />
           Logout
         </div>
