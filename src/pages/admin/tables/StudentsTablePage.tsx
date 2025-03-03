@@ -1,11 +1,11 @@
 import { View, Heading, ScrollView } from "@aws-amplify/ui-react";
-import UsersTable from "./UserTable/UserTable";
+import StudentsTable from "./StudentTable";
 
-const dataUsers = [
+const dataStudents = [
   {
     id: 1,
-    first_name: "Wilona",
-    last_name: "Mowen",
+    first_name: "aaa",
+    last_name: "bbb",
     email: "wmowen0@weather.com",
     phone: "530-817-1524",
     job_title: "Graphic Designer",
@@ -13,8 +13,8 @@ const dataUsers = [
   },
   {
     id: 2,
-    first_name: "Arthur",
-    last_name: "Berick",
+    first_name: "ccc",
+    last_name: "ddd",
     email: "aberick1@is.gd",
     phone: "998-787-6939",
     job_title: "Director of Sales",
@@ -139,7 +139,7 @@ const dataUsers = [
   },
 ];
 
-const UserTablesPage = () => {
+const StudentTablesPage = () => {
   return (
     <>
       <View
@@ -149,14 +149,14 @@ const UserTablesPage = () => {
         padding="1rem"
         minHeight="80vh"
       >
-        <Heading color="#333"> Users Manage </Heading>
+        <Heading color="#333"> Students Manage </Heading>
         <br></br>
         <ScrollView width="100%">
-          <UsersTable users={dataUsers} />
+          <StudentsTable students={dataStudents} />
         </ScrollView>
       </View>
     </>
   );
 };
 
-export default UserTablesPage;
+export default StudentTablesPage;

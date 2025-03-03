@@ -5,9 +5,9 @@ import {
   TableHead,
   TableRow,
 } from "@aws-amplify/ui-react";
-import "./UserTable.css";
+import "./StudentsTable.css";
 
-export interface User {
+export interface Students {
   id: number;
   first_name?: string;
   last_name?: string;
@@ -18,10 +18,10 @@ export interface User {
 }
 
 export interface UsersTableProps {
-  users?: User[];
+  students?: Students[];
 }
 
-const UsersTable = ({ users }: UsersTableProps) => {
+const UsersTable = ({ students }: UsersTableProps) => {
   return (
     <>
       <Table caption="" highlightOnHover={false}>
@@ -36,7 +36,7 @@ const UsersTable = ({ users }: UsersTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {users?.map((item) => {
+          {students?.map((item) => {
             return (
               <TableRow key={item.id}>
                 <TableCell>{item.first_name}</TableCell>

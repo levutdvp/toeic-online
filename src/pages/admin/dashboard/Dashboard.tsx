@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Grid,
@@ -86,7 +86,7 @@ const Dashboard = () => {
   return (
     <>
       <div>
-        <h2>Dashboard</h2>
+        <h2 className="text-[24px] font-extrabold">Dashboard</h2>
       </div>
       <View borderRadius="6px" maxWidth="100%" padding="0rem" minHeight="100vh">
         <Grid

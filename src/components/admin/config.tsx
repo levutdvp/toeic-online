@@ -1,10 +1,10 @@
 import { Icon } from "@aws-amplify/ui-react";
-
+import { SiGoogleclassroom } from "react-icons/si";
 import {
   MdDashboard,
   MdModeEditOutline,
   MdAccountBox,
-  MdOutlineTableChart,
+  MdAccountCircle,
 } from "react-icons/md";
 
 export const baseConfig = {
@@ -22,40 +22,50 @@ export const appNavs = [
     title: "Dashboard",
     to: "/admin",
   },
-
   {
-    eventKey: "tables",
-    icon: <Icon as={MdOutlineTableChart} />,
-    title: "Tables",
-    to: "/tables",
+    eventKey: "accounts",
+    icon: <Icon as={MdAccountCircle} />,
+    title: "Accounts",
+    to: "/admin/all-users",
     children: [
       {
-        eventKey: "basic-table",
-        title: "Basic Table",
-        to: "/tables",
+        eventKey: "users",
+        title: "Users",
+        to: "/admin/all-users",
       },
       {
-        eventKey: "users",
-        title: "Users Table",
-        to: "/users-table",
+        eventKey: "teachers",
+        title: "Teacher",
+        to: "/admin/users-teacher",
+      },
+      {
+        eventKey: "students",
+        title: "Student",
+        to: "/admin/users-student",
       },
     ],
+  },
+  {
+    eventKey: "class",
+    icon: <Icon as={SiGoogleclassroom} />,
+    title: "Class",
+    to: "/admin/classes",
   },
   {
     eventKey: "forms",
     icon: <Icon as={MdModeEditOutline} />,
     title: "Forms",
-    to: "/forms",
+    to: "/admin/forms",
     children: [
       {
         eventKey: "form-basic",
         title: "Basic",
-        to: "/forms",
+        to: "/admin/forms",
       },
       {
         eventKey: "form-wizard",
         title: "Edit Form",
-        to: "/edit-form",
+        to: "/admin/edit-form",
       },
     ],
   },
@@ -63,6 +73,6 @@ export const appNavs = [
     eventKey: "profile",
     icon: <Icon as={MdAccountBox} />,
     title: "Profile",
-    to: "/profile",
+    to: "/admin/profile",
   },
 ];

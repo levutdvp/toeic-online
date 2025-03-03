@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Flex, useTheme } from "@aws-amplify/ui-react";
 import FormFields from "./FormFields";
 import FormActions from "./FormActions";
@@ -21,7 +21,6 @@ const EditForm = () => {
   const [values, setValues] = useState(initialValues);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  // const [isValid, setIsValid] = useState<boolean>(false);
 
   const { tokens } = useTheme();
 

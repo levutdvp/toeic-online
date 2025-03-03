@@ -1,13 +1,9 @@
 import { View, Heading, ScrollView } from "@aws-amplify/ui-react";
-import BasicTable from "./BasicTable";
+import TeachersTable from "./TeacherTable/TeachersTable";
 
-const Tables = () => {
+const TeachersTablePage = () => {
   return (
     <>
-      <div>
-        <h2>Tables</h2>
-      </div>
-
       <View
         backgroundColor="var(--amplify-colors-white)"
         borderRadius="6px"
@@ -15,14 +11,14 @@ const Tables = () => {
         padding="1rem"
         minHeight="80vh"
       >
-        <Heading color="#333"> Basic Table </Heading>
+        <Heading color="#333"> Teachers Manage </Heading>
         <br></br>
         <ScrollView width="100%">
-          <BasicTable />
+          <TeachersTable />
         </ScrollView>
       </View>
     </>
   );
 };
 
-export default Tables;
+export default TeachersTablePage;

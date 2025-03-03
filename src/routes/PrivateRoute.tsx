@@ -1,6 +1,6 @@
+// import { useAuth } from "@/hooks/use-auth.hook";
 import { isLogged } from "@/services/auth";
 import { UserRole } from "@/types/permission.type";
-// import { userPermission } from "@/utils/permission.util";
 import { JSX } from "react";
 import { Navigate } from "react-router-dom";
 
@@ -16,9 +16,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   if (!isLogged()) {
     return <Navigate to="/auth/login" replace />;
   }
+  // const { userInfo } = useAuth();
 
-  // const userRoles = userPermission.getUserRoles();
-  // const hasAccess = requiredRoles.some((role) => userRoles.includes(role));
+  // const hasAccess = requiredRoles.some((role) => userInfo.roles?.includes(role));
   // if (!hasAccess) {
   //   return <Navigate to="/unauthorized" replace />;
   // }

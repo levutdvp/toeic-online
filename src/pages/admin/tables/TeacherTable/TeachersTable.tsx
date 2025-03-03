@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const data = mockSongsData(10);
 
-const BasicTable = () => {
+const TeachersTable = () => {
   const navigate = useNavigate();
   return (
     <>
@@ -34,7 +34,9 @@ const BasicTable = () => {
                 <TableCell>{item.description}</TableCell>
                 <TableCell>{item.genre}</TableCell>
                 <TableCell>
-                  <Button onClick={() => navigate("/edit-form")}>Edit</Button>
+                  <Button onClick={() => navigate("/admin/edit-form")}>
+                    Edit
+                  </Button>
                 </TableCell>
               </TableRow>
             );
@@ -45,4 +47,4 @@ const BasicTable = () => {
   );
 };
 
-export default BasicTable;
+export default TeachersTable;
