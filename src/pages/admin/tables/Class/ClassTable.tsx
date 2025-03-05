@@ -8,11 +8,16 @@ import {
 import "./ClassTable.css";
 
 export interface ClassTable {
-  id: number;
-  name: string;
+  id?: number;
+  class_code: string;
+  class_type: string;
+  start_date: string;
+  end_date: string;
   start_time: string;
   end_time: string;
-  image?: string;
+  days: string;
+  number_of_students: number;
+  teacher: string;
 }
 
 export interface ClassTableProps {
@@ -28,23 +33,17 @@ const ClassTable = ({ classes }: ClassTableProps) => {
             <TableCell as="th">Name</TableCell>
             <TableCell as="th">Start Time</TableCell>
             <TableCell as="th">End Time</TableCell>
-            <TableCell as="th">img</TableCell>
+            <TableCell as="th">Teacher</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {classes?.map((item) => {
             return (
               <TableRow key={item.id}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.start_time}</TableCell>
-                <TableCell>{item.end_time}</TableCell>
-                <TableCell>
-                  <img
-                    className="user-table-img"
-                    src={item.image}
-                    alt="profile"
-                  ></img>
-                </TableCell>
+                <TableCell>{item.class_code}</TableCell>
+                <TableCell>{item.class_type}</TableCell>
+                <TableCell>{item.start_date}</TableCell>
+                <TableCell>{item.end_date}</TableCell>
               </TableRow>
             );
           })}

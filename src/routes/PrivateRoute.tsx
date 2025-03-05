@@ -1,4 +1,5 @@
-// import { useAuth } from "@/hooks/use-auth.hook";
+import { useAuth } from "@/hooks/use-auth.hook";
+import PageNotFound from "@/pages/normal/page-not-found";
 import { isLogged } from "@/services/auth";
 import { UserRole } from "@/types/permission.type";
 import { JSX } from "react";
@@ -11,18 +12,21 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
   element,
-  // requiredRoles,
+  requiredRoles,
 }) => {
   if (!isLogged()) {
     return <Navigate to="/auth/login" replace />;
   }
-  // const { userInfo } = useAuth();
+  const { userRoles } = useAuth();
+  const hasAccess = requiredRoles?.some((roles) => userRoles?.includes(roles));
+  if (!hasAccess && userRoles.length > 0) {
+    return <PageNotFound />;
+  }
+  if (userRoles.includes("ADMIN") || userRoles.includes("TEACHER")) {
+    return element;
+  }
 
-  // const hasAccess = requiredRoles.some((role) => userInfo.roles?.includes(role));
-  // if (!hasAccess) {
-  //   return <Navigate to="/unauthorized" replace />;
-  // }
-  return element;
+  return "";
 };
 
 export default PrivateRoute;

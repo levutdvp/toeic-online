@@ -20,16 +20,18 @@ const LoginPage = () => {
         removeLoading();
         saveAccessToken({
           accessToken: res.data["token"],
-          expiredTime: res.data["expires_in"]
-            ? Number(res.data["expires_in"]) / 60 / 60 / 24
-            : 9999,
         });
 
-        const roles = res.data.role;
-        if (userPermission.isAdmin(roles)) {
-          navigate("/admin");
-        } else {
-          navigate("/");
+        const roles = Array.isArray(res.data.role)
+          ? res.data.role
+          : [res.data.role];
+        if (roles.length > 0) {
+          if (userPermission.isAdmin(roles)) {
+            navigate("/admin");
+          } else {
+            console.log("aaaaaaaa");
+            navigate("/");
+          }
         }
       },
 

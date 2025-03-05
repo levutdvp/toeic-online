@@ -1,6 +1,6 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
-import { UserRole, UserRoleEnum } from "@/types/permission.type";
+import { UserRole } from "@/types/permission.type";
 import { map } from "rxjs";
 
 export interface IUserProfile {
@@ -8,7 +8,7 @@ export interface IUserProfile {
   fullName: string;
   username: string;
   email: string;
-  roles: UserRole[];
+  role: UserRole[];
   isAdmin: boolean;
   isClient: boolean;
 }
@@ -26,16 +26,13 @@ export const getUserProfile = () => {
     map((response) => {
       const { data } = response;
 
+      const roles = Array.isArray(data.role) ? data.role : [data.role];
+
       return {
         ...response,
         data: {
           ...data,
-          name: data.username,
-          isAdmin: !data.isAdmin,
-          isClient:
-            !data.isAdmin &&
-            (data.roles.includes(UserRoleEnum.STUDENT) ||
-              data.roles.includes(UserRoleEnum.TEACHER)),
+          role: roles,
         },
       };
     })

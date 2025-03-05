@@ -39,7 +39,7 @@ export const AllRoutes = () => {
         ></PrivateRoute>
       ),
       children: [
-        { index: true, element: <PrivateRoute element={<Dashboard />} /> },
+        { index: true, element: <Dashboard /> },
         { path: "forms", element: <Forms /> },
         { path: "all-users", element: <UserTablesPage /> },
         { path: "users-teacher", element: <Tables /> },
