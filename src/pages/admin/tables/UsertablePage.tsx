@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Space, Table } from "antd";
+import { Button, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { UserRole } from "@/types/permission.type";
 import { getUsersList, IGetListUsers } from "@/api/admin/get-list-userInfo.api";
+import { CiEdit } from "react-icons/ci";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { TableQueriesRef } from "@/types/pagination.type";
+import { initPaging } from "@/consts/paging.const";
 
 interface DataType {
   id?: number;
@@ -14,6 +18,8 @@ interface DataType {
   active_date: boolean;
   is_first?: boolean;
 }
+
+type TableQueries = TableQueriesRef<DataType>;
 
 const columns: TableProps<DataType>["columns"] = [
   {
@@ -56,35 +62,81 @@ const columns: TableProps<DataType>["columns"] = [
     width: 200,
     render: () => (
       <Space size="middle">
-        <a>Update</a>
-        <a>Delete</a>
+        <Button size="middle">
+          <CiEdit />
+        </Button>
+        <Button size="middle">
+          <MdOutlineDeleteForever />
+        </Button>
       </Space>
     ),
   },
 ];
 const UserTablesPage = () => {
   const [dataUsers, setDataUsers] = useState<IGetListUsers[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const tableQueriesRef = useRef<TableQueries>({
+    current: initPaging.pageCurrent,
+    pageSize: initPaging.pageSize,
+    totalPage: initPaging.totalPage,
+  });
 
   const getListUsers = useCallback(() => {
+    setLoading(true);
     showLoading();
-    const getTeachersSub = getUsersList().subscribe({
+    const getUsersSub = getUsersList({
+      pageNumber: tableQueriesRef.current.current,
+      pageSize: tableQueriesRef.current.pageSize,
+    }).subscribe({
       next: (res) => {
         setDataUsers(res.data);
+        tableQueriesRef.current = {
+          ...tableQueriesRef.current,
+          current: res.meta.pageCurrent,
+          pageSize: res.meta.pageSize,
+          totalPage: res.meta.totalPage,
+          total: res.meta.total,
+        };
         removeLoading();
       },
       error: () => {
         removeLoading();
+        setLoading(false);
       },
     });
-    getTeachersSub.add();
+    getUsersSub.add();
   }, []);
 
   useEffect(() => {
     getListUsers();
-  }, [getListUsers]);
+    setLoading(false);
+  }, []);
+
+  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+    tableQueriesRef.current = {
+      ...tableQueriesRef.current,
+      current: pagination.current ?? 1,
+      pageSize: pagination.pageSize ?? initPaging.pageSize,
+    };
+    getListUsers();
+    setLoading(false);
+  };
   return (
     <>
-      <Table<DataType> columns={columns} dataSource={dataUsers} />
+      <Table<DataType>
+        columns={columns}
+        dataSource={dataUsers}
+        pagination={{
+          position: ["bottomCenter"],
+          pageSize: tableQueriesRef.current.pageSize,
+          current: tableQueriesRef.current.current,
+          total: tableQueriesRef.current.total,
+        }}
+        loading={loading}
+        rowKey="id"
+        onChange={onChangeTable}
+      />
     </>
   );
 };

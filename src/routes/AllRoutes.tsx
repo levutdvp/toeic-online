@@ -7,29 +7,20 @@ import Forms from "@/pages/admin/forms";
 import Profile from "@/pages/admin/profile";
 import Layout from "@/components/admin/Layout";
 import Dashboard from "@/pages/admin/dashboard";
-import {
-  rolesAllowedAdmin,
-  rolesAllowedClient,
-} from "@/consts/permission.const";
+import { rolesAllowedAdmin } from "@/consts/permission.const";
 import EditForm from "@/pages/admin/forms/EditForm";
 import Tables from "@/pages/admin/tables/TeachersTablePage";
 import UserTablesPage from "@/pages/admin/tables/UsertablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
+import DetailTest from "@/pages/client/ListExam/Detail-Test";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
     { path: "/auth/login", element: <LoginPage /> },
     { path: "/auth/forgot-password", element: <ForgotPassword /> },
-    {
-      path: "/",
-      element: (
-        <PrivateRoute
-          element={<HomePage />}
-          requiredRoles={rolesAllowedClient}
-        />
-      ),
-    },
+    { path: "/", element: <HomePage /> },
+    { path: "/contest/:contestId", element: <DetailTest /> },
     {
       path: "/admin",
       element: (

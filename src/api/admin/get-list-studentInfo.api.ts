@@ -17,12 +17,12 @@ export interface IParams {
   pageSize: number;
 }
 
-export const getStudentsList = () => {
-  // const querystring = queryString.stringify(params);
+export const getStudentsList = (params: IParams) => {
+  const querystring = queryString.stringify(params);
 
   return apiCall<IGetListStudents[]>(
     {
-      url: `${API_URL}/api/students/list?`,
+      url: `${API_URL}/api/students/list?${querystring}`,
       method: "GET",
     },
     {

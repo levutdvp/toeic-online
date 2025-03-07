@@ -21,17 +21,11 @@ const LoginPage = () => {
         saveAccessToken({
           accessToken: res.data["token"],
         });
-
-        const roles = Array.isArray(res.data.role)
-          ? res.data.role
-          : [res.data.role];
-        if (roles.length > 0) {
-          if (userPermission.isAdmin(roles)) {
-            navigate("/admin");
-          } else {
-            console.log("aaaaaaaa");
-            navigate("/");
-          }
+        const roles = res.data.role;
+        if (userPermission.isAdmin(roles)) {
+          navigate("/admin");
+        } else {
+          navigate("/");
         }
       },
 

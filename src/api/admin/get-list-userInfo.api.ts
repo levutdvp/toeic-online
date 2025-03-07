@@ -1,7 +1,7 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 import { UserRole } from "@/types/permission.type";
-// import queryString from "query-string";
+import queryString from "query-string";
 
 export interface IGetListUsers {
   id?: number;
@@ -18,12 +18,12 @@ export interface IParams {
   pageSize: number;
 }
 
-export const getUsersList = () => {
-  // const querystring = queryString.stringify(params);
+export const getUsersList = (params: IParams) => {
+  const querystring = queryString.stringify(params);
 
   return apiCall<IGetListUsers[]>(
     {
-      url: `${API_URL}/api/users/list?`,
+      url: `${API_URL}/api/users/list?${querystring}`,
       method: "GET",
     },
     {

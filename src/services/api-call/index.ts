@@ -11,7 +11,7 @@ export interface Response<Data> {
   message?: string;
   code: "0" | string;
   data: Data;
-  meta?: {
+  meta: {
     total: number;
     pageSize: number;
     pageCurrent: number;

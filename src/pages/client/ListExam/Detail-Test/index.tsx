@@ -1,0 +1,112 @@
+import { Button, Card, Tag, Alert } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { BiSolidEdit } from "react-icons/bi";
+import Header from "@/components/client/Header";
+import Footer from "@/components/client/Footer";
+
+interface TestProps {
+  title: string;
+  duration: number;
+  parts: number;
+  questions: number;
+  maxScore: number;
+  label: string;
+  isFree?: boolean;
+}
+
+const testData: TestProps[] = [
+  {
+    title: "Đề 2024 Test 1",
+    duration: 120,
+    parts: 7,
+    questions: 200,
+    maxScore: 990,
+    label: "ĐỀ 2024",
+    isFree: true,
+  },
+];
+
+const TestDetail = () => {
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Header />
+      <div className="flex justify-center items-center flex-grow">
+        <Card className="w-[800px] p-6 shadow-md rounded-lg bg-white">
+          <h2 className="text-2xl font-semibold text-center mb-4">
+            Đề 2023 Test 2
+          </h2>
+          <div className="flex justify-center gap-2 mb-4">
+            <Tag color="gold">Free</Tag>
+            <Tag color="gray">ĐỀ 2023</Tag>
+          </div>
+          <div className="text-center text-gray-700">
+            <p>
+              Thời gian: <strong>{testData[0].duration}</strong> phút
+            </p>
+            <p>
+              Phần thi: <strong>{testData[0].parts}</strong> phần
+            </p>
+            <p>
+              Câu hỏi: <strong>{testData[0].questions}</strong> câu
+            </p>
+            <p>
+              Điểm tối đa: <strong>{testData[0].maxScore}</strong> điểm
+            </p>
+          </div>
+          <Alert
+            message="Lưu ý"
+            description={
+              <div>
+                <p>
+                  <strong>
+                    Hãy sử dụng trình duyệt{" "}
+                    <a
+                      href="https://www.google.com/chrome/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500"
+                    >
+                      Google Chrome
+                    </a>{" "}
+                    để làm Test
+                  </strong>
+                </p>
+                <p>
+                  Nhập mã code hoặc đăng nhập để bắt đầu làm bài thi, mã code
+                  được các thầy cô cung cấp trên lớp học.
+                </p>
+                <p>
+                  Ngoài ra bạn có thể sử dụng tài khoản do Lớp TOEIC thầy Long
+                  cung cấp để làm bài!
+                </p>
+              </div>
+            }
+            type="warning"
+            className="mt-4 mb-6 bg-yellow-50 border-yellow-200 text-yellow-700"
+          />
+          <div className="flex justify-center gap-4 mt-4">
+            <Button
+              shape="round"
+              type="primary"
+              size="large"
+              icon={<BiSolidEdit />}
+            >
+              Bắt đầu thi thử
+            </Button>
+            <Button
+              shape="round"
+              size="large"
+              icon={<EditOutlined />}
+              className="bg-black text-white"
+            >
+              Luyện tập
+            </Button>
+          </div>
+        </Card>
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default TestDetail;

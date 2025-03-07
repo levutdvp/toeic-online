@@ -1,7 +1,8 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
+import queryString from "query-string";
 
-export interface ICreateClass {
+export interface IGetListClasses {
   id?: number;
   class_code: string;
   class_type: string;
@@ -14,12 +15,18 @@ export interface ICreateClass {
   teacher: string;
 }
 
-export const addClass = (params: ICreateClass) => {
-  return apiCall(
+export interface IParams {
+  pageNumber: number;
+  pageSize: number;
+}
+
+export const getClassesList = (params: IParams) => {
+  const querystring = queryString.stringify(params);
+
+  return apiCall<IGetListClasses[]>(
     {
-      url: `${API_URL}/api/create-class`,
-      method: "POST",
-      body: params,
+      url: `${API_URL}/api/classes/list?${querystring}`,
+      method: "GET",
     },
     {
       customError: "throwAndNotify",

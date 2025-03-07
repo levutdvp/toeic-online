@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
 import { Button, Space, Table } from "antd";
-import type { TablePaginationConfig, TableProps } from "antd";
+import type { TableProps } from "antd";
 import {
   getTeachersList,
   IGetListTeachers,
-  IParams,
 } from "@/api/admin/get-list-teacherInfo.api";
 import { CiEdit } from "react-icons/ci";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { TableQueriesRef } from "../../../types/pagination.type";
+import { initPaging } from "@/consts/paging.const";
 
 interface DataType {
   id?: number;
@@ -19,6 +21,8 @@ interface DataType {
   address: string;
   certificate: string[];
 }
+
+type TableQueries = TableQueriesRef<DataType>;
 
 const columns: TableProps<DataType>["columns"] = [
   {
@@ -75,10 +79,12 @@ const columns: TableProps<DataType>["columns"] = [
     width: 200,
     render: () => (
       <Space size="middle">
-        <Button size="small">
+        <Button size="middle">
           <CiEdit />
         </Button>
-        <a>Delete</a>
+        <Button size="middle">
+          <MdOutlineDeleteForever />
+        </Button>
       </Space>
     ),
   },
@@ -86,27 +92,28 @@ const columns: TableProps<DataType>["columns"] = [
 const TeachersTablePage = () => {
   const [dataTeachers, setDataTeachers] = useState<IGetListTeachers[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    onChange: (page, pageSize) => {
-      setPagination({ ...pagination, current: page, pageSize });
-    },
+  const tableQueriesRef = useRef<TableQueries>({
+    current: initPaging.pageCurrent,
+    pageSize: initPaging.pageSize,
+    totalPage: initPaging.totalPage,
   });
 
-  const getListTeachers = useCallback((params: IParams) => {
+  const getListTeachers = useCallback(() => {
     setLoading(true);
     showLoading();
-    const getTeachersSub = getTeachersList(params).subscribe({
+    const getTeachersSub = getTeachersList({
+      pageNumber: tableQueriesRef.current.current,
+      pageSize: tableQueriesRef.current.pageSize,
+    }).subscribe({
       next: (res) => {
         setDataTeachers(res.data);
-        setPagination((prev) => ({
-          ...prev,
-          total: res.meta?.total || 0,
-          current: params.pageNumber,
-          pageSize: params.pageSize,
-        }));
+        tableQueriesRef.current = {
+          ...tableQueriesRef.current,
+          current: res.meta.pageCurrent,
+          pageSize: res.meta.pageSize,
+          totalPage: res.meta.totalPage,
+          total: res.meta.total,
+        };
         removeLoading();
       },
       error: () => {
@@ -119,22 +126,32 @@ const TeachersTablePage = () => {
 
   useEffect(() => {
     getListTeachers();
-  }, [getListTeachers]);
+    setLoading(false);
+  }, []);
 
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    setPagination({
-      ...pagination,
-    });
+  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+    tableQueriesRef.current = {
+      ...tableQueriesRef.current,
+      current: pagination.current ?? 1,
+      pageSize: pagination.pageSize ?? initPaging.pageSize,
+    };
+    getListTeachers();
+    setLoading(false);
   };
   return (
     <>
       <Table<DataType>
         columns={columns}
         rowKey="id"
-        pagination={pagination}
+        pagination={{
+          position: ["bottomCenter"],
+          pageSize: tableQueriesRef.current.pageSize,
+          current: tableQueriesRef.current.current,
+          total: tableQueriesRef.current.totalPage,
+        }}
         dataSource={dataTeachers}
         loading={loading}
-        onChange={handleTableChange}
+        onChange={onChangeTable}
       />
     </>
   );
