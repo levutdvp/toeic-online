@@ -10,7 +10,7 @@ import Dashboard from "@/pages/admin/dashboard";
 import { rolesAllowedAdmin } from "@/consts/permission.const";
 import EditForm from "@/pages/admin/forms/EditForm";
 import Tables from "@/pages/admin/tables/TeachersTablePage";
-import UserTablesPage from "@/pages/admin/tables/UsertablePage";
+import UserTablesPage from "@/pages/admin/tables/UserTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
 import DetailTest from "@/pages/client/ListExam/Detail-Test";

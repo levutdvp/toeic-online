@@ -4,13 +4,16 @@ import {
   IGetListStudents,
 } from "@/api/admin/get-list-studentInfo.api";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Button, message, Modal, Space, Table } from "antd";
+import { Button, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { initPaging } from "@/consts/paging.const";
 import { TableQueriesRef } from "@/types/pagination.type";
 import { deleteStudent } from "@/api/admin/delete-student.api";
+import { showToast } from "@/services/toast";
+import ActionBlockStudents from "./students/action-block-student";
+import AddStudent from "./students/add";
 
 interface DataType {
   id?: number;
@@ -26,8 +29,13 @@ type TableQueries = TableQueriesRef<DataType>;
 
 const StudentTablesPage = () => {
   const [dataStudents, setDataStudents] = useState<IGetListStudents[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
+    null
+  );
+
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
     pageSize: initPaging.pageSize,
@@ -35,7 +43,6 @@ const StudentTablesPage = () => {
   });
 
   const getListStudents = useCallback(() => {
-    setLoading(true);
     showLoading();
     const getStudentsSub = getStudentsList({
       pageNumber: tableQueriesRef.current.current,
@@ -61,48 +68,47 @@ const StudentTablesPage = () => {
 
   useEffect(() => {
     getListStudents();
-    setLoading(false);
   }, []);
 
   const rowSelection = {
-    selectedRowKeys,
-    onChange: (selectedKeys: React.Key[]) => {
-      setSelectedRowKeys(selectedKeys as number[]);
+    onChange: (_: any, selectedRowKeys: DataType[]) => {
+      setSelectedRowKeys(selectedRowKeys);
     },
+    selectedRowKeys: selectedRowKeys
+      .map((item) => item.id)
+      .filter((id): id is number => id !== undefined),
   };
 
-  const deleteStudents = useCallback((ids: number[]) => {
-    console.log(ids.length);
-    if (ids.length === 0) {
-      message.warning("Please select student to delete");
-      return;
-    }
+  const showDeleteModal = (id: number) => {
+    setSelectedStudentId(id);
+    setIsModalOpen(true);
+  };
 
-    Modal.confirm({
-      title: "Confirm delete",
-      content: `Are you sure you want to delete?`,
-      okText: "Delete",
-      cancelText: "Cancel",
-      okType: "danger",
-      onOk: () => {
-        showLoading();
-        const deleteSub = deleteStudent({ ids }).subscribe({
-          next: () => {
-            message.success("Xóa sinh viên thành công!");
-            setSelectedRowKeys([]);
-            getListStudents();
-          },
-          error: () => {
-            message.error("Xóa thất bại, vui lòng thử lại.");
-          },
-          complete: () => {
-            removeLoading();
-          },
-        });
-        deleteSub.add();
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
+    setSelectedStudentId(null);
+  };
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!selectedStudentId) return;
+    showLoading();
+    const deleteSub = deleteStudent([selectedStudentId]).subscribe({
+      next: () => {
+        showToast({type: 'success', content: 'Delete successful!' });
+        setSelectedRowKeys([]);
+        getListStudents();
+      },
+      error: () => {
+        showToast({type: 'error', content: 'Delete failed!' });
+      },
+      complete: () => {
+        removeLoading();
+        setIsModalOpen(false);
+        setSelectedStudentId(null);
       },
     });
-  }, []);
+    deleteSub.add();
+  }, [selectedStudentId]);
 
   const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
     tableQueriesRef.current = {
@@ -111,7 +117,15 @@ const StudentTablesPage = () => {
       pageSize: pagination.pageSize ?? initPaging.pageSize,
     };
     getListStudents();
-    setLoading(false);
+  };
+
+  const onClickAction = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false); 
+    getListStudents(); 
   };
 
   const columns: TableProps<DataType>["columns"] = [
@@ -161,11 +175,7 @@ const StudentTablesPage = () => {
           <Button size="middle">
             <CiEdit />
           </Button>
-          <Button
-            size="middle"
-            danger
-            onClick={() => deleteStudents([record.id])}
-          >
+          <Button size="middle" danger onClick={() => showDeleteModal(record.id!)} disabled={record.id === 1}>
             <MdOutlineDeleteForever />
           </Button>
         </Space>
@@ -174,6 +184,7 @@ const StudentTablesPage = () => {
   ];
   return (
     <>
+    <ActionBlockStudents onClickAction={onClickAction} selectedRows={selectedRowKeys} getListData={getListStudents} />
       <Table<DataType>
         columns={columns}
         dataSource={dataStudents}
@@ -185,9 +196,21 @@ const StudentTablesPage = () => {
           current: tableQueriesRef.current.current,
           total: tableQueriesRef.current.total,
         }}
-        loading={loading}
         onChange={onChangeTable}
       />
+      <Modal
+        title="Confirm deletion"
+        open={isModalOpen}
+        onOk={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        okText="Delete"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Do you want to delete?</p>
+      </Modal>
+
+      <AddStudent isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import UserTablesPage from "./UsertablePage";
+import UserTablesPage from "./UserTablePage";
 import StudentTablesPage from "./StudentsTablePage";
 import TeachersTablePage from "./TeachersTablePage";
 import ClassTablesPage from "./ClassTablePage";
