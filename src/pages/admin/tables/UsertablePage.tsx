@@ -3,13 +3,16 @@ import { removeLoading, showLoading } from "@/services/loading";
 import { Button, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { UserRole } from "@/types/permission.type";
-import { getUsersList, IGetListUsers } from "@/api/admin/get-list-userInfo.api";
+import {
+  getUsersList,
+  IGetListUsers,
+} from "@/api/admin/api-users/get-list-userInfo.api";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { TableQueriesRef } from "@/types/pagination.type";
 import { initPaging } from "@/consts/paging.const";
 import { showToast } from "@/services/toast";
-import { deleteUser } from "@/api/admin/delete-user.api";
+import { deleteUser } from "@/api/admin/api-users/delete-user.api";
 import ActionBlockUsers from "./users/action-block-user";
 import AddUser from "./users/add";
 
@@ -27,12 +30,10 @@ type TableQueries = TableQueriesRef<DataType>;
 
 const UserTablesPage = () => {
   const [dataUsers, setDataUsers] = useState<IGetListUsers[]>([]);
-    const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-    const [selectedUserId, setSelectedUserId] = useState<number | null>(
-        null
-      );
+  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -66,7 +67,7 @@ const UserTablesPage = () => {
 
   useEffect(() => {
     getListUsers();
-  }, []);
+  }, [getListUsers]);
 
   const rowSelection = {
     onChange: (_: any, selectedRowKeys: DataType[]) => {
@@ -96,35 +97,35 @@ const UserTablesPage = () => {
     setSelectedUserId(null);
   };
 
-   const handleConfirmDelete = useCallback(() => {
-        if (!selectedUserId) return;
-        showLoading();
-        const deleteSub = deleteUser([selectedUserId]).subscribe({
-          next: () => {
-            showToast({type: 'success', content: 'Delete successful!' });
-            setSelectedRowKeys([]);
-            getListUsers();
-          },
-          error: () => {
-            showToast({type: 'error', content: 'Delete failed!' });
-          },
-          complete: () => {
-            removeLoading();
-            setIsModalOpen(false);
-            setSelectedUserId(null);
-          },
-        });
-        deleteSub.add();
-      }, [selectedUserId]);
+  const handleConfirmDelete = useCallback(() => {
+    if (!selectedUserId) return;
+    showLoading();
+    const deleteSub = deleteUser([selectedUserId]).subscribe({
+      next: () => {
+        showToast({ type: "success", content: "Delete successful!" });
+        setSelectedRowKeys([]);
+        getListUsers();
+      },
+      error: () => {
+        showToast({ type: "error", content: "Delete failed!" });
+      },
+      complete: () => {
+        removeLoading();
+        setIsModalOpen(false);
+        setSelectedUserId(null);
+      },
+    });
+    deleteSub.add();
+  }, [selectedUserId]);
 
-      const onClickAction = () => {
-        setIsAddModalOpen(true);
-      };
-    
-      const handleCloseAddModal = () => {
-        setIsAddModalOpen(false); 
-        getListUsers(); 
-      };
+  const onClickAction = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
+    getListUsers();
+  };
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -170,7 +171,12 @@ const UserTablesPage = () => {
           <Button size="middle">
             <CiEdit />
           </Button>
-          <Button size="middle" danger onClick={() => showDeleteModal(record.id!)} disabled={record.id === 1}>
+          <Button
+            size="middle"
+            danger
+            onClick={() => showDeleteModal(record.id!)}
+            disabled={record.id === 1}
+          >
             <MdOutlineDeleteForever />
           </Button>
         </Space>
@@ -179,7 +185,11 @@ const UserTablesPage = () => {
   ];
   return (
     <>
-    <ActionBlockUsers onClickAction={onClickAction} selectedRows={selectedRowKeys} getListData={getListUsers} />
+      <ActionBlockUsers
+        onClickAction={onClickAction}
+        selectedRows={selectedRowKeys}
+        getListData={getListUsers}
+      />
       <Table<DataType>
         columns={columns}
         dataSource={dataUsers}

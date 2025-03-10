@@ -2,13 +2,15 @@ import { Button, Form, Input } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { CiLock } from "react-icons/ci";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ILoginReq, loginApi } from "@/api/auth/login.api";
 import { removeLoading } from "@/services/loading";
 import { saveAccessToken } from "@/services/auth";
 import { userPermission } from "@/utils/permission.util";
+import { useAuth } from "@/hooks/use-auth.hook";
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { accessToken, userRoles } = useAuth();
 
   const handleForgotPassword = () => {
     navigate("/auth/forgot-password");
@@ -36,6 +38,11 @@ const LoginPage = () => {
 
     loginSub.add();
   };
+  const isAdmin = userRoles.some((role) => ["ADMIN", "TEACHER"].includes(role));
+
+  if (accessToken) {
+    return <Navigate to={isAdmin ? "/admin" : "/"} />;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">

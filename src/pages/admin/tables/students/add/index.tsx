@@ -2,7 +2,7 @@ import { removeLoading, showLoading } from '@/services/loading';
 import { showToast } from '@/services/toast';
 import { Button, Form, Input, Modal } from 'antd';
 import { IAddForm } from './form.config';
-import { addStudent } from '@/api/admin/add-student.api';
+import { addStudent } from '@/api/admin/api-students/add-student.api';
 import React from 'react';
 // import { validateForm } from './form.config';
 

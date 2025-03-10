@@ -5,27 +5,41 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Forms from "@/pages/admin/forms";
 import Profile from "@/pages/admin/profile";
-import Layout from "@/components/admin/Layout";
 import Dashboard from "@/pages/admin/dashboard";
 import { rolesAllowedAdmin } from "@/consts/permission.const";
 import EditForm from "@/pages/admin/forms/EditForm";
 import Tables from "@/pages/admin/tables/TeachersTablePage";
-import UserTablesPage from "@/pages/admin/tables/UserTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
 import DetailTest from "@/pages/client/ListExam/Detail-Test";
+import UserTablesPage from "@/pages/admin/tables/UsertablePage";
+import DefaultLayout from "@/components/common/defaultLayout";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
     { path: "/auth/login", element: <LoginPage /> },
     { path: "/auth/forgot-password", element: <ForgotPassword /> },
-    { path: "/", element: <HomePage /> },
-    { path: "/contest/:contestId", element: <DetailTest /> },
+    {
+      path: "/",
+      element: (
+        <DefaultLayout isDefaultLayout={false}>
+          <HomePage />
+        </DefaultLayout>
+      ),
+    },
+    {
+      path: "/contest/:contestId",
+      element: (
+        <DefaultLayout isDefaultLayout={false}>
+          <DetailTest />
+        </DefaultLayout>
+      ),
+    },
     {
       path: "/admin",
       element: (
         <PrivateRoute
-          element={<Layout />}
+          element={<DefaultLayout />}
           requiredRoles={rolesAllowedAdmin}
         ></PrivateRoute>
       ),

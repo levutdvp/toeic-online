@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getStudentsList,
   IGetListStudents,
-} from "@/api/admin/get-list-studentInfo.api";
+} from "@/api/admin/api-students/get-list-studentInfo.api";
 import { removeLoading, showLoading } from "@/services/loading";
 import { Button, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
@@ -10,7 +10,7 @@ import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { initPaging } from "@/consts/paging.const";
 import { TableQueriesRef } from "@/types/pagination.type";
-import { deleteStudent } from "@/api/admin/delete-student.api";
+import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 import { showToast } from "@/services/toast";
 import ActionBlockStudents from "./students/action-block-student";
 import AddStudent from "./students/add";
@@ -68,7 +68,7 @@ const StudentTablesPage = () => {
 
   useEffect(() => {
     getListStudents();
-  }, []);
+  }, [getListStudents]);
 
   const rowSelection = {
     onChange: (_: any, selectedRowKeys: DataType[]) => {
@@ -94,12 +94,12 @@ const StudentTablesPage = () => {
     showLoading();
     const deleteSub = deleteStudent([selectedStudentId]).subscribe({
       next: () => {
-        showToast({type: 'success', content: 'Delete successful!' });
+        showToast({ type: "success", content: "Delete successful!" });
         setSelectedRowKeys([]);
         getListStudents();
       },
       error: () => {
-        showToast({type: 'error', content: 'Delete failed!' });
+        showToast({ type: "error", content: "Delete failed!" });
       },
       complete: () => {
         removeLoading();
@@ -124,8 +124,8 @@ const StudentTablesPage = () => {
   };
 
   const handleCloseAddModal = () => {
-    setIsAddModalOpen(false); 
-    getListStudents(); 
+    setIsAddModalOpen(false);
+    getListStudents();
   };
 
   const columns: TableProps<DataType>["columns"] = [
@@ -175,7 +175,12 @@ const StudentTablesPage = () => {
           <Button size="middle">
             <CiEdit />
           </Button>
-          <Button size="middle" danger onClick={() => showDeleteModal(record.id!)} disabled={record.id === 1}>
+          <Button
+            size="middle"
+            danger
+            onClick={() => showDeleteModal(record.id!)}
+            disabled={record.id === 1}
+          >
             <MdOutlineDeleteForever />
           </Button>
         </Space>
@@ -184,7 +189,11 @@ const StudentTablesPage = () => {
   ];
   return (
     <>
-    <ActionBlockStudents onClickAction={onClickAction} selectedRows={selectedRowKeys} getListData={getListStudents} />
+      <ActionBlockStudents
+        onClickAction={onClickAction}
+        selectedRows={selectedRowKeys}
+        getListData={getListStudents}
+      />
       <Table<DataType>
         columns={columns}
         dataSource={dataStudents}

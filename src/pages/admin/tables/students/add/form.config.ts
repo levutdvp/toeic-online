@@ -6,9 +6,9 @@ export interface IAddForm {
 }
 
 export const validateForm: TFormRules<IAddForm> = {
-  fullName: [{ required: true, message: 'Please input user name' }],
+  fullName: [{ required: true, message: "Please input user name" }],
   email: [
-    { required: true, message: 'Please input email address' },
-    { type: 'email', message: 'Please enter a valid email address' },
+    { required: true, message: "Please input email address" },
+    { type: "email", message: "Please enter a valid email address" },
   ],
 };

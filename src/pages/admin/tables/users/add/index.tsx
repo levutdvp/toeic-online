@@ -3,7 +3,7 @@ import { showToast } from '@/services/toast';
 import { Button, Form, Input, Modal } from 'antd';
 import React from 'react';
 import { IAddForm } from './form.config';
-import { addUser } from '@/api/admin/add-user.api';
+import { addUser } from '@/api/admin/api-users/add-user.api';
 // import { validateForm } from './form.config';
 
 interface addUserProps {

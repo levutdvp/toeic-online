@@ -3,7 +3,7 @@ import { showToast } from '@/services/toast';
 import { Button, Form, Input, Modal } from 'antd';
 import { IAddForm } from './form.config';
 import React from 'react';
-import { addTeacher } from '@/api/admin/add-teacher.api';
+import { addTeacher } from '@/api/admin/api-teachers/add-teacher.api';
 // import { validateForm } from './form.config';
 
 interface addTeacherProps {
