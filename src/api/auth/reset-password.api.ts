@@ -1,17 +1,18 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
-import queryString from "query-string";
 
 export interface IPrams {
+  token: string;
   email: string;
+  password: string;
 }
 
-export const forgotPassword = (params: IPrams) => {
-  const querystring = queryString.stringify(params);
+export const resetPassword = (params: IPrams) => {
   return apiCall<string>(
     {
-      url: `${API_URL}/api/forgot-password?${querystring}`,
-      method: "GET",
+      url: `${API_URL}/api/reset-password`,
+      method: "POST",
+      body: params,
     },
     {
       customError: "throwAndNotify",

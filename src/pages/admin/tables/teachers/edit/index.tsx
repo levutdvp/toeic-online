@@ -1,19 +1,43 @@
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { Button, DatePicker, Form, Input, Modal, Select } from "antd";
-import { IAddForm, validateForm } from "./form.config";
-import React from "react";
-import { addTeacher } from "@/api/admin/api-teachers/add-teacher.api";
+import { IEditForm, validateForm } from "./form.config";
+import React, { useEffect, useMemo } from "react";
 import dayjs from "dayjs";
+import { IGetListTeachers } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
+import { editTeacher } from "@/api/admin/api-teachers/edit-teacher.api";
 
-interface addTeacherProps {
+interface editTeacherProps {
   isOpen: boolean;
   onClose: () => void;
+  recordSelected?: IGetListTeachers;
 }
-const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
+const EditTeacher: React.FC<editTeacherProps> = ({
+  isOpen,
+  onClose,
+  recordSelected,
+}) => {
   const [form] = Form.useForm();
 
-  const handleAddSubmit = (values: IAddForm) => {
+  const initialValues = useMemo(() => {
+    if (!recordSelected) return;
+
+    return {
+      name: recordSelected.name,
+      dob: recordSelected.dob && dayjs(recordSelected.dob).format("YYYY-MM-DD"),
+      gender: recordSelected.gender,
+      phoneNumber: recordSelected.phone,
+      email: recordSelected.email,
+      address: recordSelected.address,
+      certificates: recordSelected.certificate.join(", "),
+    };
+  }, [recordSelected]);
+
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [initialValues, form]);
+
+  const handleEditSubmit = (values: IEditForm) => {
     const params = {
       name: values.name,
       dob: dayjs(values.dob).format("YYYY-MM-DD"),
@@ -29,16 +53,16 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
     };
 
     showLoading();
-    const addTeachers = addTeacher(params).subscribe({
+    const editStudents = editTeacher(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Add teacher successful" });
+        showToast({ content: "Edit successful" });
         form.resetFields();
       },
       error: () => removeLoading(),
     });
 
-    addTeachers.add();
+    editStudents.add();
   };
 
   const handleClose = () => {
@@ -49,23 +73,28 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal
-        title={"Add Teacher"}
+        title={"Edit"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}
         footer={[
-          <Button key="Submit" type="primary" onClick={form.submit}>
-            Add
+          <Button
+            style={{ marginTop: "50px" }}
+            key="Submit"
+            type="primary"
+            onClick={form.submit}
+          >
+            Edit
           </Button>,
           <Button key="Cancel" onClick={handleClose}>
             Cancel
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 370 }}
+        bodyStyle={{ height: 330 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
+          <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
             <Form.Item name="name" rules={validateForm.name}>
               <Input placeholder="Full name" />
             </Form.Item>
@@ -116,4 +145,4 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddTeacher;
+export default EditTeacher;

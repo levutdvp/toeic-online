@@ -14,28 +14,22 @@ import ActionBlockTeachers from "./teachers/action-block-teacher";
 import AddTeacher from "./teachers/add";
 import { showToast } from "@/services/toast";
 import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
+import EditTeacher from "./teachers/edit";
 
-interface DataType {
-  id?: number;
-  name: string;
-  dob: string;
-  gender: string;
-  phone: string;
-  email: string;
-  address: string;
-  certificate: string[];
-}
-
-type TableQueries = TableQueriesRef<DataType>;
+type TableQueries = TableQueriesRef<IGetListTeachers>;
 
 const TeachersTablePage = () => {
   const [dataTeachers, setDataTeachers] = useState<IGetListTeachers[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListTeachers[]>(
+    []
+  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [selectedTeacherId, setSelectedTeacherId] = useState<number | null>(
     null
   );
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [recordSelected, setRecordSelected] = useState<IGetListTeachers>();
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -72,7 +66,7 @@ const TeachersTablePage = () => {
   }, [getListTeachers]);
 
   const rowSelection = {
-    onChange: (_: any, selectedRowKeys: DataType[]) => {
+    onChange: (_: any, selectedRowKeys: IGetListTeachers[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     selectedRowKeys: selectedRowKeys
@@ -111,7 +105,9 @@ const TeachersTablePage = () => {
     deleteSub.add();
   }, [selectedTeacherId]);
 
-  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+  const onChangeTable: TableProps<IGetListTeachers>["onChange"] = (
+    pagination
+  ) => {
     tableQueriesRef.current = {
       ...tableQueriesRef.current,
       current: pagination.current ?? 1,
@@ -129,40 +125,49 @@ const TeachersTablePage = () => {
     getListTeachers();
   };
 
-  const columns: TableProps<DataType>["columns"] = [
+  const handleOpenEditModal = (record: IGetListTeachers) => {
+    setRecordSelected(record);
+    setIsEditModalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    getListTeachers();
+  };
+
+  const columns: TableProps<IGetListTeachers>["columns"] = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width: 200,
+      width: 170,
       align: "center",
     },
     {
       title: "Date of Birth",
       dataIndex: "dob",
       key: "dob",
-      width: 200,
+      width: 150,
       align: "center",
     },
     {
       title: "Gender",
       dataIndex: "gender",
       key: "gender",
-      width: 200,
+      width: 100,
       align: "center",
     },
     {
       title: "Phone Number",
       dataIndex: "phone",
       key: "phone",
-      width: 250,
+      width: 150,
       align: "center",
     },
     {
       title: "Email Address",
       dataIndex: "email",
       key: "email",
-      width: 300,
+      width: 200,
       align: "center",
     },
     {
@@ -176,6 +181,7 @@ const TeachersTablePage = () => {
       dataIndex: "certificate",
       key: "certificate",
       align: "center",
+      render: (certificates) => (certificates ? certificates.join(", ") : ""),
     },
     {
       title: "Action",
@@ -184,7 +190,7 @@ const TeachersTablePage = () => {
       width: 200,
       render: (_, record) => (
         <Space size="middle">
-          <Button size="middle">
+          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
           </Button>
           <Button
@@ -207,7 +213,7 @@ const TeachersTablePage = () => {
         selectedRows={selectedRowKeys}
         getListData={getListTeachers}
       />
-      <Table<DataType>
+      <Table<IGetListTeachers>
         columns={columns}
         rowKey="id"
         pagination={{
@@ -234,6 +240,11 @@ const TeachersTablePage = () => {
       </Modal>
 
       <AddTeacher isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
+      <EditTeacher
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        recordSelected={recordSelected}
+      />
     </>
   );
 };

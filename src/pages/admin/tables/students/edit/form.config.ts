@@ -1,6 +1,6 @@
 import { TFormRules } from "@/types/form.type";
 
-export interface IAddForm {
+export interface IEditForm {
   name: string;
   email: string;
   dob: string;
@@ -9,7 +9,7 @@ export interface IAddForm {
   address: string;
 }
 
-export const validateForm: TFormRules<IAddForm> = {
+export const validateForm: TFormRules<IEditForm> = {
   name: [{ required: true, message: "Please input full name" }],
   dob: [{ required: true, message: "Please input date of birth" }],
   gender: [{ required: true, message: "Please select gender" }],

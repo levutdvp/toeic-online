@@ -1,7 +1,7 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 
-export interface IAddTeacher {
+export interface IEditTeacher {
   name: string;
   dob: string;
   gender: string;
@@ -11,10 +11,10 @@ export interface IAddTeacher {
   certificates: string[];
 }
 
-export const addTeacher = (params: IAddTeacher) => {
-  return apiCall<IAddTeacher>(
+export const editTeacher = (params: IEditTeacher) => {
+  return apiCall<IEditTeacher>(
     {
-      url: `${API_URL}/api/teachers/add-teacher`,
+      url: `${API_URL}/api/teachers/edit-teacher`,
       method: "POST",
       body: params,
     },

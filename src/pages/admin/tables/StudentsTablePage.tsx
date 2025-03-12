@@ -14,24 +14,19 @@ import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 import { showToast } from "@/services/toast";
 import ActionBlockStudents from "./students/action-block-student";
 import AddStudent from "./students/add";
+import EditStudent from "./students/edit";
 
-interface DataType {
-  id?: number;
-  name: string;
-  dob: string;
-  gender: string;
-  phone: string;
-  email: string;
-  address: string;
-}
-
-type TableQueries = TableQueriesRef<DataType>;
+type TableQueries = TableQueriesRef<IGetListStudents>;
 
 const StudentTablesPage = () => {
   const [dataStudents, setDataStudents] = useState<IGetListStudents[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListStudents[]>(
+    []
+  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [recordSelected, setRecordSelected] = useState<IGetListStudents>();
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null
   );
@@ -71,7 +66,7 @@ const StudentTablesPage = () => {
   }, [getListStudents]);
 
   const rowSelection = {
-    onChange: (_: any, selectedRowKeys: DataType[]) => {
+    onChange: (_: any, selectedRowKeys: IGetListStudents[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     selectedRowKeys: selectedRowKeys
@@ -110,7 +105,9 @@ const StudentTablesPage = () => {
     deleteSub.add();
   }, [selectedStudentId]);
 
-  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+  const onChangeTable: TableProps<IGetListStudents>["onChange"] = (
+    pagination
+  ) => {
     tableQueriesRef.current = {
       ...tableQueriesRef.current,
       current: pagination.current ?? 1,
@@ -128,7 +125,16 @@ const StudentTablesPage = () => {
     getListStudents();
   };
 
-  const columns: TableProps<DataType>["columns"] = [
+  const handleOpenEditModal = (record: IGetListStudents) => {
+    setRecordSelected(record);
+    setIsEditModalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    getListStudents();
+  };
+
+  const columns: TableProps<IGetListStudents>["columns"] = [
     {
       title: "Name",
       dataIndex: "name",
@@ -172,7 +178,7 @@ const StudentTablesPage = () => {
       width: 200,
       render: (_, record) => (
         <Space size="middle">
-          <Button size="middle">
+          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
           </Button>
           <Button
@@ -194,7 +200,7 @@ const StudentTablesPage = () => {
         selectedRows={selectedRowKeys}
         getListData={getListStudents}
       />
-      <Table<DataType>
+      <Table<IGetListStudents>
         columns={columns}
         dataSource={dataStudents}
         rowKey="id"
@@ -220,6 +226,11 @@ const StudentTablesPage = () => {
       </Modal>
 
       <AddStudent isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
+      <EditStudent
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        recordSelected={recordSelected}
+      />
     </>
   );
 };

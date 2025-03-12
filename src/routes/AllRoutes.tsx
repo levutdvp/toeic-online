@@ -12,8 +12,8 @@ import Tables from "@/pages/admin/tables/TeachersTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
 import DetailTest from "@/pages/client/ListExam/Detail-Test";
-import UserTablesPage from "@/pages/admin/tables/UsertablePage";
 import DefaultLayout from "@/components/common/defaultLayout";
+import UserTablesPage from "@/pages/admin/tables/UsersTablePage";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([

@@ -1,29 +1,30 @@
-import { removeLoading, showLoading } from '@/services/loading';
-import { showToast } from '@/services/toast';
-import { Button, Form, Input, Modal } from 'antd';
-import React from 'react';
-import { IAddForm } from './form.config';
-import { addUser } from '@/api/admin/api-users/add-user.api';
-// import { validateForm } from './form.config';
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { Button, Form, Input, Modal, Select } from "antd";
+import React from "react";
+import { IAddForm } from "./form.config";
+import { addUser } from "@/api/admin/api-users/add-user.api";
+import { validateForm } from "./form.config";
 
 interface addUserProps {
-    isOpen: boolean;
-    onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
   const [form] = Form.useForm();
 
   const handleAddSubmit = (values: IAddForm) => {
     const params = {
-      fullName: values.fullName,
+      username: values.username,
       email: values.email,
+      role: values.role,
     };
 
     showLoading();
     const addUsers = addUser(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: 'Add users successful' });
+        showToast({ content: "Add users successful" });
         form.resetFields();
       },
       error: () => removeLoading(),
@@ -35,37 +36,39 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal
-        title={'Add User'}
+        title={"Add User"}
         open={isOpen}
         onOk={form.submit}
         onCancel={onClose}
         footer={[
-          <Button key='Submit' type='primary' onClick={form.submit}>
+          <Button key="Submit" type="primary" onClick={form.submit}>
             Add
           </Button>,
-          <Button key='Cancel' onClick={onClose}>
+          <Button key="Cancel" onClick={onClose}>
             Cancel
           </Button>,
         ]}
         width={500}
         bodyStyle={{ height: 150 }}
       >
-        <div className='mt-20'>
-          <Form
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 14 }}
-            layout='horizontal'
-            form={form}
-            onFinish={handleAddSubmit}
-          >
-            <Input
-              name='fullName'
-              placeholder='Please input full name'
-              className='mb-5'
-            />
-            <Input 
-            className='mt-5'
-             name='email' placeholder='Please input email'  />          
+        <div className="mt-5">
+          <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
+            <Form.Item name="username" rules={validateForm.username}>
+              <Input placeholder="Username" />
+            </Form.Item>
+
+            <Form.Item name="email" rules={validateForm.email}>
+              <Input placeholder="Email" />
+            </Form.Item>
+            <Form.Item name="role" rules={validateForm.role}>
+              <Select
+                placeholder="Role"
+                options={[
+                  { value: "STUDENT", label: "STUDENT" },
+                  { value: "TEACHER", label: "TEACHER" },
+                ]}
+              />
+            </Form.Item>
           </Form>
         </div>
       </Modal>
@@ -73,4 +76,4 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddUser
+export default AddUser;

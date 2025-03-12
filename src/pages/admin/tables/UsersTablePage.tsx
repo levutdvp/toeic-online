@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
 import { Button, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
-import { UserRole } from "@/types/permission.type";
 import {
   getUsersList,
   IGetListUsers,
@@ -15,25 +14,18 @@ import { showToast } from "@/services/toast";
 import { deleteUser } from "@/api/admin/api-users/delete-user.api";
 import ActionBlockUsers from "./users/action-block-user";
 import AddUser from "./users/add";
+import EditUser from "./users/edit";
 
-interface DataType {
-  id?: number;
-  username: string;
-  email: string;
-  role: UserRole[];
-  active_status: boolean;
-  active_date: boolean;
-  is_first?: boolean;
-}
-
-type TableQueries = TableQueriesRef<DataType>;
+type TableQueries = TableQueriesRef<IGetListUsers>;
 
 const UserTablesPage = () => {
   const [dataUsers, setDataUsers] = useState<IGetListUsers[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListUsers[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [recordSelected, setRecordSelected] = useState<IGetListUsers>();
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -70,7 +62,7 @@ const UserTablesPage = () => {
   }, [getListUsers]);
 
   const rowSelection = {
-    onChange: (_: any, selectedRowKeys: DataType[]) => {
+    onChange: (_: any, selectedRowKeys: IGetListUsers[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     selectedRowKeys: selectedRowKeys
@@ -78,7 +70,7 @@ const UserTablesPage = () => {
       .filter((id): id is number => id !== undefined),
   };
 
-  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+  const onChangeTable: TableProps<IGetListUsers>["onChange"] = (pagination) => {
     tableQueriesRef.current = {
       ...tableQueriesRef.current,
       current: pagination.current ?? 1,
@@ -127,7 +119,16 @@ const UserTablesPage = () => {
     getListUsers();
   };
 
-  const columns: TableProps<DataType>["columns"] = [
+  const handleOpenEditModal = (record: IGetListUsers) => {
+    setRecordSelected(record);
+    setIsEditModalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    getListUsers();
+  };
+
+  const columns: TableProps<IGetListUsers>["columns"] = [
     {
       title: "Username",
       dataIndex: "username'",
@@ -168,7 +169,7 @@ const UserTablesPage = () => {
       width: 200,
       render: (_, record) => (
         <Space size="middle">
-          <Button size="middle">
+          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
           </Button>
           <Button
@@ -190,7 +191,7 @@ const UserTablesPage = () => {
         selectedRows={selectedRowKeys}
         getListData={getListUsers}
       />
-      <Table<DataType>
+      <Table<IGetListUsers>
         columns={columns}
         dataSource={dataUsers}
         pagination={{
@@ -217,6 +218,11 @@ const UserTablesPage = () => {
       </Modal>
 
       <AddUser isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
+      <EditUser
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        recordSelected={recordSelected}
+      />
     </>
   );
 };
