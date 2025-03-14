@@ -3,7 +3,6 @@ import { SiGoogleclassroom } from "react-icons/si";
 import {
   MdDashboard,
   MdModeEditOutline,
-  MdAccountBox,
   MdAccountCircle,
 } from "react-icons/md";
 
@@ -68,11 +67,5 @@ export const appNavs = [
         to: "/admin/edit-form",
       },
     ],
-  },
-  {
-    eventKey: "profile",
-    icon: <Icon as={MdAccountBox} />,
-    title: "Profile",
-    to: "/admin/profile",
   },
 ];

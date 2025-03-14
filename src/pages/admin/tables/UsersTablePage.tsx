@@ -149,6 +149,7 @@ const UserTablesPage = () => {
       key: "role",
       width: 300,
       align: "center",
+      render: (role: string) => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase(),
     },
     {
       title: "Active Status",

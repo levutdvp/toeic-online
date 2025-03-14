@@ -1,7 +1,7 @@
 export enum UserRoleEnum {
-  ADMIN = "ADMIN",
-  STUDENT = "STUDENT",
-  TEACHER = "TEACHER",
+  ADMIN = "Admin",
+  STUDENT = "Student",
+  TEACHER = "Teacher",
 }
 
 export type UserRole = `${UserRoleEnum}`;

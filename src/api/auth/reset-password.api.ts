@@ -4,13 +4,13 @@ import { apiCall } from "@/services/api-call";
 export interface IPrams {
   token: string;
   email: string;
-  password: string;
+  new_password: string;
 }
 
 export const resetPassword = (params: IPrams) => {
   return apiCall<string>(
     {
-      url: `${API_URL}/api/reset-password`,
+      url: `${API_URL}/api/password/reset`,
       method: "POST",
       body: params,
     },

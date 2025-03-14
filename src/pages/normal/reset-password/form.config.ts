@@ -2,13 +2,13 @@ import { TFormRules } from "@/types/form.type";
 
 export interface IResetPasswordForm {
   email: string;
-  password: string;
+  new_password: string;
   confirmPassword: string;
 }
 
 export const formRules = (): TFormRules<IResetPasswordForm> => {
   return {
-    password: [
+    new_password: [
       {
         required: true,
         message: "Please enter your password",
@@ -26,7 +26,8 @@ export const formRules = (): TFormRules<IResetPasswordForm> => {
             return Promise.resolve();
           }
 
-          const password = formInstance.getFieldValue("password");
+          const password = formInstance.getFieldValue("new_password");
+          console.log(value, password);
 
           if (value !== password) {
             return Promise.reject(new Error());

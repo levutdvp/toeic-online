@@ -20,7 +20,7 @@ const HeaderNav = () => {
           </MenuButton>
         }
       >
-        <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
+        <MenuItem onClick={() => navigate("/admin/profile")}>Profile</MenuItem>
         <MenuItem>Settings</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>

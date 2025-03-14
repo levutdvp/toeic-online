@@ -17,7 +17,7 @@ const ResetPassword = () => {
     token: searchParams.get("token") ?? "",
   };
 
-  const onFinish = ({ email, password }: IResetPasswordForm) => {
+  const onFinish = ({ email, new_password }: IResetPasswordForm) => {
     if (!email) {
       showToast({
         type: "error",
@@ -30,7 +30,7 @@ const ResetPassword = () => {
     showLoading();
     const resetPwSub = resetPassword({
       email,
-      password,
+      new_password,
       token: queryStringParams.token,
     }).subscribe({
       next: () => {
@@ -47,33 +47,34 @@ const ResetPassword = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-center text-lg font-semibold mb-4">
+          Thay đổi mật khẩu
+        </h2>
         <Form
           name="login-form"
           onFinish={onFinish}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 14 }}
+          layout="vertical"
           initialValues={{
             email: queryStringParams.email,
             username: queryStringParams.username,
           }}
         >
-          <p>Thay đổi mật khẩu</p>
           {!!queryStringParams.username && (
             <Form.Item label="Tên đăng nhập" name="username">
-              <Input disabled />
+              <Input disabled className="bg-gray-100" />
             </Form.Item>
           )}
 
           <Form.Item label="Email" name="email">
-            <Input disabled />
+            <Input disabled className="bg-gray-100" />
           </Form.Item>
 
           <Form.Item
             label="Mật khẩu mới"
-            name="password"
-            rules={formRules().password}
+            name="new_password"
+            rules={formRules().new_password}
           >
             <Input.Password placeholder="Mật khẩu mới" />
           </Form.Item>
@@ -86,17 +87,17 @@ const ResetPassword = () => {
             <Input.Password placeholder="Xác nhận mật khẩu mới" />
           </Form.Item>
 
-          <div>
-            <Button type="primary" htmlType="submit" onClick={form.submit}>
-              Cập nhật
+          <div className="flex justify-center mt-4">
+            <Button type="default" onClick={() => navigate("/auth/login")}>
+              Hủy bỏ
             </Button>
             <Button
-              type="default"
-              onClick={() => {
-                navigate("/auth/login");
-              }}
+              type="primary"
+              htmlType="submit"
+              onClick={form.submit}
+              style={{ marginLeft: "20px" }}
             >
-              Hủy bỏ
+              Cập nhật
             </Button>
           </div>
         </Form>

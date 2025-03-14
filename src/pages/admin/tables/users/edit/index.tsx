@@ -94,8 +94,8 @@ const EditUser: React.FC<editUserProps> = ({
               <Select
                 placeholder="Role"
                 options={[
-                  { value: "STUDENT", label: "STUDENT" },
-                  { value: "TEACHER", label: "TEACHER" },
+                  { value: "STUDENT", label: "Student" },
+                  { value: "TEACHER", label: "Teacher" },
                 ]}
               />
             </Form.Item>
