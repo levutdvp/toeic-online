@@ -10,7 +10,7 @@ export interface IPrams {
 export const resetPassword = (params: IPrams) => {
   return apiCall<string>(
     {
-      url: `${API_URL}/api/password/reset`,
+      url: `${API_URL}/api/auth/reset-password`,
       method: "POST",
       body: params,
     },

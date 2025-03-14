@@ -10,7 +10,7 @@ export const forgotPassword = (params: IPrams) => {
   const querystring = queryString.stringify(params);
   return apiCall<string>(
     {
-      url: `${API_URL}/api/forgot-password?${querystring}`,
+      url: `${API_URL}/api/auth/forgot-password?${querystring}`,
       method: "GET",
     },
     {
