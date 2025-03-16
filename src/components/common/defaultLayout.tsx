@@ -37,11 +37,11 @@ const DefaultLayout = ({
   const pathName = window.location.pathname;
 
   return (
-    <div className="layout-container">
+    <div className={isAdmin ? 'layout-container' : ''}>
       {baseConfig.header && isDefaultLayout ? <HeaderElement /> : <></>}
       {isAdmin && pathName !== "/" && <SideBar />}
 
-      <div className="page-container">{children ? children : <Outlet />}</div>
+      <div className={isAdmin ? 'page-container' : ''}>{children ? children : <Outlet />}</div>
       {baseConfig.footer && isDefaultLayout ? <FooterElement /> : <></>}
     </div>
   );

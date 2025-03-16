@@ -29,6 +29,7 @@ const AddStudent: React.FC<addStudentProps> = ({ isOpen, onClose }) => {
         removeLoading();
         showToast({ content: "Add student successful" });
         form.resetFields();
+        onClose();
       },
       error: () => removeLoading(),
     });

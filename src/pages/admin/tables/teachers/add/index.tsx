@@ -34,6 +34,7 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
         removeLoading();
         showToast({ content: "Add teacher successful" });
         form.resetFields();
+        onClose();
       },
       error: () => removeLoading(),
     });
@@ -81,9 +82,9 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
               <Select
                 placeholder="Gender"
                 options={[
-                  { value: "male", label: "Male" },
-                  { value: "female", label: "Female" },
-                  { value: "other", label: "Other" },
+                  { value: "MALE", label: "Male" },
+                  { value: "FEMALE", label: "Female" },
+                  { value: "OTHER", label: "Other" },
                 ]}
               />
             </Form.Item>

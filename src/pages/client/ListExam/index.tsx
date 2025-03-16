@@ -21,50 +21,58 @@ const TestCard: React.FC<TestProps> = ({
   maxScore,
   label,
   isFree,
-}) => (
-  <div className="relative bg-white border border-gray-300 rounded-lg p-5 transition-all duration-300 hover:border-blue-500 shadow-sm w-full max-w-[700px] cursor-pointer">
-    {isFree && (
-      <div>
-        <span className="absolute top-2 right-[-15px] bg-[#A98472] text-white text-center px-2 py-1 rounded-[3px] w-[60px] shadow-md ">
-          Free
-        </span>
-        <div className=" absolute w-0 h-0 border-t-[12px] border-t-[#7F6355] border-r-[12px] border-r-transparent top-[40px] right-[-13px]"></div>
-      </div>
-    )}
+}) => {
+  const linkTo = `/contest/${title.replace(/\s+/g, "")}`;
+  const state = { title, duration, parts, questions, maxScore, label, isFree };
 
-    <h3 className="font-bold text-lg">{title}</h3>
+  return (
+    <Link
+      to={linkTo}
+      state={state}
+      className="block w-full max-w-[700px]"
+    >
+      <div className="relative bg-white border border-gray-300 rounded-lg p-5 transition-all duration-300 hover:border-blue-500 shadow-sm w-full cursor-pointer">
+        {isFree && (
+          <div>
+            <span className="absolute top-2 right-[-15px] bg-[#A98472] text-white text-center px-2 py-1 rounded-[3px] w-[60px] shadow-md ">
+              Free
+            </span>
+            <div className=" absolute w-0 h-0 border-t-[12px] border-t-[#7F6355] border-r-[12px] border-r-transparent top-[40px] right-[-13px]"></div>
+          </div>
+        )}
 
-    <div className="grid grid-cols-2 gap-4 text-sm mt-2">
-      <div>
-        <p>
-          Thời gian: <b>{duration}</b> phút
-        </p>
-        <p>
-          Phần thi: <b>{parts}</b> phần
-        </p>
+        <h3 className="font-bold text-lg">{title}</h3>
+
+        <div className="grid grid-cols-2 gap-4 text-sm mt-2">
+          <div>
+            <p>
+              Thời gian: <b>{duration}</b> phút
+            </p>
+            <p>
+              Phần thi: <b>{parts}</b> phần
+            </p>
+          </div>
+          <div>
+            <p>
+              Câu hỏi: <b>{questions}</b> câu
+            </p>
+            <p>
+              Điểm tối đa: <b>{maxScore}</b> điểm
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col items-start">
+          <div className="inline-block bg-gray-200 text-gray-700 px-3 py-1 text-xs rounded mb-3 font-bold">
+            {label}
+          </div>
+          <div className="bg-[#404040] text-white px-3 py-1 rounded w-fit">
+            Làm bài
+          </div>
+        </div>
       </div>
-      <div>
-        <p>
-          Câu hỏi: <b>{questions}</b> câu
-        </p>
-        <p>
-          Điểm tối đa: <b>{maxScore}</b> điểm
-        </p>
-      </div>
-    </div>
-    <div className="flex flex-col items-start">
-      <div className="inline-block bg-gray-200 text-gray-700 px-3 py-1 text-xs rounded mb-3 font-bold">
-        {label}
-      </div>
-      <Link
-        to={`/contest/${title.replace(/\s+/g, "")}`}
-        className="bg-[#404040] text-white px-3 py-1 rounded"
-      >
-        Làm bài
-      </Link>
-    </div>
-  </div>
-);
+    </Link>
+  );
+};
 
 const transformTestData = (data: any[]): TestProps[] => {
   return data.map((item) => ({

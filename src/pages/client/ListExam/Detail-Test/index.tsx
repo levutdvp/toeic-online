@@ -3,6 +3,7 @@ import { EditOutlined } from "@ant-design/icons";
 import { BiSolidEdit } from "react-icons/bi";
 import Header from "@/components/client/Header";
 import Footer from "@/components/client/Footer";
+import { useLocation } from "react-router-dom";
 
 interface TestProps {
   title: string;
@@ -14,43 +15,36 @@ interface TestProps {
   isFree?: boolean;
 }
 
-const testData: TestProps[] = [
-  {
-    title: "Đề 2024 Test 1",
-    duration: 120,
-    parts: 7,
-    questions: 200,
-    maxScore: 990,
-    label: "ĐỀ 2024",
-    isFree: true,
-  },
-];
+
 
 const TestDetail = () => {
+  const location = useLocation()
+  const testData = location.state as TestProps
+  console.log(testData)
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
       <div className="flex justify-center items-center flex-grow">
         <Card className="w-[800px] p-6 shadow-md rounded-lg bg-white">
           <h2 className="text-2xl font-semibold text-center mb-4">
-            Đề 2023 Test 2
+            {testData.title}
           </h2>
           <div className="flex justify-center gap-2 mb-4">
-            <Tag color="gold">Free</Tag>
-            <Tag color="gray">ĐỀ 2023</Tag>
+            <Tag color="gold">{testData.isFree ? "Free" : "Paid"}</Tag>
+            <Tag color="gray">Đề 2023</Tag>
           </div>
           <div className="text-center text-gray-700">
             <p>
-              Thời gian: <strong>{testData[0].duration}</strong> phút
+              Thời gian: <strong>{testData.duration}</strong> phút
             </p>
             <p>
-              Phần thi: <strong>{testData[0].parts}</strong> phần
+              Phần thi: <strong>{testData.parts}</strong> phần
             </p>
             <p>
-              Câu hỏi: <strong>{testData[0].questions}</strong> câu
+              Câu hỏi: <strong>{testData.questions}</strong> câu
             </p>
             <p>
-              Điểm tối đa: <strong>{testData[0].maxScore}</strong> điểm
+              Điểm tối đa: <strong>{testData.maxScore}</strong> điểm
             </p>
           </div>
           <Alert

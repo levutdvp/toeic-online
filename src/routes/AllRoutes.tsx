@@ -20,7 +20,7 @@ export const AllRoutes = () => {
   const router = createBrowserRouter([
     { path: "/auth/login", element: <LoginPage /> },
     { path: "/auth/forgot-password", element: <ForgotPassword /> },
-    { path: "/api/reset-password", element: <ResetPassword /> },
+    { path: "/auth/reset-password", element: <ResetPassword /> },
     {
       path: "/",
       element: (

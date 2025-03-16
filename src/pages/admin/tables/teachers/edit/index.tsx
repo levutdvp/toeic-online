@@ -24,7 +24,7 @@ const EditTeacher: React.FC<editTeacherProps> = ({
 
     return {
       name: recordSelected.name,
-      dob: recordSelected.dob && dayjs(recordSelected.dob).format("YYYY-MM-DD"),
+      dob: recordSelected.dob ? dayjs(recordSelected.dob) : null ,
       gender: recordSelected.gender,
       phoneNumber: recordSelected.phone,
       email: recordSelected.email,
@@ -46,18 +46,19 @@ const EditTeacher: React.FC<editTeacherProps> = ({
       email: values.email,
       address: values.address,
       certificates: values.certificates
-        ? values.certificates
-            .map((cert) => cert.trim())
-            .filter((cert) => cert !== "")
-        : [],
+       
     };
 
     showLoading();
-    const editStudents = editTeacher(params).subscribe({
+    if (recordSelected?.id === undefined) {
+      return {};
+    }
+    const editStudents = editTeacher(params, recordSelected.id).subscribe({
       next: () => {
         removeLoading();
         showToast({ content: "Edit successful" });
         form.resetFields();
+        onClose();
       },
       error: () => removeLoading(),
     });
@@ -110,9 +111,9 @@ const EditTeacher: React.FC<editTeacherProps> = ({
               <Select
                 placeholder="Gender"
                 options={[
-                  { value: "male", label: "Male" },
-                  { value: "female", label: "Female" },
-                  { value: "other", label: "Other" },
+                  { value: "MALE", label: "Male" },
+                  { value: "FEMALE", label: "Female" },
+                  { value: "OTHER", label: "Other" },
                 ]}
               />
             </Form.Item>
