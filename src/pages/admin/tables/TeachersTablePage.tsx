@@ -15,6 +15,7 @@ import AddTeacher from "./teachers/add";
 import { showToast } from "@/services/toast";
 import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
 import EditTeacher from "./teachers/edit";
+import { formatGender } from "@/utils/map.util";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -89,12 +90,12 @@ const TeachersTablePage = () => {
     showLoading();
     const deleteSub = deleteTeacher([selectedTeacherId]).subscribe({
       next: () => {
-        showToast({ type: "success", content: "Delete successful!" });
+        showToast({ type: "success", content: "Xóa thành công!" });
         setSelectedRowKeys([]);
         getListTeachers();
       },
       error: () => {
-        showToast({ type: "error", content: "Delete failed!" });
+        showToast({ type: "error", content: "Xóa thất bại!" });
       },
       complete: () => {
         removeLoading();
@@ -136,55 +137,56 @@ const TeachersTablePage = () => {
 
   const columns: TableProps<IGetListTeachers>["columns"] = [
     {
-      title: "Name",
+      title: "Họ và tên",
       dataIndex: "name",
       key: "name",
       width: 170,
       align: "center",
     },
     {
-      title: "Date of Birth",
+      title: "Ngày sinh",
       dataIndex: "dob",
       key: "dob",
       width: 150,
       align: "center",
     },
     {
-      title: "Gender",
+      title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
       width: 100,
       align: "center",
+      render: (gender) => gender && formatGender(gender),
     },
     {
-      title: "Phone Number",
+      title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
       width: 150,
       align: "center",
     },
     {
-      title: "Email Address",
+      title: "Email",
       dataIndex: "email",
       key: "email",
       width: 200,
       align: "center",
     },
     {
-      title: "Address",
+      title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
       align: "center",
     },
     {
-      title: "Certificates",
+      title: "Bằng cấp",
       dataIndex: "certificate",
       key: "certificate",
       align: "center",
       render: (certificates) => (certificates ? certificates.join(", ") : ""),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       align: "center",
       width: 200,
@@ -228,15 +230,15 @@ const TeachersTablePage = () => {
       />
 
       <Modal
-        title="Confirm deletion"
+        title="Xác nhận xóa"
         open={isModalOpen}
         onOk={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="Xóa"
+        cancelText="Hủy bỏ"
         okButtonProps={{ danger: true }}
       >
-        <p>Do you want to delete?</p>
+        <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
 
       <AddTeacher isOpen={isAddModalOpen} onClose={handleCloseAddModal} />

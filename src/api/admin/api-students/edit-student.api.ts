@@ -6,7 +6,7 @@ export interface IEditStudent {
   name: string;
   dob: string;
   gender: string;
-  phoneNumber: string;
+  phone: string;
   email: string;
   address: string;
 }

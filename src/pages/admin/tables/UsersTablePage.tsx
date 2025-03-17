@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Space, Table } from "antd";
+import { Button, Modal, Select, Space, Table, Switch } from "antd";
 import type { TableProps } from "antd";
 import {
   getUsersList,
@@ -26,6 +26,9 @@ const UserTablesPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListUsers>();
+  const [filterRole, setFilterRole] = useState<
+    "ADMIN" | "STUDENT" | "TEACHER" | null
+  >(null);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -40,7 +43,14 @@ const UserTablesPage = () => {
       pageSize: tableQueriesRef.current.pageSize,
     }).subscribe({
       next: (res) => {
-        setDataUsers(res.data);
+        let filteredData = res.data;
+        if (filterRole) {
+          console.log(filterRole);
+          filteredData = res.data.filter((user) =>
+            user.role.includes(filterRole)
+          );
+        }
+        setDataUsers(filteredData);
         tableQueriesRef.current = {
           ...tableQueriesRef.current,
           current: res.meta.pageCurrent,
@@ -55,7 +65,7 @@ const UserTablesPage = () => {
       },
     });
     getUsersSub.add();
-  }, []);
+  }, [filterRole]);
 
   useEffect(() => {
     getListUsers();
@@ -94,12 +104,12 @@ const UserTablesPage = () => {
     showLoading();
     const deleteSub = deleteUser([selectedUserId]).subscribe({
       next: () => {
-        showToast({ type: "success", content: "Delete successful!" });
+        showToast({ type: "success", content: "Xóa thành công!" });
         setSelectedRowKeys([]);
         getListUsers();
       },
       error: () => {
-        showToast({ type: "error", content: "Delete failed!" });
+        showToast({ type: "error", content: "Xóa thất bại!" });
       },
       complete: () => {
         removeLoading();
@@ -130,41 +140,45 @@ const UserTablesPage = () => {
 
   const columns: TableProps<IGetListUsers>["columns"] = [
     {
-      title: "Username",
+      title: "Tên người dùng",
       dataIndex: "username'",
       key: "username",
       width: 200,
       align: "center",
     },
     {
-      title: "Email Address",
+      title: "Email",
       dataIndex: "email",
       key: "email",
       width: 300,
       align: "center",
     },
     {
-      title: "Role",
+      title: "Quyền",
       dataIndex: "role",
       key: "role",
       width: 300,
       align: "center",
-      render: (role: string) => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase(),
+      render: (role: string) =>
+        role.charAt(0).toUpperCase() + role.slice(1).toLowerCase(),
     },
     {
-      title: "Active Status",
+      title: "Trạng thái hoạt động",
       dataIndex: "active_status",
       key: "active_status",
       align: "center",
+      render: (activeStatus: boolean) => (
+        <Switch checked={activeStatus} disabled={recordSelected?.id === 1} />
+      ),
     },
     {
-      title: "Active Date",
+      title: "Ngày kích hoạt",
       dataIndex: "active_date",
       key: "active_date",
       align: "center",
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       align: "center",
       width: 200,
@@ -185,8 +199,23 @@ const UserTablesPage = () => {
       ),
     },
   ];
+
   return (
     <>
+      <Select
+        placeholder="Lọc theo quyền"
+        style={{ width: 200, marginBottom: 16 }}
+        allowClear
+        onChange={(value) => {
+          tableQueriesRef.current.current = 1;
+          setFilterRole(value || null);
+        }}
+        options={[
+          { label: "Admin", value: "ADMIN" },
+          { label: "Học sinh", value: "STUDENT" },
+          { label: "Giáo viên", value: "TEACHER" },
+        ]}
+      />
       <ActionBlockUsers
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
@@ -207,15 +236,15 @@ const UserTablesPage = () => {
       />
 
       <Modal
-        title="Confirm deletion"
+        title="Xác nhận xóa"
         open={isModalOpen}
         onOk={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="Xóa"
+        cancelText="Hủy bỏ"
         okButtonProps={{ danger: true }}
       >
-        <p>Do you want to delete?</p>
+        <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
 
       <AddUser isOpen={isAddModalOpen} onClose={handleCloseAddModal} />

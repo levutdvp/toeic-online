@@ -43,7 +43,7 @@ const EditUser: React.FC<editUserProps> = ({
     const editUsers = editUser(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Edit successful" });
+        showToast({ content: "Cập nhật thành công!" });
         form.resetFields();
       },
       error: () => removeLoading(),
@@ -60,7 +60,7 @@ const EditUser: React.FC<editUserProps> = ({
   return (
     <>
       <Modal
-        title={"Edit"}
+        title={"Cập nhật thông tin người dùng"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}
@@ -71,10 +71,10 @@ const EditUser: React.FC<editUserProps> = ({
             type="primary"
             onClick={form.submit}
           >
-            Edit
+            Cập nhật
           </Button>,
           <Button key="Cancel" onClick={handleClose}>
-            Cancel
+            Hủy bỏ
           </Button>,
         ]}
         width={500}
@@ -83,7 +83,7 @@ const EditUser: React.FC<editUserProps> = ({
         <div className="mt-5">
           <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
             <Form.Item name="name" rules={validateForm.username}>
-              <Input placeholder="Full name" />
+              <Input placeholder="Tên người dùng" />
             </Form.Item>
 
             <Form.Item name="email" rules={validateForm.email}>
@@ -92,10 +92,10 @@ const EditUser: React.FC<editUserProps> = ({
 
             <Form.Item name="role" rules={validateForm.role}>
               <Select
-                placeholder="Role"
+                placeholder="Quyền"
                 options={[
-                  { value: "STUDENT", label: "Student" },
-                  { value: "TEACHER", label: "Teacher" },
+                  { value: "STUDENT", label: "Học sinh" },
+                  { value: "TEACHER", label: "Giáo viên" },
                 ]}
               />
             </Form.Item>

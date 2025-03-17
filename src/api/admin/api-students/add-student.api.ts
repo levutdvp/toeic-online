@@ -6,7 +6,7 @@ export interface IAddStudent {
   email: string;
   dob: string;
   gender: string;
-  phoneNumber: string;
+  phone: string;
   address: string;
 }
 

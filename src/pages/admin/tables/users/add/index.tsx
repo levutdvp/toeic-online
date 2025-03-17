@@ -24,7 +24,7 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
     const addUsers = addUser(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Add users successful" });
+        showToast({ content: "Thêm mới người dùng thành công!" });
         form.resetFields();
       },
       error: () => removeLoading(),
@@ -36,16 +36,16 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal
-        title={"Add User"}
+        title={"Thêm mới người dùng"}
         open={isOpen}
         onOk={form.submit}
         onCancel={onClose}
         footer={[
           <Button key="Submit" type="primary" onClick={form.submit}>
-            Add
+            Thêm
           </Button>,
           <Button key="Cancel" onClick={onClose}>
-            Cancel
+            Hủy bỏ
           </Button>,
         ]}
         width={500}
@@ -54,7 +54,7 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
         <div className="mt-5">
           <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
             <Form.Item name="username" rules={validateForm.username}>
-              <Input placeholder="Username" />
+              <Input placeholder="Tên người dùng" />
             </Form.Item>
 
             <Form.Item name="email" rules={validateForm.email}>
@@ -62,10 +62,10 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
             </Form.Item>
             <Form.Item name="role" rules={validateForm.role}>
               <Select
-                placeholder="Role"
+                placeholder="Quyền"
                 options={[
-                  { value: "STUDENT", label: "STUDENT" },
-                  { value: "TEACHER", label: "TEACHER" },
+                  { value: "STUDENT", label: "Học sinh" },
+                  { value: "TEACHER", label: "Giáo viên" },
                 ]}
               />
             </Form.Item>

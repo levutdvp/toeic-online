@@ -33,7 +33,7 @@ export default function ActionBlockUsers({
           removeLoading();
           showToast({
             type: "success",
-            content: "Delete successful",
+            content: "Xóa thành công!",
           });
           getListData();
         },
@@ -59,7 +59,7 @@ export default function ActionBlockUsers({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>Users Management</div>
+        <div>Quản lí tài khoản người dùng</div>
         <div>
           <Space size={12}>
             <Button
@@ -67,7 +67,7 @@ export default function ActionBlockUsers({
               type="primary"
               onClick={onAdd}
             >
-              Add
+              Thêm mới
             </Button>
             <Button
               danger
@@ -75,20 +75,23 @@ export default function ActionBlockUsers({
               onClick={showDeleteModal}
               disabled={!selectedRows.length}
             >
-              Delete
+              Xóa
             </Button>
           </Space>
         </div>
       </div>
       <div>
         <Modal
-          title="Confirm deletion"
+          title="Xác nhận xóa"
           open={isDeleteModalOpen}
           onOk={handleDeleteConfirm}
+          okText="Xóa"
+          cancelText="Hủy bỏ"
+          okButtonProps={{ danger: true }}
           onCancel={() => setIsDeleteModalOpen(false)}
           zIndex={9999}
         >
-          <p>Do you want to delete?</p>
+          <p>Bạn có chắc chắn muốn xóa?</p>
         </Modal>
       </div>
     </div>

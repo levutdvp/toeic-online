@@ -15,6 +15,7 @@ import { showToast } from "@/services/toast";
 import ActionBlockStudents from "./students/action-block-student";
 import AddStudent from "./students/add";
 import EditStudent from "./students/edit";
+import { formatGender } from "@/utils/map.util";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -89,12 +90,12 @@ const StudentTablesPage = () => {
     showLoading();
     const deleteSub = deleteStudent([selectedStudentId]).subscribe({
       next: () => {
-        showToast({ type: "success", content: "Delete successful!" });
+        showToast({ type: "success", content: "Xóa thành công!" });
         setSelectedRowKeys([]);
         getListStudents();
       },
       error: () => {
-        showToast({ type: "error", content: "Delete failed!" });
+        showToast({ type: "error", content: "Xóa thất bại!" });
       },
       complete: () => {
         removeLoading();
@@ -136,43 +137,44 @@ const StudentTablesPage = () => {
 
   const columns: TableProps<IGetListStudents>["columns"] = [
     {
-      title: "Name",
+      title: "Họ và tên",
       dataIndex: "name",
       key: "name",
       width: 200,
       align: "center",
     },
     {
-      title: "Date of Birth",
+      title: "Ngày sinh",
       dataIndex: "dob",
       key: "dob",
       width: 200,
       align: "center",
     },
     {
-      title: "Gender",
+      title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
       width: 200,
       align: "center",
+      render: (gender) => gender && formatGender(gender),
     },
     {
-      title: "Phone Number",
+      title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
       width: 250,
       align: "center",
     },
     {
-      title: "Email Address",
+      title: "Email",
       dataIndex: "email",
       key: "email",
       width: 300,
       align: "center",
     },
-    { title: "Address", dataIndex: "address", key: "address", align: "center" },
+    { title: "Địa chỉ", dataIndex: "address", key: "address", align: "center" },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       align: "center",
       width: 200,
@@ -214,15 +216,15 @@ const StudentTablesPage = () => {
         onChange={onChangeTable}
       />
       <Modal
-        title="Confirm deletion"
+        title="Xác nhận xóa"
         open={isModalOpen}
         onOk={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="Xóa"
+        cancelText="Hủy bỏ"
         okButtonProps={{ danger: true }}
       >
-        <p>Do you want to delete?</p>
+        <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
 
       <AddStudent isOpen={isAddModalOpen} onClose={handleCloseAddModal} />

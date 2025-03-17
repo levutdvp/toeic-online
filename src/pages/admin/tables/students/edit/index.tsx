@@ -26,7 +26,7 @@ const EditStudent: React.FC<editStudentProps> = ({
       name: recordSelected.name,
       dob: recordSelected.dob ? dayjs(recordSelected.dob) : null,
       gender: recordSelected.gender,
-      phoneNumber: recordSelected.phone,
+      phone: recordSelected.phone,
       email: recordSelected.email,
       address: recordSelected.address,
     };
@@ -41,7 +41,7 @@ const EditStudent: React.FC<editStudentProps> = ({
       name: values.name,
       dob: dayjs(values.dob).format("YYYY-MM-DD"),
       gender: values.gender,
-      phoneNumber: values.phoneNumber,
+      phone: values.phone,
       email: values.email,
       address: values.address,
     };
@@ -53,7 +53,7 @@ const EditStudent: React.FC<editStudentProps> = ({
     const editStudents = editStudent(params, recordSelected.id).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Edit successful" });
+        showToast({ content: "Cập nhật thành công!" });
         form.resetFields();
         onClose();
       },
@@ -71,7 +71,7 @@ const EditStudent: React.FC<editStudentProps> = ({
   return (
     <>
       <Modal
-        title={"Edit"}
+        title={"Cập nhật thông tin học sinh"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}
@@ -82,10 +82,10 @@ const EditStudent: React.FC<editStudentProps> = ({
             type="primary"
             onClick={form.submit}
           >
-            Edit
+            Cập nhật
           </Button>,
           <Button key="Cancel" onClick={handleClose}>
-            Cancel
+            Hủy bỏ
           </Button>,
         ]}
         width={500}
@@ -94,29 +94,26 @@ const EditStudent: React.FC<editStudentProps> = ({
         <div className="mt-5">
           <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
             <Form.Item name="name" rules={validateForm.name}>
-              <Input placeholder="Full name" />
+              <Input placeholder="Họ và tên" />
             </Form.Item>
 
             <Form.Item name="dob" rules={validateForm.dob}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Date of birth"
-              />
+              <DatePicker style={{ width: "100%" }} placeholder="Ngày sinh" />
             </Form.Item>
 
             <Form.Item name="gender" rules={validateForm.gender}>
               <Select
-                placeholder="Gender"
+                placeholder="Giới tính"
                 options={[
-                  { value: "MALE", label: "Male" },
-                  { value: "FEMALE", label: "Female" },
-                  { value: "OTHER", label: "Other" },
+                  { value: "MALE", label: "Nam" },
+                  { value: "FEMALE", label: "Nữ" },
+                  { value: "OTHER", label: "Khác" },
                 ]}
               />
             </Form.Item>
 
-            <Form.Item name="phoneNumber" rules={validateForm.phoneNumber}>
-              <Input placeholder="Phone number" />
+            <Form.Item name="phone" rules={validateForm.phone}>
+              <Input placeholder="Số điện thoại" />
             </Form.Item>
 
             <Form.Item name="email" rules={validateForm.email}>
@@ -124,7 +121,7 @@ const EditStudent: React.FC<editStudentProps> = ({
             </Form.Item>
 
             <Form.Item name="address" rules={validateForm.address}>
-              <Input placeholder="Address" />
+              <Input placeholder="Địa chỉ" />
             </Form.Item>
           </Form>
         </div>
