@@ -1,6 +1,6 @@
 import { TFormRules } from "@/types/form.type";
 
-export interface IAddForm {
+export interface IEditForm {
   class_code: string;
   class_type: string;
   start_date: string;
@@ -12,7 +12,7 @@ export interface IAddForm {
   teacher: string;
 }
 
-export const validateForm: TFormRules<IAddForm> = {
+export const validateForm: TFormRules<IEditForm> = {
   class_code: [{ required: true, message: "Vui lòng nhập tên lớp" }],
   class_type: [{ required: true, message: "Vui lòng nhập mã lớp" }],
   start_date: [{ required: true, message: "Vui lòng nhập ngày bắt đầu" }],

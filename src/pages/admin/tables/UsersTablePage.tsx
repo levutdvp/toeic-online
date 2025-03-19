@@ -15,6 +15,7 @@ import { deleteUser } from "@/api/admin/api-users/delete-user.api";
 import ActionBlockUsers from "./users/action-block-user";
 import AddUser from "./users/add";
 import EditUser from "./users/edit";
+import { editStatusUser } from "@/api/admin/api-users/update-status-user.api";
 
 type TableQueries = TableQueriesRef<IGetListUsers>;
 
@@ -120,6 +121,31 @@ const UserTablesPage = () => {
     deleteSub.add();
   }, [selectedUserId]);
 
+  const handleToggleStatus = (checked: boolean, record: IGetListUsers) => {
+    showLoading();
+    const toggleSub = editStatusUser({
+      id: record.id,
+      statusUpdateUser: checked,
+    }).subscribe({
+      next: () => {
+        showToast({
+          type: "success",
+          content: "Cập nhật trạng thái thành công!",
+        });
+        removeLoading();
+        setDataUsers((prev) =>
+          prev.map((user) =>
+            user.id === record.id ? { ...user, active_status: checked } : user
+          )
+        );
+      },
+      error: () => {
+        showToast({ type: "error", content: "Cập nhật trạng thái thất bại!" });
+      },
+    });
+    toggleSub.add();
+  };
+
   const onClickAction = () => {
     setIsAddModalOpen(true);
   };
@@ -141,7 +167,7 @@ const UserTablesPage = () => {
   const columns: TableProps<IGetListUsers>["columns"] = [
     {
       title: "Tên người dùng",
-      dataIndex: "username'",
+      dataIndex: "username",
       key: "username",
       width: 200,
       align: "center",
@@ -167,16 +193,15 @@ const UserTablesPage = () => {
       dataIndex: "active_status",
       key: "active_status",
       align: "center",
-      render: (activeStatus: boolean) => (
-        <Switch checked={activeStatus} disabled={recordSelected?.id === 1} />
+      render: (activeStatus: boolean, record) => (
+        <Switch
+          checked={activeStatus}
+          disabled={record?.id === 1}
+          onChange={(checked) => handleToggleStatus(checked, record)}
+        />
       ),
     },
-    {
-      title: "Ngày kích hoạt",
-      dataIndex: "active_date",
-      key: "active_date",
-      align: "center",
-    },
+
     {
       title: "Hành động",
       key: "action",

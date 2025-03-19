@@ -45,6 +45,7 @@ const EditUser: React.FC<editUserProps> = ({
         removeLoading();
         showToast({ content: "Cập nhật thành công!" });
         form.resetFields();
+        onClose();
       },
       error: () => removeLoading(),
     });

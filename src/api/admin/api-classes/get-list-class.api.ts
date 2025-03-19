@@ -10,7 +10,7 @@ export interface IGetListClasses {
   end_date: string;
   start_time: string;
   end_time: string;
-  days: string;
+  days: string[];
   number_of_students: number;
   teacher: string;
 }

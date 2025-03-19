@@ -26,6 +26,7 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
         removeLoading();
         showToast({ content: "Thêm mới người dùng thành công!" });
         form.resetFields();
+        onClose();
       },
       error: () => removeLoading(),
     });

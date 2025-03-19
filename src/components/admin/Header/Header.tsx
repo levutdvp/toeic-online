@@ -1,10 +1,8 @@
 import "./Header.css";
 import { Flex } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
-
 import Logo from "../Logo";
 import HeaderNav from "./HeaderNav";
-import HeaderSearchBar from "./HeaderSearchBar";
 import { baseConfig } from "../config";
 
 const Header = () => {
@@ -27,7 +25,6 @@ const Header = () => {
         </div>
 
         <div className="header-right">
-          <HeaderSearchBar />
           <HeaderNav />
         </div>
       </Flex>

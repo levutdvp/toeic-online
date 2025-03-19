@@ -2,17 +2,19 @@ import { Button, Modal, Space } from "antd";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useCallback, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
+import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 import { showToast } from "@/services/toast";
-import { IGetListClasses } from "@/api/admin/api-classes/get-list-class.api";
-import { deleteClass } from "@/api/admin/api-classes/delete-class.api";
+import { IStudentRes } from "@/api/admin/api-classes/get-list-detail-class.api";
 
 interface IActionBlock {
+  className: string;
   onClickAction: (action?: any) => void;
   getListData: () => void;
-  selectedRows: IGetListClasses[];
+  selectedRows: IStudentRes[];
 }
 
-export default function ActionBlockClasses({
+export default function ActionBlockDetailClass({
+  className,
   onClickAction,
   getListData,
   selectedRows,
@@ -28,7 +30,7 @@ export default function ActionBlockClasses({
   const deleteDataItems = useCallback(
     (listsId: Array<number>) => {
       showLoading();
-      const deleteSub = deleteClass(listsId).subscribe({
+      const deleteSub = deleteStudent(listsId).subscribe({
         next: () => {
           removeLoading();
           showToast({
@@ -59,7 +61,7 @@ export default function ActionBlockClasses({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>Quản lí lớp học</div>
+        <div>Chi tiết lớp học {className}</div>
         <div>
           <Space size={12}>
             <Button
@@ -87,9 +89,9 @@ export default function ActionBlockClasses({
           onOk={handleDeleteConfirm}
           okText="Xóa"
           cancelText="Hủy bỏ"
-          okButtonProps={{ danger: true }}
           onCancel={() => setIsDeleteModalOpen(false)}
           zIndex={9999}
+          okButtonProps={{ danger: true }}
         >
           <p>Bạn có chắc chắn muốn xóa?</p>
         </Modal>

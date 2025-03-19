@@ -15,6 +15,7 @@ import DetailTest from "@/pages/client/ListExam/Detail-Test";
 import DefaultLayout from "@/components/common/defaultLayout";
 import UserTablesPage from "@/pages/admin/tables/UsersTablePage";
 import ResetPassword from "@/pages/normal/reset-password";
+import DetailClass from "@/pages/admin/tables/classes/detail";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -52,6 +53,7 @@ export const AllRoutes = () => {
         { path: "users-teacher", element: <Tables /> },
         { path: "users-student", element: <StudentsTablesPage /> },
         { path: "classes", element: <ClassTablesPage /> },
+        { path: "classes/detail", element: <DetailClass /> },
         { path: "edit-form", element: <EditForm /> },
         { path: "profile", element: <Profile /> },
       ],

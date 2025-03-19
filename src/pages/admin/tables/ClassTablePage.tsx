@@ -1,8 +1,8 @@
-import { deleteClass } from "@/api/api-classes/delete-class.api";
+import { deleteClass } from "@/api/admin/api-classes/delete-class.api";
 import {
   getClassesList,
   IGetListClasses,
-} from "@/api/api-classes/get-list-class.api";
+} from "@/api/admin/api-classes/get-list-class.api";
 import { initPaging } from "@/consts/paging.const";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
@@ -11,30 +11,25 @@ import { Button, Modal, Space, Table, TableProps } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
+import { FcViewDetails } from "react-icons/fc";
 import ActionBlockClasses from "./classes/action-block-class";
 import AddClass from "./classes/add";
+import EditClass from "./classes/edit";
+import { useNavigate } from "react-router-dom";
 
-interface DataType {
-  id?: number;
-  class_code: string;
-  class_type: string;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-  days: string;
-  number_of_students: number;
-  teacher: string;
-}
-
-type TableQueries = TableQueriesRef<DataType>;
+type TableQueries = TableQueriesRef<IGetListClasses>;
 
 const ClassTablesPage = () => {
   const [dataClasses, setDataClasses] = useState<IGetListClasses[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListClasses[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [recordSelected, setRecordSelected] = useState<IGetListClasses>();
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+
+  const navigate = useNavigate();
+
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
     pageSize: initPaging.pageSize,
@@ -70,7 +65,7 @@ const ClassTablesPage = () => {
   }, [getListClasses]);
 
   const rowSelection = {
-    onChange: (_: any, selectedRowKeys: DataType[]) => {
+    onChange: (_: any, selectedRowKeys: IGetListClasses[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     selectedRowKeys: selectedRowKeys
@@ -93,12 +88,12 @@ const ClassTablesPage = () => {
     showLoading();
     const deleteSub = deleteClass([selectedClassId]).subscribe({
       next: () => {
-        showToast({ type: "success", content: "Delete successful!" });
+        showToast({ type: "success", content: "Xóa thành công!" });
         setSelectedRowKeys([]);
         getListClasses();
       },
       error: () => {
-        showToast({ type: "error", content: "Delete failed!" });
+        showToast({ type: "error", content: "Xóa thất bại!" });
       },
       complete: () => {
         removeLoading();
@@ -109,7 +104,9 @@ const ClassTablesPage = () => {
     deleteSub.add();
   }, [selectedClassId]);
 
-  const onChangeTable: TableProps<DataType>["onChange"] = (pagination) => {
+  const onChangeTable: TableProps<IGetListClasses>["onChange"] = (
+    pagination
+  ) => {
     tableQueriesRef.current = {
       ...tableQueriesRef.current,
       current: pagination.current ?? 1,
@@ -127,69 +124,91 @@ const ClassTablesPage = () => {
     getListClasses();
   };
 
-  const columns: TableProps<DataType>["columns"] = [
+  const handleOpenEditModal = (record: IGetListClasses) => {
+    setRecordSelected(record);
+    setIsEditModalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    getListClasses();
+  };
+
+  const handleViewDetail = (record: IGetListClasses) => {
+    navigate(`/admin/classes/detail/`, {
+      state: { classId: record.id, className: record.class_type },
+    });
+  };
+
+  const columns: TableProps<IGetListClasses>["columns"] = [
     {
-      title: "Class Name",
+      title: "Tên lớp",
       dataIndex: "class_type",
       key: "class_type",
       align: "center",
     },
     {
-      title: "Class Code",
+      title: "Mã lớp",
       dataIndex: "class_code",
       key: "class_code",
       align: "center",
     },
     {
-      title: "Start Date",
+      title: "Ngày bắt đầu",
       dataIndex: "start_date",
       key: "start_date",
       align: "center",
     },
     {
-      title: "End Date",
+      title: "Ngày kết thúc",
       dataIndex: "end_date",
       key: "end_date",
       align: "center",
     },
     {
-      title: "Start Time",
+      title: "Thời gian bắt đầu",
       dataIndex: "start_time",
       key: "start_time",
       align: "center",
     },
     {
-      title: "End Time",
+      title: "Thời gian kết thúc",
       dataIndex: "end_time",
       key: "end_time",
       align: "center",
     },
     {
-      title: "Schedule",
+      title: "Lịch học",
       dataIndex: "days",
       key: "days",
       align: "center",
+      render: (days: string[]) => (
+        <div>
+          {days.map((day, idx) => (
+            <div key={idx}>{day}</div>
+          ))}
+        </div>
+      ),
     },
     {
-      title: "Number of Students",
+      title: "Số lượng học viên",
       dataIndex: "number_of_students",
       key: "number_of_students",
       align: "center",
     },
     {
-      title: "Teacher",
+      title: "Giáo viên phụ trách",
       dataIndex: "teacher",
       key: "teacher",
       align: "center",
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       align: "center",
       width: 200,
       render: (_, record) => (
         <Space size="middle">
-          <Button size="middle">
+          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
           </Button>
           <Button
@@ -199,6 +218,9 @@ const ClassTablesPage = () => {
             disabled={record.id === 1}
           >
             <MdOutlineDeleteForever />
+          </Button>
+          <Button size="middle" onClick={() => handleViewDetail(record)}>
+            <FcViewDetails />
           </Button>
         </Space>
       ),
@@ -212,7 +234,7 @@ const ClassTablesPage = () => {
         selectedRows={selectedRowKeys}
         getListData={getListClasses}
       />
-      <Table<DataType>
+      <Table<IGetListClasses>
         columns={columns}
         dataSource={dataClasses}
         rowKey="id"
@@ -227,18 +249,23 @@ const ClassTablesPage = () => {
       />
 
       <Modal
-        title="Confirm deletion"
+        title="Xác nhận xóa"
         open={isModalOpen}
         onOk={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        okText="Delete"
-        cancelText="Cancel"
+        okText="Xóa"
+        cancelText="Hủy bỏ"
         okButtonProps={{ danger: true }}
       >
-        <p>Do you want to delete?</p>
+        <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
 
       <AddClass isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
+      <EditClass
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        recordSelected={recordSelected}
+      />
     </>
   );
 };

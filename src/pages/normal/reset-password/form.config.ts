@@ -25,10 +25,7 @@ export const formRules = (): TFormRules<IResetPasswordForm> => {
           if (!value || !rule) {
             return Promise.resolve();
           }
-
           const password = formInstance.getFieldValue("new_password");
-          console.log(value, password);
-
           if (value !== password) {
             return Promise.reject(new Error());
           }
