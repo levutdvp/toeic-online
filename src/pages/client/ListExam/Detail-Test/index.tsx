@@ -1,9 +1,9 @@
 import { Button, Card, Tag, Alert } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import { BiSolidEdit } from "react-icons/bi";
+// import { BiSolidEdit } from "react-icons/bi";
 import Header from "@/components/client/Header";
 import Footer from "@/components/client/Footer";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface TestProps {
   title: string;
@@ -15,12 +15,10 @@ interface TestProps {
   isFree?: boolean;
 }
 
-
-
 const TestDetail = () => {
-  const location = useLocation()
-  const testData = location.state as TestProps
-  console.log(testData)
+  const location = useLocation();
+  const testData = location.state as TestProps;
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -31,7 +29,7 @@ const TestDetail = () => {
           </h2>
           <div className="flex justify-center gap-2 mb-4">
             <Tag color="gold">{testData.isFree ? "Free" : "Paid"}</Tag>
-            <Tag color="gray">Đề 2023</Tag>
+            <Tag color="gray">{testData.label}</Tag>
           </div>
           <div className="text-center text-gray-700">
             <p>
@@ -79,18 +77,19 @@ const TestDetail = () => {
             className="mt-4 mb-6 bg-yellow-50 border-yellow-200 text-yellow-700"
           />
           <div className="flex justify-center gap-4 mt-4">
-            <Button
+            {/* <Button
               shape="round"
               type="primary"
               size="large"
               icon={<BiSolidEdit />}
             >
               Bắt đầu thi thử
-            </Button>
+            </Button> */}
             <Button
               shape="round"
               size="large"
               icon={<EditOutlined />}
+              onClick={() => navigate("/test")}
               className="bg-black text-white"
             >
               Luyện tập

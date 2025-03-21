@@ -1,19 +1,16 @@
-import { getTestFull } from "@/api/client/get-list-test-full.api";
+import {
+  getTestFull,
+  IGetListTestFull,
+} from "@/api/client/get-list-test-full.api";
+import { initPaging } from "@/consts/paging.const";
 import { removeLoading, showLoading } from "@/services/loading";
-import React, { useCallback, useEffect, useState } from "react";
+import { TableQueriesRef } from "@/types/pagination.type";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-interface TestProps {
-  title: string;
-  duration: number;
-  parts: number;
-  questions: number;
-  maxScore: number;
-  label: string;
-  isFree?: boolean;
-}
+type TableQueries = TableQueriesRef<IGetListTestFull>;
 
-const TestCard: React.FC<TestProps> = ({
+const TestCard: React.FC<IGetListTestFull> = ({
   title,
   duration,
   parts,
@@ -26,11 +23,7 @@ const TestCard: React.FC<TestProps> = ({
   const state = { title, duration, parts, questions, maxScore, label, isFree };
 
   return (
-    <Link
-      to={linkTo}
-      state={state}
-      className="block w-full max-w-[700px]"
-    >
+    <Link to={linkTo} state={state} className="block w-full max-w-[700px]">
       <div className="relative bg-white border border-gray-300 rounded-lg p-5 transition-all duration-300 hover:border-blue-500 shadow-sm w-full cursor-pointer">
         {isFree && (
           <div>
@@ -74,7 +67,7 @@ const TestCard: React.FC<TestProps> = ({
   );
 };
 
-const transformTestData = (data: any[]): TestProps[] => {
+const transformTestData = (data: any[]): IGetListTestFull[] => {
   return data.map((item) => ({
     ...item,
     isFree: item.isFree === 0,
@@ -82,14 +75,30 @@ const transformTestData = (data: any[]): TestProps[] => {
 };
 
 const ListExam: React.FC = () => {
-  const [testData, setTestData] = useState<TestProps[]>([]);
+  const [testData, setTestData] = useState<IGetListTestFull[]>([]);
+
+  const tableQueriesRef = useRef<TableQueries>({
+    current: initPaging.pageCurrent,
+    pageSize: initPaging.pageSize,
+    totalPage: initPaging.totalPage,
+  });
 
   const getListTest = useCallback(() => {
     showLoading();
-    const getListTestSub = getTestFull().subscribe({
+    const getListTestSub = getTestFull({
+      pageNumber: tableQueriesRef.current.current,
+      pageSize: tableQueriesRef.current.pageSize,
+    }).subscribe({
       next: (res) => {
         const transformedData = transformTestData(res.data);
         setTestData(transformedData);
+        tableQueriesRef.current = {
+          ...tableQueriesRef.current,
+          current: res.meta.pageCurrent,
+          pageSize: res.meta.pageSize,
+          totalPage: res.meta.totalPage,
+          total: res.meta.total,
+        };
         removeLoading();
       },
       error: () => {

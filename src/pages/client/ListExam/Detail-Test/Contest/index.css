@@ -1,0 +1,22 @@
+.ant-radio-wrapper {
+    margin-inline-end: 0
+}
+
+.ant-radio-checked .ant-radio-inner{
+    border-color: black !important ;
+}
+  
+.ant-radio-checked .ant-radio-inner:after{
+    background-color: black;
+}
+  
+.ant-radio:hover .ant-radio-inner {
+    border-color: black ;
+}
+.ant-radio-checked .ant-radio-inner:focus{
+    border-color: red;
+}
+
+.ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
+    background-color: white;
+}

@@ -7,9 +7,11 @@ import {
 } from "@ant-design/icons";
 import { clearAccessToken } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { userInfo } = useAuth();
   const handleLogout = () => {
     clearAccessToken();
     navigate("/auth/login");
@@ -87,7 +89,7 @@ const Header = () => {
               onClick={(e) => e.preventDefault()}
             >
               <Space>
-                vu.letruong
+                {userInfo?.username}
                 <DownOutlined />
               </Space>
             </a>

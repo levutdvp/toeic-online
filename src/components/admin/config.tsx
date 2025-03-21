@@ -18,28 +18,28 @@ export const appNavs = [
   {
     eventKey: "dashboard",
     icon: <Icon as={MdDashboard} />,
-    title: "Dashboard",
+    title: "Thống kê",
     to: "/admin",
   },
   {
     eventKey: "accounts",
     icon: <Icon as={MdAccountCircle} />,
-    title: "Accounts",
+    title: "Quản lí",
     to: "/admin/all-users",
     children: [
       {
         eventKey: "users",
-        title: "Users",
+        title: "Quản lí người dùng",
         to: "/admin/all-users",
       },
       {
         eventKey: "teachers",
-        title: "Teacher",
+        title: "Quản lí giáo viên",
         to: "/admin/users-teacher",
       },
       {
         eventKey: "students",
-        title: "Student",
+        title: "Quản lí học sinh",
         to: "/admin/users-student",
       },
     ],
@@ -47,25 +47,13 @@ export const appNavs = [
   {
     eventKey: "class",
     icon: <Icon as={SiGoogleclassroom} />,
-    title: "Class",
+    title: "Quản lí lớp học",
     to: "/admin/classes",
   },
   {
-    eventKey: "forms",
+    eventKey: "editForms",
     icon: <Icon as={MdModeEditOutline} />,
-    title: "Forms",
-    to: "/admin/forms",
-    children: [
-      {
-        eventKey: "form-basic",
-        title: "Basic",
-        to: "/admin/forms",
-      },
-      {
-        eventKey: "form-wizard",
-        title: "Edit Form",
-        to: "/admin/edit-form",
-      },
-    ],
+    title: "Quản lí đề thi",
+    to: "/admin/edit-form",
   },
 ];

@@ -1,6 +1,6 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
-// import queryString from "query-string";
+import queryString from "query-string";
 
 export interface IGetListTestFull {
   id?: number;
@@ -18,12 +18,12 @@ export interface IParams {
   pageSize: number;
 }
 
-export const getTestFull = () => {
-  // const querystring = queryString.stringify(params);
+export const getTestFull = (params: IParams) => {
+  const querystring = queryString.stringify(params);
 
   return apiCall<IGetListTestFull[]>(
     {
-      url: `${API_URL}/api/tests-full/list?`,
+      url: `${API_URL}/api/tests-full/list?${querystring}`,
       method: "GET",
     },
     {

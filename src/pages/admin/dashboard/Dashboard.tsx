@@ -7,13 +7,9 @@ import {
   Placeholder,
   useTheme,
 } from "@aws-amplify/ui-react";
-import { MdRemoveRedEye, MdWeb, MdPermIdentity } from "react-icons/md";
 
-import MiniStatistics from "./MiniStatistics";
 import TrafficSources from "./TrafficSources";
-import SalesSummary from "./SalesSummary";
 import TrafficSummary from "./TrafficSummary";
-import CustomersSummary from "./CustomersSummary";
 
 import "./Dashboard.css";
 
@@ -38,24 +34,6 @@ const barChartDataDemo = [
       4, 9, 11, 7, 8, 3, 6, 5, 5, 4, 6, 4, 11, 10, 3, 6, 7, 5, 2, 8, 4, 9, 9, 2,
       6, 7, 5, 1, 8, 3, 12, 3, 4, 9, 7, 11, 10,
     ],
-  },
-];
-
-const lineChartData = [
-  {
-    name: "Mobile apps",
-    data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-  },
-  {
-    name: "Websites",
-    data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-  },
-];
-
-const customersData = [
-  {
-    name: "New Customers",
-    data: [50, 60, 140, 190, 180, 230],
   },
 ];
 
@@ -86,7 +64,7 @@ const Dashboard = () => {
   return (
     <>
       <div>
-        <h2 className="text-[24px] font-extrabold">Dashboard</h2>
+        <h2 className="text-[24px] font-extrabold">Thống kê</h2>
       </div>
       <View borderRadius="6px" maxWidth="100%" padding="0rem" minHeight="100vh">
         <Grid
@@ -94,24 +72,6 @@ const Dashboard = () => {
           templateRows={{ base: "repeat(4, 10rem)", large: "repeat(3, 8rem)" }}
           gap={tokens.space.xl}
         >
-          <View rowSpan={{ base: 1, large: 1 }}>
-            <MiniStatistics
-              title="Page Views"
-              amount="321,236"
-              icon={<MdRemoveRedEye />}
-            />
-          </View>
-          <View rowSpan={{ base: 1, large: 1 }}>
-            <MiniStatistics title="Visits" amount="251,607" icon={<MdWeb />} />
-          </View>
-          <View rowSpan={{ base: 1, large: 1 }}>
-            <MiniStatistics
-              title="Unique Visitors"
-              amount="23,762"
-              icon={<MdPermIdentity />}
-            />
-          </View>
-
           <View columnSpan={[1, 1, 1, 2]} rowSpan={{ base: 3, large: 4 }}>
             <Card borderRadius="15px">
               <div className="card-title">Traffic Summary</div>
@@ -191,69 +151,6 @@ const Dashboard = () => {
                       "Other",
                     ]}
                   />
-                ) : (
-                  <Flex direction="column" minHeight="285px">
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                  </Flex>
-                )}
-              </div>
-            </Card>
-          </View>
-
-          <View columnSpan={[1, 1, 1, 2]} rowSpan={{ base: 3, large: 4 }}>
-            <Card borderRadius="15px">
-              <div className="card-title">Sales Summary</div>
-              <div className="chart-wrap">
-                {barChartData ? (
-                  <div className="row">
-                    <SalesSummary
-                      title="Sales Summary"
-                      data={lineChartData}
-                      type="line"
-                      labels={[
-                        "Jan",
-                        "Feb",
-                        "Mar",
-                        "Apr",
-                        "May",
-                        "Jun",
-                        "Jul",
-                        "Aug",
-                        "Sep",
-                        "Oct",
-                        "Nov",
-                        "Dec",
-                      ]}
-                    />
-                  </div>
-                ) : (
-                  <Flex direction="column" minHeight="285px">
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
-                  </Flex>
-                )}
-              </div>
-            </Card>
-          </View>
-
-          <View rowSpan={{ base: 1, large: 4 }}>
-            <Card height="100%" borderRadius="15px">
-              <div className="card-title">New Customers</div>
-              <div className="chart-wrap">
-                {barChartData ? (
-                  <div className="row">
-                    <CustomersSummary
-                      title="CutomersSummary"
-                      data={customersData}
-                      type="line"
-                      labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
-                    />
-                  </div>
                 ) : (
                   <Flex direction="column" minHeight="285px">
                     <Placeholder size="small" />

@@ -3,11 +3,10 @@ import ForgotPassword from "@/pages/normal/forgot-password";
 import LoginPage from "@/pages/normal/login";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Forms from "@/pages/admin/forms";
 import Profile from "@/pages/admin/profile";
 import Dashboard from "@/pages/admin/dashboard";
 import { rolesAllowedAdmin } from "@/consts/permission.const";
-import EditForm from "@/pages/admin/forms/EditForm";
+import EditForm from "@/pages/admin/forms/ExcelExam";
 import Tables from "@/pages/admin/tables/TeachersTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
@@ -16,6 +15,8 @@ import DefaultLayout from "@/components/common/defaultLayout";
 import UserTablesPage from "@/pages/admin/tables/UsersTablePage";
 import ResetPassword from "@/pages/normal/reset-password";
 import DetailClass from "@/pages/admin/tables/classes/detail";
+import TestComponent from "@/pages/client/ListExam/Detail-Test/Contest";
+import { ConfigProvider } from "antd";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -39,6 +40,16 @@ export const AllRoutes = () => {
       ),
     },
     {
+      path: "/test",
+      element: (
+        <DefaultLayout isDefaultLayout={false}>
+          <ConfigProvider theme={{ hashed: false }}>
+            <TestComponent />
+          </ConfigProvider>
+        </DefaultLayout>
+      ),
+    },
+    {
       path: "/admin",
       element: (
         <PrivateRoute
@@ -48,7 +59,6 @@ export const AllRoutes = () => {
       ),
       children: [
         { index: true, element: <Dashboard /> },
-        { path: "forms", element: <Forms /> },
         { path: "all-users", element: <UserTablesPage /> },
         { path: "users-teacher", element: <Tables /> },
         { path: "users-student", element: <StudentsTablesPage /> },
