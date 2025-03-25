@@ -9,6 +9,7 @@ import { removeLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
 import { lastValueFrom } from "rxjs";
+import { convertFileToBase64 } from "@/utils/convertFilesToBase64";
 
 const ExcelUploadPart1 = () => {
   const [fileList, setFileList] = useState<RcFile[]>([]);
@@ -98,21 +99,12 @@ const ExcelUploadPart1 = () => {
     maxCount: 1,
   };
 
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const handleFileUpload = async (
     file: RcFile,
     index: number,
     type: "audio" | "image"
   ) => {
-    const base64 = await convertToBase64(file);
+    const base64 = await convertFileToBase64(file);
     const updatedList = [...mediaList];
     if (type === "audio") updatedList[index].audio_url = base64;
     else updatedList[index].image_url = base64;

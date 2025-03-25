@@ -2,7 +2,6 @@ import { Dropdown, Space } from "antd";
 import {
   ContactsOutlined,
   DownOutlined,
-  IdcardOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { clearAccessToken } from "@/services/auth";
@@ -26,18 +25,8 @@ const Header = () => {
         </div>
       ),
     },
-
     {
       key: "2",
-      label: (
-        <div>
-          <IdcardOutlined className="mr-2" />
-          Lớp học của tôi
-        </div>
-      ),
-    },
-    {
-      key: "3",
       label: (
         <div onClick={handleLogout}>
           <LogoutOutlined className="mr-2" />
@@ -62,24 +51,6 @@ const Header = () => {
           </a>
           <a href="#" className="text-gray-700 no-underline">
             Luyện tập Part
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Luyện tập Reading
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Nghe - Chép chính tả
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Khóa học
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Lịch khai giảng
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Liên hệ
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
-            Góp ý
           </a>
         </div>
         <div className="flex items-center mr-4">

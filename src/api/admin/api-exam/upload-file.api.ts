@@ -17,7 +17,7 @@ export const uploadFile = async ({
 }) => {
   try {
     const filesImageBase64 = await convertFileToBase64(imageFile);
-    const fileAudioBase64 = await convertFileToBase64(audioFile);
+    const filesAudioBase64 = await convertFileToBase64(audioFile);
 
     const response = await lastValueFrom(
       apiCall<Response<IUploadFile>>(
@@ -25,7 +25,7 @@ export const uploadFile = async ({
           url: `${API_URL}/api/upload-base64`,
           method: "POST",
           body: {
-            audio_base64: fileAudioBase64,
+            audio_base64: filesAudioBase64,
             image_base64: filesImageBase64,
           },
           headers: {

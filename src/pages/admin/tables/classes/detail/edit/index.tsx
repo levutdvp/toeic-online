@@ -22,9 +22,11 @@ const EditStudentDetailClass: React.FC<editStudentProps> = ({
   const initialValues = useMemo(() => {
     if (!recordSelected) return;
 
+    console.log(recordSelected)
+
     return {
-      name: recordSelected.full_name,
-      birth: recordSelected.birth_date ? dayjs(recordSelected.birth_date) : null,
+      name: recordSelected.first_name + " " + recordSelected.last_name,
+      dob: recordSelected.birth_date ? dayjs(recordSelected.birth_date) : null,
       gender: recordSelected.gender,
       phone: recordSelected.phone,
       email: recordSelected.email,

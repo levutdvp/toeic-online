@@ -16,6 +16,7 @@ import ActionBlockUsers from "./users/action-block-user";
 import AddUser from "./users/add";
 import EditUser from "./users/edit";
 import { editStatusUser } from "@/api/admin/api-users/update-status-user.api";
+import { formatRoles } from "@/utils/map.util";
 
 type TableQueries = TableQueriesRef<IGetListUsers>;
 
@@ -46,7 +47,6 @@ const UserTablesPage = () => {
       next: (res) => {
         let filteredData = res.data;
         if (filterRole) {
-          console.log(filterRole);
           filteredData = res.data.filter((user) =>
             user.role.includes(filterRole)
           );
@@ -186,7 +186,7 @@ const UserTablesPage = () => {
       width: 300,
       align: "center",
       render: (role: string) =>
-        role.charAt(0).toUpperCase() + role.slice(1).toLowerCase(),
+        formatRoles(role)
     },
     {
       title: "Trạng thái hoạt động",

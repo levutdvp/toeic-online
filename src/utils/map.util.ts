@@ -1,3 +1,16 @@
 export const formatGender = (gender: string) => {
   return gender.toUpperCase() === "MALE" ? "Nam" : "Nữ";
 };
+
+export const formatRoles = (role: string): string => {
+  switch (role) {
+    case "STUDENT":
+      return "Học sinh";
+    case "TEACHER":
+      return "Giáo viên";
+    case "ADMIN":
+      return "Admin";
+    default:
+      return role;
+  }
+};
