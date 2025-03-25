@@ -6,7 +6,6 @@ import PrivateRoute from "./PrivateRoute";
 import Profile from "@/pages/admin/profile";
 import Dashboard from "@/pages/admin/dashboard";
 import { rolesAllowedAdmin } from "@/consts/permission.const";
-import EditForm from "@/pages/admin/forms/ExcelExam";
 import Tables from "@/pages/admin/tables/TeachersTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
@@ -17,6 +16,13 @@ import ResetPassword from "@/pages/normal/reset-password";
 import DetailClass from "@/pages/admin/tables/classes/detail";
 import TestComponent from "@/pages/client/ListExam/Detail-Test/Contest";
 import { ConfigProvider } from "antd";
+import ExcelUploadPart1 from "@/pages/admin/forms/ExcelExam/Part1";
+import ExcelUploadPart2 from "@/pages/admin/forms/ExcelExam/Part2";
+import ExcelUploadPart3 from "@/pages/admin/forms/ExcelExam/Part3";
+import ExcelUploadPart4 from "@/pages/admin/forms/ExcelExam/Part4";
+import ExcelUploadPart5 from "@/pages/admin/forms/ExcelExam/Part5";
+import ExcelUploadPart6 from "@/pages/admin/forms/ExcelExam/Part6";
+import ExcelUploadPart7 from "@/pages/admin/forms/ExcelExam/Part7";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -64,7 +70,13 @@ export const AllRoutes = () => {
         { path: "users-student", element: <StudentsTablesPage /> },
         { path: "classes", element: <ClassTablesPage /> },
         { path: "classes/detail", element: <DetailClass /> },
-        { path: "edit-form", element: <EditForm /> },
+        { path: "exams/part1", element: <ExcelUploadPart1 /> },
+        { path: "exams/part2", element: <ExcelUploadPart2 /> },
+        { path: "exams/part3", element: <ExcelUploadPart3 /> },
+        { path: "exams/part4", element: <ExcelUploadPart4 /> },
+        { path: "exams/part5", element: <ExcelUploadPart5 /> },
+        { path: "exams/part6", element: <ExcelUploadPart6 /> },
+        { path: "exams/part7", element: <ExcelUploadPart7 /> },
         { path: "profile", element: <Profile /> },
       ],
     },

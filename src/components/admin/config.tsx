@@ -51,9 +51,46 @@ export const appNavs = [
     to: "/admin/classes",
   },
   {
-    eventKey: "editForms",
+    eventKey: "exams",
     icon: <Icon as={MdModeEditOutline} />,
     title: "Quản lí đề thi",
-    to: "/admin/edit-form",
+    to: "/admin/exams/part1",
+    children: [
+      {
+        eventKey: "part1",
+        title: "Part 1",
+        to: "/admin/exams/part1",
+      },
+      {
+        eventKey: "part2",
+        title: "Part 2",
+        to: "/admin/exams/part2",
+      },
+      {
+        eventKey: "part3",
+        title: "Part 3",
+        to: "/admin/exams/part3",
+      },
+      {
+        eventKey: "part4",
+        title: "Part 4",
+        to: "/admin/exams/part4",
+      },
+      {
+        eventKey: "part5",
+        title: "Part 5",
+        to: "/admin/exams/part5",
+      },
+      {
+        eventKey: "part6",
+        title: "Part 6",
+        to: "/admin/exams/part6",
+      },
+      {
+        eventKey: "part7",
+        title: "Part 7",
+        to: "/admin/exams/part7",
+      },
+    ],
   },
 ];

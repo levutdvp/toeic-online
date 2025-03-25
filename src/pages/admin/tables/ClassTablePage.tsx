@@ -134,7 +134,7 @@ const ClassTablesPage = () => {
   };
 
   const handleViewDetail = (record: IGetListClasses) => {
-    navigate(`/admin/classes/detail/`, {
+    navigate(`/admin/classes/detail`, {
       state: { classId: record.id, className: record.class_type },
     });
   };
