@@ -12,8 +12,8 @@ export const uploadFile = async ({
   audioFile,
   imageFile,
 }: {
-  audioFile: File;
-  imageFile: File;
+  audioFile?: File;
+  imageFile?: File;
 }) => {
   try {
     const filesImageBase64 = await convertFileToBase64(imageFile);

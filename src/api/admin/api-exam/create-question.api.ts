@@ -1,11 +1,6 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 
-export interface ICreateQuestionBody {
-  audio_url: string;
-  image_url: string;
-}
-
 export const createQuestion = (
   body: any,
   part_number: number,

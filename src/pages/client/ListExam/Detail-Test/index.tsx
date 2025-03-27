@@ -1,23 +1,13 @@
 import { Button, Card, Tag, Alert } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-// import { BiSolidEdit } from "react-icons/bi";
 import Header from "@/components/client/Header";
 import Footer from "@/components/client/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
-
-interface TestProps {
-  title: string;
-  duration: number;
-  parts: number;
-  questions: number;
-  maxScore: number;
-  label: string;
-  isFree?: boolean;
-}
+import { IGetListTest } from "@/api/client/get-list-test.api";
 
 const TestDetail = () => {
   const location = useLocation();
-  const testData = location.state as TestProps;
+  const testData = location.state as IGetListTest;
   const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -25,24 +15,29 @@ const TestDetail = () => {
       <div className="flex justify-center items-center flex-grow">
         <Card className="w-[800px] p-6 shadow-md rounded-lg bg-white">
           <h2 className="text-2xl font-semibold text-center mb-4">
-            {testData.title}
+            {testData.exam_name}
           </h2>
           <div className="flex justify-center gap-2 mb-4">
-            <Tag color="gold">{testData.isFree ? "Free" : "Paid"}</Tag>
-            <Tag color="gray">{testData.label}</Tag>
+            {testData.is_Free ? (
+              <Tag color="gold">Miễn phí</Tag>
+            ) : (
+              <Tag color="purple">Cho học viên</Tag>
+            )}
+
+            <Tag color="gray">{testData.type}</Tag>
           </div>
           <div className="text-center text-gray-700">
             <p>
               Thời gian: <strong>{testData.duration}</strong> phút
             </p>
             <p>
-              Phần thi: <strong>{testData.parts}</strong> phần
+              Phần thi: <strong>Part {testData.part_number}</strong>
             </p>
             <p>
-              Câu hỏi: <strong>{testData.questions}</strong> câu
+              Câu hỏi: <strong>{testData.question_count}</strong> câu
             </p>
             <p>
-              Điểm tối đa: <strong>{testData.maxScore}</strong> điểm
+              Điểm tối đa: <strong>{testData.max_score}</strong> điểm
             </p>
           </div>
           <Alert
@@ -89,7 +84,7 @@ const TestDetail = () => {
               shape="round"
               size="large"
               icon={<EditOutlined />}
-              onClick={() => navigate("/test")}
+              onClick={() => navigate("/test", { state: testData })}
               className="bg-black text-white"
             >
               Luyện tập

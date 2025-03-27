@@ -21,7 +21,6 @@ const HeaderNav = () => {
         }
       >
         <MenuItem onClick={() => navigate("/admin/profile")}>Profile</MenuItem>
-        <MenuItem>Settings</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </>

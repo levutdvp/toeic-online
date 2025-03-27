@@ -54,7 +54,7 @@ export const appNavs = [
     eventKey: "exams",
     icon: <Icon as={MdModeEditOutline} />,
     title: "Quản lí đề thi",
-    to: "/admin/exams/part1",
+    to: "/admin/exams",
     children: [
       {
         eventKey: "part1",

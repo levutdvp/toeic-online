@@ -16,10 +16,6 @@ const LoginPage = () => {
     navigate("/auth/forgot-password");
   };
 
-  const handleChangePassword = () => {
-    navigate("/auth/change-password");
-  };
-
   const onFinish = (values: ILoginReq) => {
     const loginSub = loginApi(values).subscribe({
       next: (res) => {
@@ -87,12 +83,6 @@ const LoginPage = () => {
               className="hover:underline cursor-pointer"
             >
               Quên mật khẩu?
-            </a>
-            <a
-              onClick={handleChangePassword}
-              className="hover:underline cursor-pointer"
-            >
-              Đổi mật khẩu
             </a>
           </div>
           <div className="flex justify-center">

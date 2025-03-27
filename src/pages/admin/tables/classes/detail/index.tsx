@@ -230,6 +230,7 @@ const DetailClass = () => {
         <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
       <AddStudentDetailClass
+        classId={classId}
         isOpen={isAddModalOpen}
         onClose={handleCloseAddModal}
       />

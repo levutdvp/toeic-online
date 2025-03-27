@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Upload, Button, Input, Space } from "antd";
+import { Upload, Button, Input, Space, Progress } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import type { RcFile } from "antd/es/upload";
@@ -26,6 +26,7 @@ const ExcelUploadPart1 = () => {
     image_file_name: [],
   });
   const [examCode, setExamCode] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const partNumber = 1;
   const apiSubRef = useRef<any>(null);
 
@@ -131,21 +132,12 @@ const ExcelUploadPart1 = () => {
   };
   const handleSubmitAll = async () => {
     if (!examCode) {
-      showToast({ content: "Vui lòng nhập tên đề thi", type: "error" });
+      showToast({ content: "Vui lòng nhập mã đề thi", type: "error" });
       return;
     }
 
-    const isValid = mediaList.every(
-      (m) => m.audio_url !== "" && m.image_url !== ""
-    );
-    if (!isValid) {
-      showToast({
-        content: "Vui lòng upload đầy đủ audio và image cho tất cả câu hỏi",
-        type: "error",
-      });
-      return;
-    }
     try {
+      setUploadProgress(0);
       const payloadData = [];
       for (let idx = 0; idx < questions.length; idx++) {
         const question = questions[idx];
@@ -153,44 +145,52 @@ const ExcelUploadPart1 = () => {
         const audioFileName = fileNames.audio_file_name[idx];
         const imageFileName = fileNames.image_file_name[idx];
 
-        if (!audioFileName || !imageFileName) {
-          showToast({
-            content: `Câu ${question.question_number} chưa có file audio hoặc image`,
-            type: "error",
+        let audioFile: File | undefined;
+        let imageFile: File | undefined;
+
+        if (mediaList[idx].audio_url) {
+          const audioBlob = await fetch(mediaList[idx].audio_url).then((res) =>
+            res.blob()
+          );
+          audioFile = new File([audioBlob], audioFileName, {
+            type: audioBlob.type,
           });
-          continue;
         }
 
-        showToast({
-          content: `Đang tải lên file cho câu ${question.question_number}...`,
-          type: "info",
-        });
+        if (mediaList[idx].image_url) {
+          const imageBlob = await fetch(mediaList[idx].image_url).then((res) =>
+            res.blob()
+          );
+          imageFile = new File([imageBlob], imageFileName, {
+            type: imageBlob.type,
+          });
+        }
 
-        const [audioBlob, imageBlob] = await Promise.all([
-          fetch(mediaList[idx].audio_url).then((res) => res.blob()),
-          fetch(mediaList[idx].image_url).then((res) => res.blob()),
-        ]);
-
-        const audioFile = new File([audioBlob], audioFileName, {
-          type: audioBlob.type,
-        });
-        const imageFile = new File([imageBlob], imageFileName, {
-          type: imageBlob.type,
-        });
         const uploadResponse: any = await uploadFile({
-          audioFile,
-          imageFile,
+          ...(audioFile && { audioFile }),
+          ...(imageFile && { imageFile }),
         });
 
         const payload = {
           ...question,
-          audio_url: uploadResponse?.audio_url || "",
-          image_url: uploadResponse?.image_url || "",
+          ...(uploadResponse?.audio_url && {
+            audio_url: uploadResponse.audio_url,
+          }),
+          ...(uploadResponse?.image_url && {
+            image_url: uploadResponse.image_url,
+          }),
         };
 
-        console.log(uploadResponse);
-
         payloadData.push(payload);
+
+        fileNames.audio_file_name[idx] = "";
+        fileNames.image_file_name[idx] = "";
+        setFileNames({ ...fileNames });
+
+        setUploadProgress(
+          parseFloat((((idx + 1) / questions.length) * 100).toFixed(2))
+        );
+
         if (idx === questions.length - 1) {
           await lastValueFrom(
             createQuestion(
@@ -200,18 +200,14 @@ const ExcelUploadPart1 = () => {
             )
           );
         }
-
-        showToast({
-          content: `Gửi câu hỏi ${question.question_number} thành công!`,
-          type: "success",
-        });
       }
 
       showToast({
         content: "Gửi toàn bộ câu hỏi thành công!",
         type: "success",
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+      setUploadProgress(null);
     } catch (e) {
       console.log("e", e);
       showToast({
@@ -249,7 +245,7 @@ const ExcelUploadPart1 = () => {
 
         <Input
           type="text"
-          placeholder="Nhập tên đề thi"
+          placeholder="Nhập mã đề thi"
           style={{ marginBottom: "16px", marginTop: "16px" }}
           value={examCode}
           onChange={(e) => setExamCode(e.target.value)}
@@ -314,9 +310,17 @@ const ExcelUploadPart1 = () => {
               </div>
             ))}
 
-            <Button type="primary" className="w-full" onClick={handleSubmitAll}>
-              Gửi toàn bộ câu hỏi
-            </Button>
+            {uploadProgress !== null ? (
+              <Progress percent={uploadProgress} status="active" />
+            ) : (
+              <Button
+                type="primary"
+                className="w-full"
+                onClick={handleSubmitAll}
+              >
+                Gửi toàn bộ câu hỏi
+              </Button>
+            )}
           </div>
         )}
       </div>

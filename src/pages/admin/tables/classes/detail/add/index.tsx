@@ -7,10 +7,12 @@ import React from "react";
 import dayjs from "dayjs";
 
 interface addStudentProps {
+  classId: number;
   isOpen: boolean;
   onClose: () => void;
 }
 const AddStudentDetailClass: React.FC<addStudentProps> = ({
+  classId,
   isOpen,
   onClose,
 }) => {
@@ -18,6 +20,7 @@ const AddStudentDetailClass: React.FC<addStudentProps> = ({
 
   const handleAddSubmit = (values: IAddForm) => {
     const params = {
+      class_id: classId,
       name: values.name,
       dob: dayjs(values.dob).format("YYYY-MM-DD"),
       gender: values.gender,

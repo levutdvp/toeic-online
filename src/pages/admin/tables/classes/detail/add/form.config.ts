@@ -1,6 +1,7 @@
 import { TFormRules } from "@/types/form.type";
 
 export interface IAddForm {
+  id_class?: number;
   name: string;
   email: string;
   dob: string;
