@@ -1,7 +1,7 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 
-export interface ICreateExam {
+export interface IEditExam {
   exam_code: string;
   exam_name: string;
   section_name: string;
@@ -13,10 +13,10 @@ export interface ICreateExam {
   is_Free: boolean;
 }
 
-export const addExam = (params: ICreateExam) => {
+export const editExam = (params: IEditExam, id: number) => {
   return apiCall(
     {
-      url: `${API_URL}/api/create-exam-section`,
+      url: `${API_URL}/api/edit-exam/${id}`,
       method: "POST",
       body: params,
     },

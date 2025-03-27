@@ -1,34 +1,30 @@
-import { deleteClass } from "@/api/admin/api-classes/delete-class.api";
-import {
-  getClassesList,
-  IGetListClasses,
-} from "@/api/admin/api-classes/get-list-class.api";
-import { initPaging } from "@/consts/paging.const";
-import { removeLoading, showLoading } from "@/services/loading";
-import { showToast } from "@/services/toast";
-import { TableQueriesRef } from "@/types/pagination.type";
-import { Button, Modal, Space, Table, TableProps } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { removeLoading, showLoading } from "@/services/loading";
+import { Button, Modal, Space, Table } from "antd";
+import type { TableProps } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
-import { FcViewDetails } from "react-icons/fc";
-import ActionBlockClasses from "./classes/action-block-class";
-import AddClass from "./classes/add";
-import EditClass from "./classes/edit";
-import { useNavigate } from "react-router-dom";
+import { initPaging } from "@/consts/paging.const";
+import { TableQueriesRef } from "@/types/pagination.type";
+import { showToast } from "@/services/toast";
+import { getListExam, IGetListTest } from "@/api/client/get-list-test.api";
+import ActionBlockExams from "./exams/action-block-exam";
+import { formatIsFree } from "@/utils/map.util";
+import AddExam from "./exams/add";
+import EditExam from "./exams/edit";
+import { deleteExams } from "@/api/admin/api-exam/delete-exam.api";
 
-type TableQueries = TableQueriesRef<IGetListClasses>;
+type TableQueries = TableQueriesRef<IGetListTest>;
 
-const ClassTablesPage = () => {
-  const [dataClasses, setDataClasses] = useState<IGetListClasses[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListClasses[]>([]);
+const ExamTablePage = () => {
+  const [dataExams, setDataExams] = useState<IGetListTest[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListTest[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [recordSelected, setRecordSelected] = useState<IGetListClasses>();
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
-
-  const navigate = useNavigate();
+  const [recordSelected, setRecordSelected] = useState<IGetListTest>();
+  const [selectedExamId, setSelectedExamId] = useState<number | null>(null);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -36,14 +32,14 @@ const ClassTablesPage = () => {
     totalPage: initPaging.totalPage,
   });
 
-  const getListClasses = useCallback(() => {
+  const getListExams = useCallback(() => {
     showLoading();
-    const getClassesSub = getClassesList({
+    const getStudentsSub = getListExam({
       pageNumber: tableQueriesRef.current.current,
       pageSize: tableQueriesRef.current.pageSize,
     }).subscribe({
       next: (res) => {
-        setDataClasses(res.data);
+        setDataExams(res.data);
         tableQueriesRef.current = {
           ...tableQueriesRef.current,
           current: res.meta.pageCurrent,
@@ -57,15 +53,15 @@ const ClassTablesPage = () => {
         removeLoading();
       },
     });
-    getClassesSub.add();
+    getStudentsSub.add();
   }, []);
 
   useEffect(() => {
-    getListClasses();
-  }, [getListClasses]);
+    getListExams();
+  }, [getListExams]);
 
   const rowSelection = {
-    onChange: (_: any, selectedRowKeys: IGetListClasses[]) => {
+    onChange: (_: any, selectedRowKeys: IGetListTest[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     selectedRowKeys: selectedRowKeys
@@ -74,23 +70,23 @@ const ClassTablesPage = () => {
   };
 
   const showDeleteModal = (id: number) => {
-    setSelectedClassId(id);
+    setSelectedExamId(id);
     setIsModalOpen(true);
   };
 
   const handleCancelDelete = () => {
     setIsModalOpen(false);
-    setSelectedClassId(null);
+    setSelectedExamId(null);
   };
 
   const handleConfirmDelete = useCallback(() => {
-    if (!selectedClassId) return;
+    if (!selectedExamId) return;
     showLoading();
-    const deleteSub = deleteClass([selectedClassId]).subscribe({
+    const deleteSub = deleteExams([selectedExamId]).subscribe({
       next: () => {
         showToast({ type: "success", content: "Xóa thành công!" });
         setSelectedRowKeys([]);
-        getListClasses();
+        getListExams();
       },
       error: () => {
         showToast({ type: "error", content: "Xóa thất bại!" });
@@ -98,21 +94,19 @@ const ClassTablesPage = () => {
       complete: () => {
         removeLoading();
         setIsModalOpen(false);
-        setSelectedClassId(null);
+        setSelectedExamId(null);
       },
     });
     deleteSub.add();
-  }, [selectedClassId]);
+  }, [selectedExamId]);
 
-  const onChangeTable: TableProps<IGetListClasses>["onChange"] = (
-    pagination
-  ) => {
+  const onChangeTable: TableProps<IGetListTest>["onChange"] = (pagination) => {
     tableQueriesRef.current = {
       ...tableQueriesRef.current,
       current: pagination.current ?? 1,
       pageSize: pagination.pageSize ?? initPaging.pageSize,
     };
-    getListClasses();
+    getListExams();
   };
 
   const onClickAction = () => {
@@ -121,85 +115,73 @@ const ClassTablesPage = () => {
 
   const handleCloseAddModal = () => {
     setIsAddModalOpen(false);
-    getListClasses();
+    getListExams();
   };
 
-  const handleOpenEditModal = (record: IGetListClasses) => {
+  const handleOpenEditModal = (record: IGetListTest) => {
     setRecordSelected(record);
     setIsEditModalOpen(true);
   };
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
-    getListClasses();
+    getListExams();
   };
 
-  const handleViewDetail = (record: IGetListClasses) => {
-    navigate(`/admin/classes/detail`, {
-      state: { classId: record.id, className: record.class_type },
-    });
-  };
-
-  const columns: TableProps<IGetListClasses>["columns"] = [
+  const columns: TableProps<IGetListTest>["columns"] = [
     {
-      title: "Tên lớp",
-      dataIndex: "class_type",
-      key: "class_type",
+      title: "Mã đề thi",
+      dataIndex: "exam_code",
+      key: "exam_code",
       align: "center",
     },
     {
-      title: "Mã lớp",
-      dataIndex: "class_code",
-      key: "class_code",
+      title: "Tên đề thi",
+      dataIndex: "exam_name",
+      key: "exam_name",
       align: "center",
     },
     {
-      title: "Ngày bắt đầu",
-      dataIndex: "start_date",
-      key: "start_date",
+      title: "Thời lượng (Phút)",
+      dataIndex: "duration",
+      key: "duration",
       align: "center",
     },
     {
-      title: "Ngày kết thúc",
-      dataIndex: "end_date",
-      key: "end_date",
+      title: "Part",
+      dataIndex: "part_number",
+      key: "part_number",
       align: "center",
     },
     {
-      title: "Thời gian bắt đầu",
-      dataIndex: "start_time",
-      key: "start_time",
+      title: "Phần thi",
+      dataIndex: "section_name",
+      key: "section_name",
       align: "center",
     },
     {
-      title: "Thời gian kết thúc",
-      dataIndex: "end_time",
-      key: "end_time",
+      title: "Số lượng câu hỏi",
+      dataIndex: "question_count",
+      key: "question_count",
       align: "center",
     },
     {
-      title: "Lịch học",
-      dataIndex: "days",
-      key: "days",
-      align: "center",
-      render: (days: string[]) => (
-        <div>
-          {days.map((day, idx) => (
-            <div key={idx}>{day}</div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: "Số lượng học viên",
-      dataIndex: "number_of_students",
-      key: "number_of_students",
+      title: "Số điểm tối đa đạt được",
+      dataIndex: "max_score",
+      key: "max_score",
       align: "center",
     },
     {
-      title: "Giáo viên phụ trách",
-      dataIndex: "teacher",
-      key: "teacher",
+      title: "Loại đề thi",
+      dataIndex: "type",
+      key: "type",
       align: "center",
+    },
+    {
+      title: "Miễn phí",
+      dataIndex: "is_Free",
+      key: "is_Free",
+      align: "center",
+      render: (isFree) => formatIsFree(isFree),
     },
     {
       title: "Hành động",
@@ -218,25 +200,22 @@ const ClassTablesPage = () => {
           >
             <MdOutlineDeleteForever />
           </Button>
-          <Button size="middle" onClick={() => handleViewDetail(record)}>
-            <FcViewDetails />
-          </Button>
         </Space>
       ),
     },
   ];
-
   return (
     <>
-      <ActionBlockClasses
+      <ActionBlockExams
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
-        getListData={getListClasses}
+        getListData={getListExams}
       />
-      <Table<IGetListClasses>
+      <Table<IGetListTest>
         columns={columns}
-        dataSource={dataClasses}
+        dataSource={dataExams}
         rowKey="id"
+        rowSelection={rowSelection}
         pagination={{
           position: ["bottomCenter"],
           pageSize: tableQueriesRef.current.pageSize,
@@ -244,9 +223,7 @@ const ClassTablesPage = () => {
           total: tableQueriesRef.current.total,
         }}
         onChange={onChangeTable}
-        rowSelection={rowSelection}
       />
-
       <Modal
         title="Xác nhận xóa"
         open={isModalOpen}
@@ -259,8 +236,8 @@ const ClassTablesPage = () => {
         <p>Bạn có chắc chắn muốn xóa?</p>
       </Modal>
 
-      <AddClass isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
-      <EditClass
+      <AddExam isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
+      <EditExam
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         recordSelected={recordSelected}
@@ -269,4 +246,4 @@ const ClassTablesPage = () => {
   );
 };
 
-export default ClassTablesPage;
+export default ExamTablePage;

@@ -14,3 +14,6 @@ export const formatRoles = (role: string): string => {
       return role;
   }
 };
+export const formatIsFree = (type: number) => {
+  return type === 1 ? "Miễn phí" : "Cho học viên";
+};

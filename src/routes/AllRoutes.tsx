@@ -23,7 +23,7 @@ import ExcelUploadPart4 from "@/pages/admin/forms/ExcelExam/Part4";
 import ExcelUploadPart5 from "@/pages/admin/forms/ExcelExam/Part5";
 import ExcelUploadPart6 from "@/pages/admin/forms/ExcelExam/Part6";
 import ExcelUploadPart7 from "@/pages/admin/forms/ExcelExam/Part7";
-import CreateExamForm from "@/pages/admin/forms/Exam";
+import ExamTablePage from "@/pages/admin/tables/ExamTablePage";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -71,7 +71,7 @@ export const AllRoutes = () => {
         { path: "users-student", element: <StudentsTablesPage /> },
         { path: "classes", element: <ClassTablesPage /> },
         { path: "classes/detail", element: <DetailClass /> },
-        { path: "exams", element: <CreateExamForm /> },
+        { path: "exams", element: <ExamTablePage /> },
         { path: "exams/part1", element: <ExcelUploadPart1 /> },
         { path: "exams/part2", element: <ExcelUploadPart2 /> },
         { path: "exams/part3", element: <ExcelUploadPart3 /> },

@@ -8,10 +8,10 @@ export interface IAddForm {
 }
 
 export const validateForm: TFormRules<IAddForm> = {
-  username: [{ required: true, message: 'Please input user name' }],
+  username: [{ required: true, message: "Vui lòng nhập tên người dùng" }],
   email: [
-    { required: true, message: 'Please input email address' },
-    { type: 'email', message: 'Please enter a valid email address' },
+    { required: true, message: "Vui lòng nhập email" },
+    { type: "email", message: "vui lòng nhập đúng định dạng email" },
   ],
-  role: [{ required: true, message: 'Please select role' }],
+  role: [{ required: true, message: "Vui lòng chọn quyền" }],
 };

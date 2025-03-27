@@ -188,7 +188,6 @@ const DetailClass = () => {
             size="middle"
             danger
             onClick={() => showDeleteModal(record.id!)}
-            disabled={record.id === 1}
           >
             <MdOutlineDeleteForever />
           </Button>

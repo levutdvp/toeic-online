@@ -10,16 +10,16 @@ export interface IEditForm {
 }
 
 export const validateForm: TFormRules<IEditForm> = {
-  name: [{ required: true, message: "Please input full name" }],
-  dob: [{ required: true, message: "Please input date of birth" }],
-  gender: [{ required: true, message: "Please select gender" }],
-  phone: [{ required: true, message: "Please input phone number" }],
+  name: [{ required: true, message: "Vui lòng nhập đầy đủ họ tên" }],
+  dob: [{ required: true, message: "vui lòng chọn ngày sinh" }],
+  gender: [{ required: true, message: "Vui lòng chọn giới tính" }],
+  phone: [{ required: true, message: "Vui lòng nhập số điện thoại" }],
   email: [
-    { required: true, message: "Please input email address" },
-    { type: "email", message: "Please enter a valid email address" },
+    { required: true, message: "Vui lòng nhập email" },
+    { type: "email", message: "vui lòng nhập đúng định dạng email" },
   ],
-  address: [{ required: true, message: "Please input address" }],
+  address: [{ required: true, message: "Vui lòng nhập nơi ở hiện tại" }],
   certificates: [
-    { required: true, message: "Please input at least one certificate" },
+    { required: true, message: "Vui lòng nhập ít nhất 1 chứng chỉ" },
   ],
 };
