@@ -1,48 +1,45 @@
-import React, { useState } from "react";
-import { Input, Button } from "antd";
-import "antd/dist/reset.css";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+// import { Input, Button } from "antd";
+import { getListExam, IGetListTest } from "@/api/client/get-list-test.api";
 
 const Filter: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
-  const [searchText, setSearchText] = useState<string>("");
+  // const [searchText, setSearchText] = useState<string>("");
+  // const [examList, setExamList] = useState<IGetListTest[]>([]);
+  const [filteredExams, setFilteredExams] = useState<IGetListTest[]>([]);
+  const loadingRef = useRef<boolean>(false); 
 
-  const filters = [
-    "Tất cả",
-    "ĐỀ 2024",
-    "ĐỀ 2023",
-    "ĐỀ 2022",
-    "ĐỀ 2020",
-    "ĐỀ ACTUAL TESTS",
-    "ĐỀ ALL NEW",
-  ];
+  const fetchExamList = useCallback(() => {
+    if (loadingRef.current) return; 
+    loadingRef.current = true;
+    console.log(filteredExams)
 
-  const handleFilterClick = (filter: string) => {
-    setActiveFilter(filter);
-  };
+    getListExam({ pageNumber: 1, pageSize: 50 }).subscribe({
+      next: (response) => {
+        // setExamList(response.data); 
+        setFilteredExams(response.data); 
+        loadingRef.current = false;
+      },
+      error: (err) => {
+        console.error("Lỗi khi tải danh sách đề thi:", err);
+        loadingRef.current = false;
+      },
+    });
+  }, []);
 
-  const handleSearch = () => {};
+  useEffect(() => {
+    fetchExamList();
+  }, [fetchExamList]);
+  // const handleSearch = () => {
+  //   const filtered = examList.filter((exam) =>
+  //     exam.exam_name.toLowerCase().includes(searchText.toLowerCase())
+  //   );
+  //   setFilteredExams(filtered); 
+  // };
 
   return (
     <div className="bg-gray-100 p-6">
       <h1 className="text-5xl font-sans ml-[200px]">Tổng hợp đề thi</h1>
-      <div className="flex ml-[200px] gap-6 flex-wrap mb-6">
-        {filters.map((filter) => (
-          <Button
-            shape="round"
-            key={filter}
-            type={activeFilter === filter ? "primary" : "default"}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-              activeFilter === filter
-                ? "bg-blue-500 text-white"
-                : "text-gray-700"
-            }`}
-            onClick={() => handleFilterClick(filter)}
-          >
-            {filter}
-          </Button>
-        ))}
-      </div>
-      <div className="flex gap-2 max-w-[1000px] ml-[200px]">
+      {/* <div className="flex gap-2 max-w-[1000px] ml-[200px]">
         <Input
           placeholder="Nhập tên đề muốn tìm..."
           value={searchText}
@@ -58,7 +55,7 @@ const Filter: React.FC = () => {
         >
           Tìm kiếm
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };

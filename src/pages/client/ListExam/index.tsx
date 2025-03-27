@@ -147,7 +147,6 @@ const ListExam: React.FC = () => {
           pageSize={tableQueriesRef.current.pageSize}
           total={tableQueriesRef.current.total}
           onChange={handlePageChange}
-          showSizeChanger
         />
       </div>
     </div>
