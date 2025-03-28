@@ -4,7 +4,7 @@ import {
   IGetListStudents,
 } from "@/api/admin/api-students/get-list-studentInfo.api";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Space, Table } from "antd";
+import { Button, Input, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
@@ -16,6 +16,7 @@ import ActionBlockStudents from "./students/action-block-student";
 import AddStudent from "./students/add";
 import EditStudent from "./students/edit";
 import { formatGender } from "@/utils/map.util";
+import { SearchOutlined } from "@ant-design/icons";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -31,6 +32,8 @@ const StudentTablesPage = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null
   );
+  const [searchName, setSearchName] = useState<string>("");
+  const [searchEmail, setSearchEmail] = useState<string>("");
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -135,6 +138,16 @@ const StudentTablesPage = () => {
     getListStudents();
   };
 
+  const filteredStudents = dataStudents.filter(
+    (student) =>
+      (student.name ? student.name.toLowerCase() : "").includes(
+        searchName.toLowerCase()
+      ) &&
+      (student.email ? student.email.toLowerCase() : "").includes(
+        searchEmail.toLowerCase()
+      )
+  );
+
   const columns: TableProps<IGetListStudents>["columns"] = [
     {
       title: "Họ và tên",
@@ -197,6 +210,22 @@ const StudentTablesPage = () => {
   ];
   return (
     <>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+        <Input
+          placeholder="Tìm theo tên"
+          prefix={<SearchOutlined />}
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          style={{ width: 240 }}
+        />
+        <Input
+          placeholder="Tìm theo email"
+          prefix={<SearchOutlined />}
+          value={searchEmail}
+          onChange={(e) => setSearchEmail(e.target.value)}
+          style={{ width: 240 }}
+        />
+      </div>
       <ActionBlockStudents
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
@@ -204,7 +233,7 @@ const StudentTablesPage = () => {
       />
       <Table<IGetListStudents>
         columns={columns}
-        dataSource={dataStudents}
+        dataSource={filteredStudents}
         rowKey="id"
         rowSelection={rowSelection}
         pagination={{

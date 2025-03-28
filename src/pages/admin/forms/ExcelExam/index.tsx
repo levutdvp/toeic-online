@@ -9,7 +9,7 @@ import { removeLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
 import { lastValueFrom } from "rxjs";
-import { convertFileToBase64 } from "@/utils/convertFilesToBase64";
+import { convertFileToBase64 } from "@/utils/convertFilesToBase64.util";
 
 const ExcelUploadPart7 = () => {
   const [fileList, setFileList] = useState<RcFile[]>([]);

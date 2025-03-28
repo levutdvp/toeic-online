@@ -88,7 +88,7 @@ const EditUser: React.FC<editUserProps> = ({
             </Form.Item>
 
             <Form.Item name="email" rules={validateForm.email}>
-              <Input placeholder="Email" />
+              <Input placeholder="Email" disabled/>
             </Form.Item>
 
             <Form.Item name="role" rules={validateForm.role}>

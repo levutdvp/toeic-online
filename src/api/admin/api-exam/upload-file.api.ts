@@ -1,7 +1,7 @@
 import { lastValueFrom } from "rxjs";
 import { API_URL } from "@/consts/common.const";
 import { apiCall, Response } from "@/services/api-call";
-import { convertFileToBase64 } from "@/utils/convertFilesToBase64";
+import { convertFileToBase64 } from "@/utils/convertFilesToBase64.util";
 
 export interface IUploadFile {
   image_base64?: string;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Space, Table } from "antd";
+import { Button, Input, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import {
   getTeachersList,
@@ -16,6 +16,7 @@ import { showToast } from "@/services/toast";
 import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
 import EditTeacher from "./teachers/edit";
 import { formatGender } from "@/utils/map.util";
+import { SearchOutlined } from "@ant-design/icons";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -31,6 +32,8 @@ const TeachersTablePage = () => {
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListTeachers>();
+  const [searchName, setSearchName] = useState<string>("");
+  const [searchEmail, setSearchEmail] = useState<string>("");
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -60,7 +63,7 @@ const TeachersTablePage = () => {
       },
     });
     getTeachersSub.add();
-  }, []);
+  }, [searchName, searchEmail]);
 
   useEffect(() => {
     getListTeachers();
@@ -134,6 +137,16 @@ const TeachersTablePage = () => {
     setIsEditModalOpen(false);
     getListTeachers();
   };
+
+  const filteredTeachers = dataTeachers.filter(
+    (teacher) =>
+      (teacher.name ? teacher.name.toLowerCase() : "").includes(
+        searchName.toLowerCase()
+      ) &&
+      (teacher.email ? teacher.email.toLowerCase() : "").includes(
+        searchEmail.toLowerCase()
+      )
+  );
 
   const columns: TableProps<IGetListTeachers>["columns"] = [
     {
@@ -210,6 +223,22 @@ const TeachersTablePage = () => {
 
   return (
     <>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+        <Input
+          placeholder="Tìm theo tên"
+          prefix={<SearchOutlined />}
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          style={{ width: 240 }}
+        />
+        <Input
+          placeholder="Tìm theo email"
+          prefix={<SearchOutlined />}
+          value={searchEmail}
+          onChange={(e) => setSearchEmail(e.target.value)}
+          style={{ width: 240 }}
+        />
+      </div>
       <ActionBlockTeachers
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
@@ -224,7 +253,7 @@ const TeachersTablePage = () => {
           current: tableQueriesRef.current.current,
           total: tableQueriesRef.current.totalPage,
         }}
-        dataSource={dataTeachers}
+        dataSource={filteredTeachers}
         rowSelection={rowSelection}
         onChange={onChangeTable}
       />

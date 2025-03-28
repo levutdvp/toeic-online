@@ -7,7 +7,7 @@ import { initPaging } from "@/consts/paging.const";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { TableQueriesRef } from "@/types/pagination.type";
-import { Button, Modal, Space, Table, TableProps } from "antd";
+import { Button, Input, Modal, Space, Table, TableProps } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
@@ -16,6 +16,7 @@ import ActionBlockClasses from "./classes/action-block-class";
 import AddClass from "./classes/add";
 import EditClass from "./classes/edit";
 import { useNavigate } from "react-router-dom";
+import { SearchOutlined } from "@ant-design/icons";
 
 type TableQueries = TableQueriesRef<IGetListClasses>;
 
@@ -27,6 +28,7 @@ const ClassTablesPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListClasses>();
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [searchText, setSearchText] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -139,6 +141,12 @@ const ClassTablesPage = () => {
     });
   };
 
+  const filteredClasses = dataClasses.filter((cls) =>
+    (cls.class_type ? cls.class_type.toLowerCase() : "").includes(
+      searchText.toLowerCase()
+    )
+  );
+
   const columns: TableProps<IGetListClasses>["columns"] = [
     {
       title: "Tên lớp",
@@ -228,6 +236,15 @@ const ClassTablesPage = () => {
 
   return (
     <>
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Tìm kiếm theo tên lớp học"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 240 }}
+          prefix={<SearchOutlined />}
+        />
+      </Space>
       <ActionBlockClasses
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
@@ -235,7 +252,7 @@ const ClassTablesPage = () => {
       />
       <Table<IGetListClasses>
         columns={columns}
-        dataSource={dataClasses}
+        dataSource={filteredClasses}
         rowKey="id"
         pagination={{
           position: ["bottomCenter"],

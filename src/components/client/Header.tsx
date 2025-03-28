@@ -15,6 +15,8 @@ const Header = () => {
     clearAccessToken();
     navigate("/auth/login");
   };
+
+  console.log(userInfo);
   const items = [
     {
       key: "1",

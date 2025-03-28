@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Select, Space, Table, Switch } from "antd";
+import { Button, Modal, Select, Space, Table, Switch, Input } from "antd";
 import type { TableProps } from "antd";
 import {
   getUsersList,
@@ -17,6 +17,7 @@ import AddUser from "./users/add";
 import EditUser from "./users/edit";
 import { editStatusUser } from "@/api/admin/api-users/update-status-user.api";
 import { formatRoles } from "@/utils/map.util";
+import { SearchOutlined } from "@ant-design/icons";
 
 type TableQueries = TableQueriesRef<IGetListUsers>;
 
@@ -28,6 +29,7 @@ const UserTablesPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListUsers>();
+  const [searchText, setSearchText] = useState<string>("");
   const [filterRole, setFilterRole] = useState<
     "ADMIN" | "STUDENT" | "TEACHER" | null
   >(null);
@@ -164,6 +166,12 @@ const UserTablesPage = () => {
     getListUsers();
   };
 
+  const filteredUsers = dataUsers.filter((user) =>
+    (user.username ? user.username.toLowerCase() : "").includes(
+      searchText.toLowerCase()
+    )
+  );
+
   const columns: TableProps<IGetListUsers>["columns"] = [
     {
       title: "Tên người dùng",
@@ -185,8 +193,7 @@ const UserTablesPage = () => {
       key: "role",
       width: 300,
       align: "center",
-      render: (role: string) =>
-        formatRoles(role)
+      render: (role: string) => formatRoles(role),
     },
     {
       title: "Trạng thái hoạt động",
@@ -227,20 +234,29 @@ const UserTablesPage = () => {
 
   return (
     <>
-      <Select
-        placeholder="Lọc theo quyền"
-        style={{ width: 200, marginBottom: 16 }}
-        allowClear
-        onChange={(value) => {
-          tableQueriesRef.current.current = 1;
-          setFilterRole(value || null);
-        }}
-        options={[
-          { label: "Admin", value: "ADMIN" },
-          { label: "Học sinh", value: "STUDENT" },
-          { label: "Giáo viên", value: "TEACHER" },
-        ]}
-      />
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          placeholder="Tìm kiếm theo tên người dùng"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 240 }}
+          prefix={<SearchOutlined />}
+        />
+        <Select
+          placeholder="Lọc theo quyền"
+          style={{ width: 200 }}
+          allowClear
+          onChange={(value) => {
+            tableQueriesRef.current.current = 1;
+            setFilterRole(value || null);
+          }}
+          options={[
+            { label: "Admin", value: "ADMIN" },
+            { label: "Học sinh", value: "STUDENT" },
+            { label: "Giáo viên", value: "TEACHER" },
+          ]}
+        />
+      </Space>
       <ActionBlockUsers
         onClickAction={onClickAction}
         selectedRows={selectedRowKeys}
@@ -248,7 +264,7 @@ const UserTablesPage = () => {
       />
       <Table<IGetListUsers>
         columns={columns}
-        dataSource={dataUsers}
+        dataSource={filteredUsers}
         pagination={{
           position: ["bottomCenter"],
           pageSize: tableQueriesRef.current.pageSize,

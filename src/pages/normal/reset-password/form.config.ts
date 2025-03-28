@@ -11,16 +11,16 @@ export const formRules = (): TFormRules<IResetPasswordForm> => {
     new_password: [
       {
         required: true,
-        message: "Please enter your password",
+        message: "Vui lòng nhập mật khẩu của bạn",
       },
     ],
     confirmPassword: [
       {
         required: true,
-        message: "Please re-enter your password",
+        message: "Vui lòng nhập lại mật khẩu",
       },
       (formInstance) => ({
-        message: "Re-password does not match",
+        message: "Mật khẩu nhập lại không đúng",
         validator(rule, value) {
           if (!value || !rule) {
             return Promise.resolve();

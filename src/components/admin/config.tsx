@@ -29,7 +29,7 @@ export const appNavs = [
     children: [
       {
         eventKey: "users",
-        title: "Quản lí người dùng",
+        title: "Quản lí tài khoản",
         to: "/admin/all-users",
       },
       {

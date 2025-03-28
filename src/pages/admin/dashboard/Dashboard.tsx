@@ -74,12 +74,11 @@ const Dashboard = () => {
         >
           <View columnSpan={[1, 1, 1, 2]} rowSpan={{ base: 3, large: 4 }}>
             <Card borderRadius="15px">
-              <div className="card-title">Traffic Summary</div>
+              <div className="card-title">Tổng quan điểm thi</div>
               <div className="chart-wrap">
                 {barChartData ? (
                   <div className="row">
                     <TrafficSummary
-                      title="Traffic Summary"
                       data={barChartData}
                       type="bar"
                       labels={[
@@ -136,11 +135,10 @@ const Dashboard = () => {
           </View>
           <View rowSpan={{ base: 1, large: 4 }}>
             <Card height="100%" borderRadius="15px">
-              <div className="card-title">Traffic Sources</div>
+              <div className="card-title">Thống kê điểm thi</div>
               <div className="chart-wrap">
                 {barChartData ? (
                   <TrafficSources
-                    title="Traffic Sources"
                     data={trafficSourceData}
                     type="donut"
                     labels={[
