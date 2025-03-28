@@ -93,7 +93,7 @@ export default function ExamLayout() {
           Question {currentQuestionIndex + 1} of {questions.length}
         </div>
         <div className="flex items-center gap-4">
-          <Button
+          {/* <Button
             type="default"
             color="purple"
             variant="solid"
@@ -101,7 +101,7 @@ export default function ExamLayout() {
             shape="round"
           >
             Xuất kết quả PDF
-          </Button>
+          </Button> */}
           <Button size="large" shape="round">
             {currentQuestionIndex + 1}/{questions.length}
           </Button>
