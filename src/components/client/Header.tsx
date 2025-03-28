@@ -1,4 +1,4 @@
-import { Dropdown, Space } from "antd";
+import { Dropdown, Modal, Space } from "antd";
 import {
   ContactsOutlined,
   DownOutlined,
@@ -7,8 +7,10 @@ import {
 import { clearAccessToken } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth.hook";
+import { useState } from "react";
 
 const Header = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const { userInfo } = useAuth();
   const handleLogout = () => {
@@ -16,12 +18,18 @@ const Header = () => {
     navigate("/auth/login");
   };
 
-  console.log(userInfo);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const items = [
     {
       key: "1",
       label: (
-        <div>
+        <div onClick={showModal}>
           <ContactsOutlined className="mr-2" />
           Thông tin tài khoản
         </div>
@@ -69,6 +77,22 @@ const Header = () => {
           </Dropdown>
         </div>
       </div>
+      <Modal
+        title="Thông tin tài khoản"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <p>
+          <strong>Tên người dùng:</strong> {userInfo?.username}
+        </p>
+        <p>
+          <strong>Tên đầy đủ:</strong> {userInfo?.fullName}
+        </p>
+        <p>
+          <strong>Email:</strong> {userInfo?.email}
+        </p>
+      </Modal>
     </header>
   );
 };
