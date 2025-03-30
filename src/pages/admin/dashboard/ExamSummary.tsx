@@ -84,7 +84,7 @@ const defaultOptions = {
   },
 };
 
-const BarChart = ({ data, type, labels, options }: BarChartProps) => (
+const ExamSummary = ({ data, type, labels, options }: BarChartProps) => (
   <Chart
     series={data}
     type={type as any}
@@ -94,4 +94,4 @@ const BarChart = ({ data, type, labels, options }: BarChartProps) => (
   />
 );
 
-export default BarChart;
+export default ExamSummary;

@@ -1,11 +1,16 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { Button, Modal, Radio } from "antd";
 import {
   getListQuestionTest,
   IQuestion,
 } from "@/api/client/get-list-question-in-test.api";
-import { useLocation } from "react-router-dom";
 import { IGetListTest } from "@/api/client/get-list-test.api";
+import { submitTest } from "@/api/client/submit-answer.api";
+import { useAuth } from "@/hooks/use-auth.hook";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { Button, Modal, Radio } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CiCircleInfo } from "react-icons/ci";
 
 export default function ExamLayout() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -13,11 +18,14 @@ export default function ExamLayout() {
   const [selectedAnswers, setSelectedAnswers] = useState<
     Record<number, string | null>
   >({});
-  const loadingRef = useRef<boolean>(false);
   const location = useLocation();
   const testData = location.state as IGetListTest;
   const [timeLeft, setTimeLeft] = useState<number>(testData.duration * 60);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isSubmitModalVisible, setIsSubmitModalVisible] = useState<boolean>(false);
+
+  const { userInfo} = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -31,8 +39,7 @@ export default function ExamLayout() {
   }, [timeLeft]);
 
   const fetchQuestions = useCallback(() => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
+    showLoading()
 
     getListQuestionTest(
       testData.exam_code,
@@ -40,12 +47,12 @@ export default function ExamLayout() {
     ).subscribe({
       next: (res) => {
         setQuestions(res.questions);
-        loadingRef.current = false;
+        removeLoading()
 
         setSelectedAnswers({});
       },
       error: () => {
-        loadingRef.current = false;
+        removeLoading()
       },
     });
   }, []);
@@ -85,6 +92,44 @@ export default function ExamLayout() {
     }));
   };
 
+  const handleSubmitTest = useCallback(() => {    
+        showLoading();
+  
+        const formattedData = {
+          user_id: userInfo?.id,
+          exam_code: testData.exam_code,
+          parts: [
+            {
+              part_number: Number(testData.part_number),
+              answers: questions.map((q, index) => ({
+                user_answer: selectedAnswers[index] || "",
+                correct_answer: q.correct_answer,
+              })),
+            },
+          ],
+        };
+  
+        submitTest(formattedData).subscribe({
+          next: () => {
+            showToast({type: "success", content: "Nộp bài thành công!" });
+            removeLoading()
+            setIsSubmitModalVisible(false);
+            navigate('/test/result', {state: {exam_code: testData.exam_code, part_number: testData.part_number}});
+          },
+          error: () => {
+            showToast({type: "error", content: "Nộp bài thất bại!" });
+            removeLoading()
+          },
+        });
+     
+  
+  }, [testData, questions, selectedAnswers]);
+
+  const handleOpenSubmitModal = () => {
+    setIsSubmitModalVisible(true);
+  };
+  
+
   return (
     <div className="flex flex-col h-screen">
       <header className="flex justify-between items-center bg-gray-800 text-white p-4">
@@ -93,15 +138,6 @@ export default function ExamLayout() {
           Question {currentQuestionIndex + 1} of {questions.length}
         </div>
         <div className="flex items-center gap-4">
-          {/* <Button
-            type="default"
-            color="purple"
-            variant="solid"
-            size="large"
-            shape="round"
-          >
-            Xuất kết quả PDF
-          </Button> */}
           <Button size="large" shape="round">
             {currentQuestionIndex + 1}/{questions.length}
           </Button>
@@ -114,7 +150,7 @@ export default function ExamLayout() {
           >
             Time: {formatTime(timeLeft)}
           </Button>
-          <Button type="primary" shape="round" size="large">
+          <Button type="primary" shape="round" size="large" onClick={handleOpenSubmitModal}>
             Nộp bài
           </Button>
         </div>
@@ -237,6 +273,27 @@ export default function ExamLayout() {
       >
         <p>Bạn đã hoàn thành bài thi này!</p>
       </Modal>
+
+      <Modal
+  title={
+    <span className="flex items-center gap-2">
+      <CiCircleInfo className="text-blue-500 text-xl" />
+      Đã hoàn thành bài kiểm tra?
+    </span>
+  }
+  open={isSubmitModalVisible}
+  onCancel={() => setIsSubmitModalVisible(false)}
+  footer={[
+    <Button key="cancel" onClick={() => setIsSubmitModalVisible(false)}>
+      Hủy
+    </Button>,
+    <Button key="submit" type="primary" onClick={handleSubmitTest}>
+      Đồng ý
+    </Button>,
+  ]}
+>
+  <p>Hãy chắc chắn rằng bạn không bỏ sót điều gì trước khi xác nhận việc hoàn thành bài kiểm tra!</p>
+</Modal>
     </div>
   );
 }

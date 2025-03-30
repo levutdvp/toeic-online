@@ -1,65 +1,92 @@
-import { useEffect, useState } from "react";
-import {
-  View,
-  Grid,
-  Flex,
-  Card,
-  Placeholder,
-  useTheme,
-} from "@aws-amplify/ui-react";
+import { useCallback, useEffect, useState } from "react";
+import { View, Grid, Flex, Card, Placeholder, useTheme } from "@aws-amplify/ui-react";
+import { getExamResult } from "@/api/admin/api-result/get-result.api";
+import { removeLoading, showLoading } from "@/services/loading";
+import ExamSources from "./ExamSources";
+import ExamSummary from "./ExamSummary";
 
-import TrafficSources from "./TrafficSources";
-import TrafficSummary from "./TrafficSummary";
+interface ScoreRange {
+  label: string;
+  min: number;
+  max: number;
+}
 
-import "./Dashboard.css";
+interface ExamResult {
+  part_number: string;
+  students: { submitted_at: string; score: number }[];
+}
 
-const barChartDataDemo = [
-  {
-    name: "Web",
-    data: [
-      11, 8, 9, 10, 3, 11, 11, 11, 12, 13, 2, 12, 5, 8, 22, 6, 8, 6, 4, 1, 8,
-      24, 29, 51, 40, 47, 23, 26, 50, 26, 22, 27, 46, 47, 81, 46, 40,
-    ],
-  },
-  {
-    name: "Social",
-    data: [
-      7, 5, 4, 3, 3, 11, 4, 7, 5, 12, 12, 15, 13, 12, 6, 7, 7, 1, 5, 5, 2, 12,
-      4, 6, 18, 3, 5, 2, 13, 15, 20, 47, 18, 15, 11, 10, 9,
-    ],
-  },
-  {
-    name: "Other",
-    data: [
-      4, 9, 11, 7, 8, 3, 6, 5, 5, 4, 6, 4, 11, 10, 3, 6, 7, 5, 2, 8, 4, 9, 9, 2,
-      6, 7, 5, 1, 8, 3, 12, 3, 4, 9, 7, 11, 10,
-    ],
-  },
+const scoreRanges: ScoreRange[] = [
+  { label: "0-450", min: 0, max: 450 },
+  { label: "451-600", min: 451, max: 600 },
+  { label: "601-800", min: 601, max: 800 },
+  { label: "801-990", min: 801, max: 990 },
 ];
 
-const getChartData = () =>
-  new Promise((resolve, reject) => {
-    if (!barChartDataDemo) {
-      return setTimeout(() => reject(new Error("no data")), 750);
-    }
+type ChartData = {
+  barChartData: { name: string; data: number[] }[];
+  trafficSourceData: number[];
+  labels: string[];
+  dates: string[];
+};
 
-    setTimeout(() => resolve(Object.values(barChartDataDemo)), 750);
+const processChartData = (examResults: ExamResult[]): ChartData => {
+  const dateMap: Record<string, Record<string, number>> = {};
+  const scoreDistribution: Record<string, number> = {};
+  
+  examResults.forEach(({ students }) => {
+    students.forEach(({ submitted_at, score }) => {
+      const date = submitted_at.split("T")[0];
+      if (!dateMap[date]) {
+        dateMap[date] = { "0-450": 0, "455-600": 0, "605-800": 0, "805-990": 0 };
+      }
+      
+      scoreRanges.forEach(({ label, min, max }) => {
+        if (score >= min && score <= max) {
+          dateMap[date][label] += 1;
+          scoreDistribution[label] = (scoreDistribution[label] || 0) + 1;
+        }
+      });
+    });
   });
 
+  const barChartData = scoreRanges.map(({ label }) => ({
+    name: label,
+    data: Object.values(dateMap).map((entry) => entry[label]),
+  }));
+
+  const trafficSourceData = Object.values(scoreDistribution);
+  const labels = Object.keys(scoreDistribution);
+
+  return { barChartData, trafficSourceData, labels, dates: Object.keys(dateMap) };
+};
+
 const Dashboard = () => {
-  const [barChartData, setBarChartData] = useState<any | null>(null);
-  const [trafficSourceData, setTrafficSourceData] = useState<any | null>(null);
+  const [barChartData, setBarChartData] = useState<{ name: string; data: number[] }[] | null>(null);
+  const [trafficSourceData, setTrafficSourceData] = useState<number[] | null>(null);
+  const [chartLabels, setChartLabels] = useState<string[]>([]);
   const { tokens } = useTheme();
 
-  useEffect(() => {
-    const doChartData = async () => {
-      const result = await getChartData();
-      setBarChartData(result);
-      setTrafficSourceData([112332, 123221, 432334, 342334, 133432]);
-    };
-
-    doChartData();
+  const getExamResults = useCallback(() => {
+    showLoading();
+    getExamResult().subscribe({
+      next: (res) => {
+        const examResults = res.data; 
+        if (!examResults) return;
+        
+        const { barChartData, trafficSourceData, dates } = processChartData(examResults);
+        setBarChartData(barChartData);
+        setTrafficSourceData(trafficSourceData);
+        setChartLabels(dates);
+        removeLoading();
+      },
+      error: removeLoading,
+    });
   }, []);
+
+  useEffect(() => {
+    getExamResults();
+  }, [getExamResults]);
 
   return (
     <>
@@ -67,65 +94,15 @@ const Dashboard = () => {
         <h2 className="text-[24px] font-extrabold">Thống kê</h2>
       </div>
       <View borderRadius="6px" maxWidth="100%" padding="0rem" minHeight="100vh">
-        <Grid
-          templateColumns={{ base: "1fr", large: "1fr 1fr 1fr" }}
-          templateRows={{ base: "repeat(4, 10rem)", large: "repeat(3, 8rem)" }}
-          gap={tokens.space.xl}
-        >
+        <Grid templateColumns={{ base: "1fr", large: "1fr 1fr 1fr" }} gap={tokens.space.xl}>
           <View columnSpan={[1, 1, 1, 2]} rowSpan={{ base: 3, large: 4 }}>
             <Card borderRadius="15px">
               <div className="card-title">Tổng quan điểm thi</div>
               <div className="chart-wrap">
                 {barChartData ? (
-                  <div className="row">
-                    <TrafficSummary
-                      data={barChartData}
-                      type="bar"
-                      labels={[
-                        "2022-01-20",
-                        "2022-01-21",
-                        "2022-01-22",
-                        "2022-01-23",
-                        "2022-01-24",
-                        "2022-01-25",
-                        "2022-01-26",
-                        "2022-01-27",
-                        "2022-01-28",
-                        "2022-01-29",
-                        "2022-01-30",
-                        "2022-02-01",
-                        "2022-02-02",
-                        "2022-02-03",
-                        "2022-02-04",
-                        "2022-02-05",
-                        "2022-02-06",
-                        "2022-02-07",
-                        "2022-02-08",
-                        "2022-02-09",
-                        "2022-02-10",
-                        "2022-02-11",
-                        "2022-02-12",
-                        "2022-02-13",
-                        "2022-02-14",
-                        "2022-02-15",
-                        "2022-02-16",
-                        "2022-02-17",
-                        "2022-02-18",
-                        "2022-02-19",
-                        "2022-02-20",
-                        "2022-02-21",
-                        "2022-02-22",
-                        "2022-02-23",
-                        "2022-02-24",
-                        "2022-02-25",
-                        "2022-02-26",
-                      ]}
-                    />
-                  </div>
+                  <ExamSummary data={barChartData} type="bar" labels={chartLabels} />
                 ) : (
                   <Flex direction="column" minHeight="285px">
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
                     <Placeholder size="small" />
                     <Placeholder size="small" />
                   </Flex>
@@ -137,22 +114,10 @@ const Dashboard = () => {
             <Card height="100%" borderRadius="15px">
               <div className="card-title">Thống kê điểm thi</div>
               <div className="chart-wrap">
-                {barChartData ? (
-                  <TrafficSources
-                    data={trafficSourceData}
-                    type="donut"
-                    labels={[
-                      "Direct",
-                      "Internal",
-                      "Referrals",
-                      "Search Engines",
-                      "Other",
-                    ]}
-                  />
+                {trafficSourceData ? (
+                  <ExamSources data={trafficSourceData} type="donut" labels={scoreRanges.map((r) => r.label)} />
                 ) : (
                   <Flex direction="column" minHeight="285px">
-                    <Placeholder size="small" />
-                    <Placeholder size="small" />
                     <Placeholder size="small" />
                     <Placeholder size="small" />
                   </Flex>

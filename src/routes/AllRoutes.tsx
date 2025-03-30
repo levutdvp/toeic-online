@@ -24,6 +24,7 @@ import ExcelUploadPart5 from "@/pages/admin/forms/ExcelExam/Part5";
 import ExcelUploadPart6 from "@/pages/admin/forms/ExcelExam/Part6";
 import ExcelUploadPart7 from "@/pages/admin/forms/ExcelExam/Part7";
 import ExamTablePage from "@/pages/admin/tables/ExamTablePage";
+import ExamResultPage from "@/pages/client/ListExam/Detail-Test/Contest/ExamResult";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -53,6 +54,14 @@ export const AllRoutes = () => {
           <ConfigProvider theme={{ hashed: false }}>
             <TestComponent />
           </ConfigProvider>
+        </DefaultLayout>
+      ),
+    },
+    {
+      path: "/test/result",
+      element: (
+        <DefaultLayout isDefaultLayout={false}>
+          <ExamResultPage />
         </DefaultLayout>
       ),
     },

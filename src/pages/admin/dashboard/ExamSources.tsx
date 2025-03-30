@@ -1,6 +1,6 @@
 import Chart from "react-apexcharts";
 
-interface TrafficSourcesProps {
+interface ExamSourcesProps {
   title?: string;
   data: any;
   type?:
@@ -47,12 +47,12 @@ const defaultOptions = {
   },
 };
 
-const TrafficSources = ({
+const ExamSources = ({
   data,
   type,
   labels,
   options,
-}: TrafficSourcesProps) => {
+}: ExamSourcesProps) => {
   return (
     <>
       <Chart
@@ -65,4 +65,4 @@ const TrafficSources = ({
   );
 };
 
-export default TrafficSources;
+export default ExamSources;
