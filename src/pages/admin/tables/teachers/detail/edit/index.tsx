@@ -4,16 +4,16 @@ import { Button, Form, Input, InputNumber, Modal } from "antd";
 import { IEditForm, validateForm } from "./form.config";
 import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { IGetListTeachers } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { convertToInteger } from "@/utils/map.util";
 import { editCertificate } from "@/api/admin/api-teachers/detail-teacher/edit-certificate.api";
+import { ICertificate } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 
-interface addTeacherProps {
+interface editCertificateProps {
   isOpen: boolean;
   onClose: () => void;
-  recordSelected?: IGetListTeachers;
+  recordSelected?: ICertificate;
 }
-const EditCertificate: React.FC<addTeacherProps> = ({
+const EditCertificate: React.FC<editCertificateProps> = ({
   isOpen,
   onClose,
   recordSelected,
@@ -22,11 +22,11 @@ const EditCertificate: React.FC<addTeacherProps> = ({
   const { teacherId } = useParams<{ teacherId: string }>();
 
   const initialValues = useMemo(() => {
-    if (!recordSelected || !recordSelected.certificate?.length) return {};
+    if (!recordSelected) return {};
 
     return {
-      certificate_name: recordSelected.certificate[0].certificate_name,
-      score: convertToInteger(recordSelected.certificate[0].score),
+      certificate_name: recordSelected.certificate_name,
+      score: convertToInteger(recordSelected.score),
     };
   }, [recordSelected]);
 
@@ -49,7 +49,7 @@ const EditCertificate: React.FC<addTeacherProps> = ({
     const editCertificates = editCertificate(params, teacherId).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Sửa bằng cấp thành công" });
+        showToast({ content: "Cập nhật thành công!" });
         form.resetFields();
         onClose();
       },

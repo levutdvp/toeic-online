@@ -15,29 +15,29 @@ const TestDetail = () => {
       <div className="flex justify-center items-center flex-grow">
         <Card className="w-[800px] p-6 shadow-md rounded-lg bg-white">
           <h2 className="text-2xl font-semibold text-center mb-4">
-            {testData.exam_name}
+            {testData?.exam_name}
           </h2>
           <div className="flex justify-center gap-2 mb-4">
-            {testData.is_Free ? (
+            {testData?.is_Free ? (
               <Tag color="gold">Miễn phí</Tag>
             ) : (
               <Tag color="purple">Cho học viên</Tag>
             )}
 
-            <Tag color="gray">{testData.type}</Tag>
+            <Tag color="gray">{testData?.type}</Tag>
           </div>
           <div className="text-center text-gray-700">
             <p>
-              Thời gian: <strong>{testData.duration}</strong> phút
+              Thời gian: <strong>{testData?.duration}</strong> phút
             </p>
             <p>
-              Phần thi: <strong>Part {testData.part_number}</strong>
+              Phần thi: <strong>Part {testData?.part_number}</strong>
             </p>
             <p>
-              Câu hỏi: <strong>{testData.question_count}</strong> câu
+              Câu hỏi: <strong>{testData?.question_count}</strong> câu
             </p>
             <p>
-              Điểm tối đa: <strong>{testData.max_score}</strong> điểm
+              Điểm tối đa: <strong>{testData?.max_score}</strong> điểm
             </p>
           </div>
           <Alert

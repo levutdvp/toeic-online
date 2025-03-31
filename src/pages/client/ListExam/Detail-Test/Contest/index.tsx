@@ -111,7 +111,7 @@ export default function ExamLayout() {
     };
 
     submitTest(formattedData).subscribe({
-      next: () => {
+      next: (res) => {
         showToast({ type: "success", content: "Nộp bài thành công!" });
         removeLoading();
         setIsSubmitModalVisible(false);
@@ -119,6 +119,9 @@ export default function ExamLayout() {
           state: {
             exam_code: testData.exam_code,
             part_number: testData.part_number,
+            result: res.data,
+            submittedData: formattedData,
+            questions,
           },
         });
       },
@@ -273,7 +276,7 @@ export default function ExamLayout() {
           <Button
             key="ok"
             type="primary"
-            onClick={() => setIsModalVisible(false)}
+            onClick={handleSubmitTest}
           >
             Đồng ý
           </Button>,

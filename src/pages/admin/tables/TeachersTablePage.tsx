@@ -4,7 +4,6 @@ import { Button, Input, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import {
   getTeachersList,
-  ICertificate,
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { CiEdit } from "react-icons/ci";
@@ -162,14 +161,12 @@ const TeachersTablePage = () => {
       title: "Họ và tên",
       dataIndex: "name",
       key: "name",
-      width: 170,
       align: "center",
     },
     {
       title: "Ngày sinh",
       dataIndex: "dob",
       key: "dob",
-      width: 150,
       align: "center",
       render: (dob: string) => {
         return dob ? dayjs(dob).format("DD-MM-YYYY") : "";
@@ -179,7 +176,6 @@ const TeachersTablePage = () => {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
-      width: 100,
       align: "center",
       render: (gender) => gender && formatGender(gender),
     },
@@ -187,14 +183,12 @@ const TeachersTablePage = () => {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      width: 150,
       align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: 200,
       align: "center",
     },
     {
@@ -203,41 +197,42 @@ const TeachersTablePage = () => {
       key: "address",
       align: "center",
     },
-    {
-      title: "Bằng cấp",
-      dataIndex: "certificate",
-      key: "certificate",
-      align: "center",
-      render: (certificates: ICertificate[]) =>
-        certificates?.length
-          ? certificates
-              .map((cert) => `${cert.certificate_name} - ${cert.score}`)
-              .join(", ")
-          : "Chưa có",
-    },
+    // {
+    //   title: "Bằng cấp",
+    //   dataIndex: "certificate",
+    //   key: "certificate",
+    //   align: "center",
+    //   render: (certificates: ICertificate[]) =>
+    //     certificates?.length
+    //       ? certificates
+    //           .map((cert) => `${cert.certificate_name} - ${cert.score}`)
+    //           .join(", ")
+    //       : "Chưa có",
+    // },
     {
       title: "Hành động",
       key: "action",
       align: "center",
-      width: 200,
-      render: (_, record) => (
-        <Space size="middle">
-          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
-            <CiEdit />
-          </Button>
-          <Button
-            size="middle"
-            danger
-            onClick={() => showDeleteModal(record.id!)}
-            disabled={record.id === 1}
-          >
-            <MdOutlineDeleteForever />
-          </Button>
-          <Button size="middle" onClick={() => handleViewDetails(record)}>
-            <FcViewDetails />
-          </Button>
-        </Space>
-      ),
+      render: (_, record) => {
+        return (
+          <Space size="middle">
+            <Button size="middle" onClick={() => handleOpenEditModal(record)}>
+              <CiEdit />
+            </Button>
+            <Button
+              size="middle"
+              danger
+              onClick={() => showDeleteModal(record.id!)}
+              disabled={record.id === 1}
+            >
+              <MdOutlineDeleteForever />
+            </Button>
+            <Button size="middle" onClick={() => handleViewDetails(record)}>
+              <FcViewDetails />
+            </Button>
+          </Space>
+        );
+      },
     },
   ];
 

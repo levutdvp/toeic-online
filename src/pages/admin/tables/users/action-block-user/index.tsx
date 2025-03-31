@@ -59,7 +59,7 @@ export default function ActionBlockUsers({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>Quản lí tài khoản người dùng</div>
+        <div>Danh sách tài khoản</div>
         <div>
           <Space size={12}>
             <Button

@@ -2,6 +2,7 @@ import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 import queryString from "query-string";
 export interface ICertificate {
+  id?: number;
   certificate_name: string;
   score: string;
 }

@@ -18,7 +18,7 @@ export const appNavs = [
   {
     eventKey: "dashboard",
     icon: <Icon as={MdDashboard} />,
-    title: "Thống kê",
+    title: "Báo cáo",
     to: "/admin",
   },
   {

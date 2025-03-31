@@ -1,24 +1,18 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
-import queryString from "query-string";
 
-export interface IGetListStudents {
+export interface IGetListCertificate {
   id?: number;
   certificate_name: string;
   score: string;
 }
 
-export interface IParams {
-  pageNumber: number;
-  pageSize: number;
-}
 
-export const getStudentsList = (params: IParams) => {
-  const querystring = queryString.stringify(params);
+export const getCertificateList = (user_id: string) => {
 
-  return apiCall<IGetListStudents[]>(
+  return apiCall<IGetListCertificate[]>(
     {
-      url: `${API_URL}/api/students/list?${querystring}`,
+      url: `${API_URL}/api/diploma/list/${user_id}`,
       method: "GET",
     },
     {

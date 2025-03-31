@@ -113,7 +113,7 @@ const Dashboard = () => {
   return (
     <>
       <div>
-        <h2 className="text-[24px] font-extrabold">Thống kê</h2>
+        <h2 className="text-[24px] font-extrabold">Báo cáo</h2>
       </div>
       <View borderRadius="6px" maxWidth="100%" padding="0rem" minHeight="100vh">
         <Grid

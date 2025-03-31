@@ -1,9 +1,10 @@
-import { Card, Avatar, Button, Table } from "antd";
+import { Card, Avatar, Button, Table, Modal } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
 import {
   getTeachersList,
+  ICertificate,
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { useParams } from "react-router-dom";
@@ -12,13 +13,24 @@ import { convertToInteger, formatGender } from "@/utils/map.util";
 import { ColumnsType } from "antd/es/table";
 import AddCertificate from "./add";
 import EditCertificate from "./edit";
+import { deleteCertificate } from "@/api/admin/api-teachers/detail-teacher/delete-certificate.api";
+import { showToast } from "@/services/toast";
+import {
+  getCertificateList,
+  IGetListCertificate,
+} from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
 
 const TeacherDetail: React.FC = () => {
   const { teacherId } = useParams<{ teacherId: string }>();
   const [teacher, setTeacher] = useState<IGetListTeachers | null>(null);
   const [openModalAdd, setOpenModalAdd] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [recordSelected, setRecordSelected] = useState<IGetListTeachers>();
+  const [recordSelected, setRecordSelected] = useState<ICertificate>({
+    certificate_name: "",
+    score: "",
+  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [certificates, setCertificates] = useState<IGetListCertificate[]>([]);
 
   const getTeacherDetail = useCallback(() => {
     showLoading();
@@ -36,12 +48,34 @@ const TeacherDetail: React.FC = () => {
     });
   }, [teacherId]);
 
+  const getTeacherCertificates = useCallback(() => {
+    if (teacherId) {
+      showLoading();
+      getCertificateList(teacherId).subscribe({
+        next: (res) => {
+          setCertificates(res.data);
+          removeLoading();
+        },
+        error: () => {
+          showToast({
+            type: "error",
+            content: "Lấy danh sách bằng cấp thất bại!",
+          });
+          removeLoading();
+        },
+      });
+    }
+  }, [teacherId]);
+
   useEffect(() => {
-    if (teacherId) getTeacherDetail();
+    if (teacherId) {
+      getTeacherDetail();
+      getTeacherCertificates();
+    }
   }, [teacherId, getTeacherDetail]);
 
   const columns: ColumnsType<{
-    key: number;
+    id: number;
     certificate: string;
     score_certificate: string;
   }> = [
@@ -73,7 +107,13 @@ const TeacherDetail: React.FC = () => {
       title: "Xóa",
       key: "delete",
       align: "center",
-      render: () => <Button icon={<DeleteOutlined />} danger />,
+      render: (_, record) => (
+        <Button
+          icon={<DeleteOutlined />}
+          danger
+          onClick={() => handleDeleteClick(record.id)}
+        />
+      ),
     },
   ];
 
@@ -88,18 +128,56 @@ const TeacherDetail: React.FC = () => {
     getTeacherDetail();
   };
 
-  const handleOpenEditModal = (record: { key: number; certificate: string; score_certificate: string }) => {
-      setRecordSelected({
-        ...teacher,
-        certificate: teacher?.certificate.map((cert, index) =>
-          index === record.key ? { ...cert, certificate_name: record.certificate, score: record.score_certificate } : cert
-        ),
-      } as IGetListTeachers);
-      setIsEditModalOpen(true);
-    };
+  const handleOpenEditModal = (record: {
+    id: number;
+    certificate: string;
+    score_certificate: string;
+  }) => {
+    const selectedCertificate = teacher?.certificate[record.id];
+
+    setRecordSelected({
+      certificate_name: selectedCertificate?.certificate_name || "",
+      score: selectedCertificate?.score || "",
+    });
+
+    setIsEditModalOpen(true);
+  };
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     getTeacherDetail();
+  };
+
+  const handleDeleteClick = (id: number) => {
+    console.log(id)
+    const certificateToDelete = certificates.find((cert) => cert.id === id);
+    console.log(certificateToDelete)
+    if (certificateToDelete) {
+      setRecordSelected(certificateToDelete);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteCertificate = () => {
+    if (recordSelected.id) {
+      showLoading();
+      // Gọi API xóa với ID của chứng chỉ
+      deleteCertificate([recordSelected.id]).subscribe({
+        next: () => {
+          showToast({ type: "success", content: "Xóa thành công!" });
+          setIsDeleteModalOpen(false);
+          getTeacherCertificates(); // Tải lại danh sách chứng chỉ
+        },
+        error: () => {
+          showToast({ type: "error", content: "Xóa thất bại!" });
+          setIsDeleteModalOpen(false);
+          removeLoading();
+        },
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -138,7 +216,7 @@ const TeacherDetail: React.FC = () => {
         <h3 className="font-bold text-lg">Bằng cấp</h3>
         <Table
           dataSource={teacher.certificate.map((cert, index) => ({
-            key: index,
+            id: index,
             certificate: cert.certificate_name,
             score_certificate: cert.score,
           }))}
@@ -163,6 +241,18 @@ const TeacherDetail: React.FC = () => {
           onClose={handleCloseEditModal}
           recordSelected={recordSelected}
         />
+
+        <Modal
+          title="Xác nhận xóa"
+          visible={isDeleteModalOpen}
+          onOk={() => handleDeleteCertificate()}
+          onCancel={handleCancelDelete}
+          okText="Xóa"
+          okButtonProps={{ danger: true }}
+          cancelText="Hủy"
+        >
+          <p>Bạn có chắc chắn muốn xóa?</p>
+        </Modal>
       </div>
     </Card>
   );

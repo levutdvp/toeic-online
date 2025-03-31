@@ -17,12 +17,19 @@ export interface ISubmitTest {
   parts: IPart[];
 }
 
+export interface ISubmitTestResponse {
+  part_number: number;
+  correct_answers: number;
+  wrong_answers: number;
+  score: number;
+}
+
 export const submitTest = (params: ISubmitTest) => {
-  return apiCall<ISubmitTest>(
+  return apiCall<ISubmitTestResponse[]>(
     {
       url: `${API_URL}/api/submit-exam`,
       method: "POST",
-      body: params
+      body: params,
     },
     {
       customError: "throwAndNotify",
