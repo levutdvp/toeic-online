@@ -22,10 +22,11 @@ export default function ExamLayout() {
   const testData = location.state as IGetListTest;
   const [timeLeft, setTimeLeft] = useState<number>(testData.duration * 60);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [isSubmitModalVisible, setIsSubmitModalVisible] = useState<boolean>(false);
+  const [isSubmitModalVisible, setIsSubmitModalVisible] =
+    useState<boolean>(false);
 
-  const { userInfo} = useAuth()
-  const navigate = useNavigate()
+  const { userInfo } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -39,7 +40,7 @@ export default function ExamLayout() {
   }, [timeLeft]);
 
   const fetchQuestions = useCallback(() => {
-    showLoading()
+    showLoading();
 
     getListQuestionTest(
       testData.exam_code,
@@ -47,12 +48,12 @@ export default function ExamLayout() {
     ).subscribe({
       next: (res) => {
         setQuestions(res.questions);
-        removeLoading()
+        removeLoading();
 
         setSelectedAnswers({});
       },
       error: () => {
-        removeLoading()
+        removeLoading();
       },
     });
   }, []);
@@ -92,43 +93,45 @@ export default function ExamLayout() {
     }));
   };
 
-  const handleSubmitTest = useCallback(() => {    
-        showLoading();
-  
-        const formattedData = {
-          user_id: userInfo?.id,
-          exam_code: testData.exam_code,
-          parts: [
-            {
-              part_number: Number(testData.part_number),
-              answers: questions.map((q, index) => ({
-                user_answer: selectedAnswers[index] || "",
-                correct_answer: q.correct_answer,
-              })),
-            },
-          ],
-        };
-  
-        submitTest(formattedData).subscribe({
-          next: () => {
-            showToast({type: "success", content: "Nộp bài thành công!" });
-            removeLoading()
-            setIsSubmitModalVisible(false);
-            navigate('/test/result', {state: {exam_code: testData.exam_code, part_number: testData.part_number}});
-          },
-          error: () => {
-            showToast({type: "error", content: "Nộp bài thất bại!" });
-            removeLoading()
+  const handleSubmitTest = useCallback(() => {
+    showLoading();
+
+    const formattedData = {
+      user_id: userInfo?.id,
+      exam_code: testData.exam_code,
+      parts: [
+        {
+          part_number: Number(testData.part_number),
+          answers: questions.map((q, index) => ({
+            user_answer: selectedAnswers[index] || "",
+            correct_answer: q.correct_answer,
+          })),
+        },
+      ],
+    };
+
+    submitTest(formattedData).subscribe({
+      next: () => {
+        showToast({ type: "success", content: "Nộp bài thành công!" });
+        removeLoading();
+        setIsSubmitModalVisible(false);
+        navigate("/test/result", {
+          state: {
+            exam_code: testData.exam_code,
+            part_number: testData.part_number,
           },
         });
-     
-  
+      },
+      error: () => {
+        showToast({ type: "error", content: "Nộp bài thất bại!" });
+        removeLoading();
+      },
+    });
   }, [testData, questions, selectedAnswers]);
 
   const handleOpenSubmitModal = () => {
     setIsSubmitModalVisible(true);
   };
-  
 
   return (
     <div className="flex flex-col h-screen">
@@ -150,7 +153,12 @@ export default function ExamLayout() {
           >
             Time: {formatTime(timeLeft)}
           </Button>
-          <Button type="primary" shape="round" size="large" onClick={handleOpenSubmitModal}>
+          <Button
+            type="primary"
+            shape="round"
+            size="large"
+            onClick={handleOpenSubmitModal}
+          >
             Nộp bài
           </Button>
         </div>
@@ -275,25 +283,28 @@ export default function ExamLayout() {
       </Modal>
 
       <Modal
-  title={
-    <span className="flex items-center gap-2">
-      <CiCircleInfo className="text-blue-500 text-xl" />
-      Đã hoàn thành bài kiểm tra?
-    </span>
-  }
-  open={isSubmitModalVisible}
-  onCancel={() => setIsSubmitModalVisible(false)}
-  footer={[
-    <Button key="cancel" onClick={() => setIsSubmitModalVisible(false)}>
-      Hủy
-    </Button>,
-    <Button key="submit" type="primary" onClick={handleSubmitTest}>
-      Đồng ý
-    </Button>,
-  ]}
->
-  <p>Hãy chắc chắn rằng bạn không bỏ sót điều gì trước khi xác nhận việc hoàn thành bài kiểm tra!</p>
-</Modal>
+        title={
+          <span className="flex items-center gap-2">
+            <CiCircleInfo className="text-blue-500 text-xl" />
+            Đã hoàn thành bài kiểm tra?
+          </span>
+        }
+        open={isSubmitModalVisible}
+        onCancel={() => setIsSubmitModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsSubmitModalVisible(false)}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleSubmitTest}>
+            Đồng ý
+          </Button>,
+        ]}
+      >
+        <p>
+          Hãy chắc chắn rằng bạn không bỏ sót điều gì trước khi xác nhận việc
+          hoàn thành bài kiểm tra!
+        </p>
+      </Modal>
     </div>
   );
 }

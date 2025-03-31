@@ -17,6 +17,7 @@ import AddStudent from "./students/add";
 import EditStudent from "./students/edit";
 import { formatGender } from "@/utils/map.util";
 import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -162,6 +163,9 @@ const StudentTablesPage = () => {
       key: "dob",
       width: 200,
       align: "center",
+      render: (dob: string) => {
+        return dob ? dayjs(dob).format("DD-MM-YYYY") : "";
+      },
     },
     {
       title: "Giới tính",

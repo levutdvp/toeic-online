@@ -98,7 +98,11 @@ const EditStudent: React.FC<editStudentProps> = ({
             </Form.Item>
 
             <Form.Item name="dob" rules={validateForm.dob}>
-              <DatePicker style={{ width: "100%" }} placeholder="Ngày sinh" />
+              <DatePicker
+                style={{ width: "100%" }}
+                placeholder="Ngày sinh"
+                format={"DD-MM-YYYY"}
+              />
             </Form.Item>
 
             <Form.Item name="gender" rules={validateForm.gender}>

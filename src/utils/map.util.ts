@@ -17,3 +17,7 @@ export const formatRoles = (role: string): string => {
 export const formatIsFree = (type: number) => {
   return type === 1 ? "Miễn phí" : "Cho học viên";
 };
+
+export const convertToInteger = (value: string): number => {
+  return Math.floor(parseFloat(value));
+};

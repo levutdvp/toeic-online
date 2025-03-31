@@ -63,7 +63,7 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 370 }}
+        bodyStyle={{ height: 340 }}
       >
         <div className="mt-5">
           <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
@@ -72,7 +72,7 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
             </Form.Item>
 
             <Form.Item name="dob" rules={validateForm.dob}>
-              <DatePicker style={{ width: "100%" }} placeholder="Ngày sinh" />
+              <DatePicker style={{ width: "100%" }} placeholder="Ngày sinh" format="DD-MM-YYYY" />
             </Form.Item>
 
             <Form.Item name="gender" rules={validateForm.gender}>
@@ -97,7 +97,7 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
             <Form.Item name="address" rules={validateForm.address}>
               <Input placeholder="Địa chỉ" />
             </Form.Item>
-            <Form.Item name="certificates" rules={validateForm.certificates}>
+            {/* <Form.Item name="certificates" rules={validateForm.certificates}>
               <Input
                 placeholder="Bằng cấp"
                 onChange={(e) => {
@@ -106,7 +106,7 @@ const AddTeacher: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
                   });
                 }}
               />
-            </Form.Item>
+            </Form.Item> */}
           </Form>
         </div>
       </Modal>

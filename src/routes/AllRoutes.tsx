@@ -6,7 +6,6 @@ import PrivateRoute from "./PrivateRoute";
 import Profile from "@/pages/admin/profile";
 import Dashboard from "@/pages/admin/dashboard";
 import { rolesAllowedAdmin } from "@/consts/permission.const";
-import Tables from "@/pages/admin/tables/TeachersTablePage";
 import StudentsTablesPage from "@/pages/admin/tables/StudentsTablePage";
 import ClassTablesPage from "@/pages/admin/tables/ClassTablePage";
 import DetailTest from "@/pages/client/ListExam/Detail-Test";
@@ -25,6 +24,8 @@ import ExcelUploadPart6 from "@/pages/admin/forms/ExcelExam/Part6";
 import ExcelUploadPart7 from "@/pages/admin/forms/ExcelExam/Part7";
 import ExamTablePage from "@/pages/admin/tables/ExamTablePage";
 import ExamResultPage from "@/pages/client/ListExam/Detail-Test/Contest/ExamResult";
+import TeachersTablePage from "@/pages/admin/tables/TeachersTablePage";
+import TeacherDetail from "@/pages/admin/tables/teachers/detail";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -76,7 +77,8 @@ export const AllRoutes = () => {
       children: [
         { index: true, element: <Dashboard /> },
         { path: "all-users", element: <UserTablesPage /> },
-        { path: "users-teacher", element: <Tables /> },
+        { path: "users-teacher", element: <TeachersTablePage /> },
+        { path: "users-teacher/:teacherId", element: <TeacherDetail /> },
         { path: "users-student", element: <StudentsTablesPage /> },
         { path: "classes", element: <ClassTablesPage /> },
         { path: "classes/detail", element: <DetailClass /> },

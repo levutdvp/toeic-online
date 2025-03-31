@@ -17,6 +17,7 @@ import AddClass from "./classes/add";
 import EditClass from "./classes/edit";
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 type TableQueries = TableQueriesRef<IGetListClasses>;
 
@@ -165,12 +166,18 @@ const ClassTablesPage = () => {
       dataIndex: "start_date",
       key: "start_date",
       align: "center",
+      render: (start_date: string) => {
+        return start_date ? dayjs(start_date).format("DD-MM-YYYY") : "";
+      },
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "end_date",
       key: "end_date",
       align: "center",
+      render: (end_date: string) => {
+        return end_date ? dayjs(end_date).format("DD-MM-YYYY") : "";
+      },
     },
     {
       title: "Thời gian bắt đầu",

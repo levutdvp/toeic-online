@@ -1,20 +1,11 @@
 import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 import queryString from "query-string";
-export interface ICertificate {
+
+export interface IGetListStudents {
+  id?: number;
   certificate_name: string;
   score: string;
-}
-export interface IGetListTeachers {
-  id?: number;
-  name: string;
-  dob: string;
-  gender: string;
-  phone: string;
-  email: string;
-  address: string;
-  certificate: ICertificate[];
-  avatar?: string;
 }
 
 export interface IParams {
@@ -22,12 +13,12 @@ export interface IParams {
   pageSize: number;
 }
 
-export const getTeachersList = (params: IParams) => {
+export const getStudentsList = (params: IParams) => {
   const querystring = queryString.stringify(params);
 
-  return apiCall<IGetListTeachers[]>(
+  return apiCall<IGetListStudents[]>(
     {
-      url: `${API_URL}/api/teachers/list?${querystring}`,
+      url: `${API_URL}/api/students/list?${querystring}`,
       method: "GET",
     },
     {

@@ -4,6 +4,7 @@ import { Button, Input, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import {
   getTeachersList,
+  ICertificate,
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { CiEdit } from "react-icons/ci";
@@ -17,6 +18,9 @@ import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
 import EditTeacher from "./teachers/edit";
 import { formatGender } from "@/utils/map.util";
 import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { FcViewDetails } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -41,6 +45,7 @@ const TeachersTablePage = () => {
     totalPage: initPaging.totalPage,
   });
 
+  const navigate = useNavigate();
   const getListTeachers = useCallback(() => {
     showLoading();
     const getTeachersSub = getTeachersList({
@@ -138,6 +143,10 @@ const TeachersTablePage = () => {
     getListTeachers();
   };
 
+  const handleViewDetails = (record: IGetListTeachers) => {
+    navigate(`/admin/users-teacher/${record.id}`);
+  };
+
   const filteredTeachers = dataTeachers.filter(
     (teacher) =>
       (teacher.name ? teacher.name.toLowerCase() : "").includes(
@@ -162,6 +171,9 @@ const TeachersTablePage = () => {
       key: "dob",
       width: 150,
       align: "center",
+      render: (dob: string) => {
+        return dob ? dayjs(dob).format("DD-MM-YYYY") : "";
+      },
     },
     {
       title: "Giới tính",
@@ -196,7 +208,12 @@ const TeachersTablePage = () => {
       dataIndex: "certificate",
       key: "certificate",
       align: "center",
-      render: (certificates) => (certificates ? certificates.join(", ") : ""),
+      render: (certificates: ICertificate[]) =>
+        certificates?.length
+          ? certificates
+              .map((cert) => `${cert.certificate_name} - ${cert.score}`)
+              .join(", ")
+          : "Chưa có",
     },
     {
       title: "Hành động",
@@ -215,6 +232,9 @@ const TeachersTablePage = () => {
             disabled={record.id === 1}
           >
             <MdOutlineDeleteForever />
+          </Button>
+          <Button size="middle" onClick={() => handleViewDetails(record)}>
+            <FcViewDetails />
           </Button>
         </Space>
       ),
