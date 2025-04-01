@@ -52,7 +52,7 @@ const TeachersTablePage = () => {
 
   const { userRoles, userInfo } = useAuth();
 
-  const editPermissions = userRoles.some((role) => role === "TEACHER");
+  const teacherPermissions = userRoles.some((role) => role === "TEACHER");
 
   const getListTeachers = useCallback(() => {
     showLoading();
@@ -92,7 +92,7 @@ const TeachersTablePage = () => {
   };
 
   const showDeleteModal = (id: number) => {
-    if (editPermissions) {
+    if (teacherPermissions) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -141,6 +141,13 @@ const TeachersTablePage = () => {
   };
 
   const onClickAction = () => {
+    if (teacherPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setIsAddModalOpen(true);
   };
 
@@ -150,7 +157,7 @@ const TeachersTablePage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListTeachers) => {
-    if (editPermissions) {
+    if (teacherPermissions) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
