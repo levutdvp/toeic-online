@@ -5,6 +5,8 @@ import { TableQueriesRef } from "@/types/pagination.type";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Pagination } from "antd";
+import { getTestFull } from "@/api/client/get-list-test-full.api";
+import { Observable } from "rxjs";
 
 type TableQueries = TableQueriesRef<IGetListTest>;
 
@@ -91,7 +93,7 @@ const transformTestData = (data: any[]): IGetListTest[] => {
   }));
 };
 
-const ListExam: React.FC = () => {
+const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
   const [testData, setTestData] = useState<IGetListTest[]>([]);
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -101,10 +103,13 @@ const ListExam: React.FC = () => {
   });
 
   const getListTest = useCallback(() => {
-    getListExam({
-      pageNumber: tableQueriesRef.current.current,
-      pageSize: tableQueriesRef.current.pageSize,
-    }).subscribe({
+    const getList = isPractice ? getListExam : getTestFull;
+    (
+      getList({
+        pageNumber: tableQueriesRef.current.current,
+        pageSize: tableQueriesRef.current.pageSize,
+      }) as Observable<any>
+    ).subscribe({
       next: (res) => {
         const transformedData = transformTestData(res.data);
         setTestData(transformedData);
@@ -121,7 +126,7 @@ const ListExam: React.FC = () => {
         removeLoading();
       },
     });
-  }, []);
+  }, [isPractice]);
 
   useEffect(() => {
     getListTest();
@@ -137,7 +142,11 @@ const ListExam: React.FC = () => {
     <div className="p-5 mr-[200px] ml-[200px]">
       <div className="grid grid-cols-2 gap-6 place-items-center">
         {testData.map((test, index) => (
-          <TestCard key={index} {...test} />
+          <TestCard
+            key={index}
+            {...test}
+            type={isPractice ? "Luyện tập" : "Thi thử"}
+          />
         ))}
       </div>
 

@@ -1,27 +1,36 @@
-import { Card, Avatar, Button, Table, Modal } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { useCallback, useEffect, useState } from "react";
-import { removeLoading, showLoading } from "@/services/loading";
+import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
+import { deleteCertificate } from "@/api/admin/api-teachers/detail-teacher/delete-certificate.api";
+import {
+  getCertificateList,
+  IGetListCertificate,
+} from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
 import {
   getTeachersList,
   ICertificate,
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
-import { useParams } from "react-router-dom";
-import dayjs from "dayjs";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
 import { convertToInteger, formatGender } from "@/utils/map.util";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { Avatar, Button, Modal, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AddCertificate from "./add";
 import EditCertificate from "./edit";
-import { deleteCertificate } from "@/api/admin/api-teachers/detail-teacher/delete-certificate.api";
-import { showToast } from "@/services/toast";
-import {
-  getCertificateList,
-  IGetListCertificate,
-} from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
 
-const TeacherDetail: React.FC = () => {
-  const { teacherId } = useParams<{ teacherId: string }>();
+interface IProps {
+  teacherId: number;
+  onClose: () => void;
+}
+
+const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
   const [teacher, setTeacher] = useState<IGetListTeachers | null>(null);
   const [openModalAdd, setOpenModalAdd] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
@@ -31,13 +40,16 @@ const TeacherDetail: React.FC = () => {
   });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [certificates, setCertificates] = useState<IGetListCertificate[]>([]);
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getTeacherDetail = useCallback(() => {
     showLoading();
     getTeachersList({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res) => {
         const selectedTeacher = res.data.find(
-          (t) => t.id?.toString() === teacherId
+          (t) => t.id?.toString() === teacherId.toString()
         );
         setTeacher(selectedTeacher || null);
         removeLoading();
@@ -51,7 +63,7 @@ const TeacherDetail: React.FC = () => {
   const getTeacherCertificates = useCallback(() => {
     if (teacherId) {
       showLoading();
-      getCertificateList(teacherId).subscribe({
+      getCertificateList(teacherId.toString()).subscribe({
         next: (res) => {
           setCertificates(res.data);
           removeLoading();
@@ -89,6 +101,35 @@ const TeacherDetail: React.FC = () => {
       render: (score) => convertToInteger(score),
     },
     {
+      title: "Cấp bởi",
+      align: "center",
+      dataIndex: "issued_by",
+      key: "issued_by",
+      render: (issuedBy) => {
+        return <p>{issuedBy ?? "-"}</p>;
+      },
+    },
+
+    {
+      title: "Ngày cấp",
+      align: "center",
+      dataIndex: "issue_date",
+      key: "issue_date",
+      render: (issuedDate) => {
+        return <p>{issuedDate ?? "-"}</p>;
+      },
+    },
+
+    {
+      title: "Ngày hết hạn",
+      align: "center",
+      dataIndex: "expiry_date",
+      key: "expiry_date",
+      render: (expiredDate) => {
+        return <p>{expiredDate ?? "-"}</p>;
+      },
+    },
+    {
       title: "Sửa",
       key: "edit",
       align: "center",
@@ -112,8 +153,6 @@ const TeacherDetail: React.FC = () => {
       ),
     },
   ];
-
-  if (!teacher) return <p>Không tìm thấy giáo viên</p>;
 
   const handleAddCertificate = () => {
     setOpenModalAdd(true);
@@ -164,78 +203,127 @@ const TeacherDetail: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    setUploading(true);
+
+    uploadFile({ imageFile: file }).then((res) => {
+      console.log(res);
+    });
+  };
+
   return (
-    <Card className="max-w-3xl mx-auto p-6 shadow-lg">
-      <div className="flex items-center space-x-10 gap-8">
-        <Avatar src={teacher.avatar} size={100} className="border" />
-        <div>
-          <h2 className="text-xl font-bold">{teacher.name}</h2>
-          <p>
-            <strong>Mã giáo viên:</strong> {teacher.id}
-          </p>
-          <p>
-            <strong>Giới tính:</strong> {formatGender(teacher.gender)}
-          </p>
-          <p>
-            <strong>Ngày sinh:</strong>{" "}
-            {dayjs(teacher.dob).format("DD-MM-YYYY")}
-          </p>
+    <>
+      <Modal open={true} onCancel={onClose} onOk={onClose} width={800}>
+        <div className="flex items-center space-x-10 gap-8">
+          <div
+            className="relative group cursor-pointer"
+            onClick={handleAvatarClick}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+
+            {uploading ? (
+              <div className="flex items-center justify-center w-[100px] h-[100px] border rounded-full">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <>
+                <Avatar src={teacher?.avatar} size={100} className="border" />
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0">
+                  <UploadOutlined className="text-white text-2xl" />
+                </div>
+              </>
+            )}
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">{teacher?.name}</h2>
+            <p>
+              <strong>Mã giáo viên:</strong> {teacher?.id}
+            </p>
+            <p>
+              <strong>Giới tính:</strong> {formatGender(teacher?.gender || "")}
+            </p>
+            <p>
+              <strong>Ngày sinh:</strong>{" "}
+              {dayjs(teacher?.dob).format("DD-MM-YYYY")}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="mt-4">
-        <h3 className="font-bold text-lg">Thông tin liên hệ</h3>
-        <p>
-          <strong>Số điện thoại:</strong> {teacher.phone}
-        </p>
-        <p>
-          <strong>Địa chỉ:</strong> {teacher.address}
-        </p>
-        <p>
-          <strong>Email:</strong> {teacher.email}
-        </p>
-      </div>
+        <div className="mt-4">
+          <h3 className="font-bold text-lg mb-2">Thông tin liên hệ</h3>
+          <div className="flex gap-24">
+            <div className="flex flex-col gap-2">
+              <p className="mb-2">
+                <strong>Số điện thoại:</strong> {teacher?.phone}
+              </p>
+              <p className="mb-2">
+                <strong>Địa chỉ:</strong> {teacher?.address}
+              </p>
+              <p className="mb-2">
+                <strong>Email:</strong> {teacher?.email}
+              </p>
+            </div>
+          </div>
+        </div>
 
-      <div className="mt-4">
-        <h3 className="font-bold text-lg">Bằng cấp</h3>
-        <Table
-          dataSource={certificates}
-          columns={columns}
-          rowKey="certificate"
-          pagination={false}
-        />
-        <Button
-          icon={<PlusOutlined />}
-          className="mt-2"
-          onClick={handleAddCertificate}
-        >
-          Thêm bằng cấp
-        </Button>
+        <div className="mt-4">
+          <h3 className="font-bold text-lg">Bằng cấp</h3>
+          <Table
+            dataSource={certificates}
+            columns={columns}
+            rowKey="certificate"
+            pagination={false}
+          />
+          <Button
+            icon={<PlusOutlined />}
+            className="mt-2"
+            onClick={handleAddCertificate}
+          >
+            Thêm bằng cấp
+          </Button>
 
-        <AddCertificate
-          isOpen={openModalAdd}
-          onClose={handleCloseAddCertificate}
-        />
-        <EditCertificate
-          isOpen={isEditModalOpen}
-          onClose={handleCloseEditModal}
-          recordSelected={recordSelected}
-        />
+          <EditCertificate
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            recordSelected={recordSelected}
+          />
+        </div>
+      </Modal>
+      <Modal
+        title="Xác nhận xóa"
+        visible={isDeleteModalOpen}
+        onOk={() => handleDeleteCertificate()}
+        onCancel={handleCancelDelete}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn xóa?</p>
+      </Modal>
 
-        <Modal
-          title="Xác nhận xóa"
-          visible={isDeleteModalOpen}
-          onOk={() => handleDeleteCertificate()}
-          onCancel={handleCancelDelete}
-          okText="Xóa"
-          okButtonProps={{ danger: true }}
-          cancelText="Hủy"
-        >
-          <p>Bạn có chắc chắn muốn xóa?</p>
-        </Modal>
-      </div>
-    </Card>
+      <AddCertificate
+        isOpen={openModalAdd}
+        onClose={handleCloseAddCertificate}
+        teacherId={teacherId}
+        getTeacherCertificates={getTeacherCertificates}
+      />
+    </>
   );
 };
 
-export default TeacherDetail;
+export default ModalTeacherDetail;

@@ -1,9 +1,9 @@
-import Footer from "@/components/client/Footer";
-import Header from "@/components/client/Header";
 import Filter from "@/components/client/Filter";
 import ListExam from "../ListExam";
 import { useAuth } from "@/hooks/use-auth.hook";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { PageWrapper } from "../PageWrapper";
+import { useEffect, useMemo } from "react";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -12,12 +12,24 @@ const HomePage = () => {
     navigate("/auth/login");
   }
 
+  const pathname = useLocation();
+
+  const isPractice = useMemo(() => {
+    return pathname.pathname === "/practice";
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isPractice) {
+      navigate("/practice");
+    }
+  }, [isPractice]);
+
   return (
     <>
-      <Header />
-      <Filter />
-      <ListExam />
-      <Footer />
+      <PageWrapper>
+        <Filter />
+        <ListExam isPractice={isPractice} />
+      </PageWrapper>
     </>
   );
 };

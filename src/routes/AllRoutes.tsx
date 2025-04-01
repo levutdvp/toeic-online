@@ -12,7 +12,6 @@ import DetailTest from "@/pages/client/ListExam/Detail-Test";
 import DefaultLayout from "@/components/common/defaultLayout";
 import UserTablesPage from "@/pages/admin/tables/UsersTablePage";
 import ResetPassword from "@/pages/normal/reset-password";
-import DetailClass from "@/pages/admin/tables/classes/detail";
 import TestComponent from "@/pages/client/ListExam/Detail-Test/Contest";
 import { ConfigProvider } from "antd";
 import ExcelUploadPart1 from "@/pages/admin/forms/ExcelExam/Part1";
@@ -25,7 +24,6 @@ import ExcelUploadPart7 from "@/pages/admin/forms/ExcelExam/Part7";
 import ExamTablePage from "@/pages/admin/tables/ExamTablePage";
 import ExamResultPage from "@/pages/client/ListExam/Detail-Test/Contest/ExamResult";
 import TeachersTablePage from "@/pages/admin/tables/TeachersTablePage";
-import TeacherDetail from "@/pages/admin/tables/teachers/detail";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -34,6 +32,14 @@ export const AllRoutes = () => {
     { path: "/auth/reset-password", element: <ResetPassword /> },
     {
       path: "/",
+      element: (
+        <DefaultLayout isDefaultLayout={false}>
+          <HomePage />
+        </DefaultLayout>
+      ),
+    },
+    {
+      path: "/practice",
       element: (
         <DefaultLayout isDefaultLayout={false}>
           <HomePage />
@@ -78,10 +84,10 @@ export const AllRoutes = () => {
         { index: true, element: <Dashboard /> },
         { path: "all-users", element: <UserTablesPage /> },
         { path: "users-teacher", element: <TeachersTablePage /> },
-        { path: "users-teacher/:teacherId", element: <TeacherDetail /> },
+        // { path: "users-teacher/:teacherId", element: <TeacherDetail /> },
         { path: "users-student", element: <StudentsTablesPage /> },
         { path: "classes", element: <ClassTablesPage /> },
-        { path: "classes/detail", element: <DetailClass /> },
+        // { path: "classes/detail", element: <DetailClass /> },
         { path: "exams", element: <ExamTablePage /> },
         { path: "exams/part1", element: <ExcelUploadPart1 /> },
         { path: "exams/part2", element: <ExcelUploadPart2 /> },

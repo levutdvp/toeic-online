@@ -4,15 +4,20 @@ import { Button, Form, Input, InputNumber, Modal } from "antd";
 import { IAddForm, validateForm } from "./form.config";
 import React from "react";
 import { addCertificate } from "@/api/admin/api-teachers/detail-teacher/add-certificate.api";
-import { useParams } from "react-router-dom";
 
 interface addTeacherProps {
   isOpen: boolean;
   onClose: () => void;
+  teacherId: number;
+  getTeacherCertificates: () => void;
 }
-const AddCertificate: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
+const AddCertificate: React.FC<addTeacherProps> = ({
+  isOpen,
+  onClose,
+  teacherId,
+  getTeacherCertificates,
+}) => {
   const [form] = Form.useForm();
-  const { teacherId } = useParams<{ teacherId: string }>();
 
   const handleAddSubmit = (values: IAddForm) => {
     if (!teacherId) {
@@ -20,7 +25,7 @@ const AddCertificate: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
     }
 
     const params = {
-      user_id: teacherId,
+      user_id: teacherId.toString(),
       certificate_name: values.certificate_name,
       score: values.score,
     };
@@ -32,6 +37,7 @@ const AddCertificate: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
         showToast({ content: "Thêm bằng cấp thành công" });
         form.resetFields();
         onClose();
+        getTeacherCertificates();
       },
       error: () => removeLoading(),
     });
@@ -60,7 +66,6 @@ const AddCertificate: React.FC<addTeacherProps> = ({ isOpen, onClose }) => {
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 100 }}
       >
         <div className="mt-5">
           <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>

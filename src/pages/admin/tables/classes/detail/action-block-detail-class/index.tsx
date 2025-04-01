@@ -14,7 +14,6 @@ interface IActionBlock {
 }
 
 export default function ActionBlockDetailClass({
-  className,
   onClickAction,
   getListData,
   selectedRows,
@@ -61,7 +60,7 @@ export default function ActionBlockDetailClass({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>Chi tiết lớp học {className}</div>
+        {/* <div>Chi tiết lớp học {className}</div> */}
         <div>
           <Space size={12}>
             <Button
