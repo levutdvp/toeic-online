@@ -112,7 +112,6 @@ export default function ExamLayout() {
 
     submitTest(formattedData).subscribe({
       next: (res) => {
-        showToast({ type: "success", content: "Nộp bài thành công!" });
         removeLoading();
         setIsSubmitModalVisible(false);
         navigate("/test/result", {
@@ -273,11 +272,7 @@ export default function ExamLayout() {
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={[
-          <Button
-            key="ok"
-            type="primary"
-            onClick={handleSubmitTest}
-          >
+          <Button key="ok" type="primary" onClick={handleSubmitTest}>
             Đồng ý
           </Button>,
         ]}

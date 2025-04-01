@@ -47,9 +47,9 @@ const processChartData = (examResults: ExamResult[]): ChartData => {
       if (!dateMap[date]) {
         dateMap[date] = {
           "0-450": 0,
-          "455-600": 0,
-          "605-800": 0,
-          "805-990": 0,
+          "451-600": 0,
+          "601-800": 0,
+          "801-990": 0,
         };
       }
 

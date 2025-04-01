@@ -79,12 +79,12 @@ const ExamResultPage: React.FC = () => {
             {partResult ? partResult.score : "--"}
           </p>
           <Card className="text-center" style={{ marginTop: "20px" }}>
-            <p className="font-semibold">
-              Listening Part {data.exam_section.part_number}:
+            <p className="font-semibold text-lg">
+              Part {data.exam_section.part_number}:
             </p>
-            <p className="text-lg">{data.questions.length} câu hỏi</p>
+            <p>{data.questions.length} câu hỏi</p>
 
-            <p className="text-lg">Trả lời đúng:</p>
+            <p className="text-lg font-semibold">Trả lời đúng:</p>
             <p className="text-lg">
               {partResult?.correct_answers ?? 0} / {data.questions.length}
             </p>
@@ -167,10 +167,8 @@ const ExamResultPage: React.FC = () => {
         </div>
 
         <div className="col-span-3 bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-bold mb-2">
-            Part {data.exam_section.part_number}
-          </h3>
-          <div className="grid grid-cols-3 gap-2">
+          <h3 className="text-lg mb-2">Part {data.exam_section.part_number}</h3>
+          <div className="grid grid-cols-4 gap-2">
             {data.questions.map((q, index) => {
               const partData = submittedData?.parts?.find(
                 (p: any) => p.part_number === Number(part_number)
@@ -183,10 +181,10 @@ const ExamResultPage: React.FC = () => {
               return (
                 <button
                   key={q.id}
-                  className={`p-2 text-center rounded border-2 w-full cursor-pointer ${
+                  className={`p-1 text-center rounded border-2 w-[90px] cursor-pointer ${
                     isCorrect
-                      ? "border-green-500 bg-green-100"
-                      : "border-red-500 bg-red-100"
+                      ? "border-[#D6F5BE] bg-[#F6FFED]"
+                      : "border-[#FFA39E] bg-[#FFF1F0]"
                   }`}
                   onClick={() => setSelectedQuestion(q)}
                 >

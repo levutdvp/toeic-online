@@ -35,8 +35,7 @@ const TeachersTablePage = () => {
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListTeachers>();
-  const [searchName, setSearchName] = useState<string>("");
-  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -67,7 +66,7 @@ const TeachersTablePage = () => {
       },
     });
     getTeachersSub.add();
-  }, [searchName, searchEmail]);
+  }, []);
 
   useEffect(() => {
     getListTeachers();
@@ -146,15 +145,14 @@ const TeachersTablePage = () => {
     navigate(`/admin/users-teacher/${record.id}`);
   };
 
-  const filteredTeachers = dataTeachers.filter(
-    (teacher) =>
-      (teacher.name ? teacher.name.toLowerCase() : "").includes(
-        searchName.toLowerCase()
-      ) &&
-      (teacher.email ? teacher.email.toLowerCase() : "").includes(
-        searchEmail.toLowerCase()
-      )
-  );
+  const filteredTeachers = dataTeachers.filter((teacher) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return (
+      (teacher.name?.toLowerCase() || "").includes(lowerSearchTerm) ||
+      (teacher.email?.toLowerCase() || "").includes(lowerSearchTerm) ||
+      (teacher.phone?.toLowerCase() || "").includes(lowerSearchTerm)
+    );
+  });
 
   const columns: TableProps<IGetListTeachers>["columns"] = [
     {
@@ -240,18 +238,11 @@ const TeachersTablePage = () => {
     <>
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
         <Input
-          placeholder="Tìm theo tên"
+          placeholder="Tìm theo tên, email hoặc số điện thoại"
           prefix={<SearchOutlined />}
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          style={{ width: 240 }}
-        />
-        <Input
-          placeholder="Tìm theo email"
-          prefix={<SearchOutlined />}
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          style={{ width: 240 }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ width: 300 }}
         />
       </div>
       <ActionBlockTeachers

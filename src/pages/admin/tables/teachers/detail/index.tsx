@@ -74,22 +74,18 @@ const TeacherDetail: React.FC = () => {
     }
   }, [teacherId, getTeacherDetail]);
 
-  const columns: ColumnsType<{
-    id: number;
-    certificate: string;
-    score_certificate: string;
-  }> = [
+  const columns: ColumnsType<IGetListCertificate> = [
     {
       title: "Bằng cấp",
-      dataIndex: "certificate",
-      key: "certificate",
+      dataIndex: "certificate_name",
+      key: "certificate_name",
       align: "center",
     },
     {
       title: "Điểm",
       align: "center",
-      dataIndex: "score_certificate",
-      key: "score_certificate",
+      dataIndex: "score",
+      key: "score",
       render: (score) => convertToInteger(score),
     },
     {
@@ -111,7 +107,7 @@ const TeacherDetail: React.FC = () => {
         <Button
           icon={<DeleteOutlined />}
           danger
-          onClick={() => handleDeleteClick(record.id)}
+          onClick={() => handleDeleteClick(record)}
         />
       ),
     },
@@ -128,16 +124,10 @@ const TeacherDetail: React.FC = () => {
     getTeacherDetail();
   };
 
-  const handleOpenEditModal = (record: {
-    id: number;
-    certificate: string;
-    score_certificate: string;
-  }) => {
-    const selectedCertificate = teacher?.certificate[record.id];
-
+  const handleOpenEditModal = (record: IGetListCertificate) => {
     setRecordSelected({
-      certificate_name: selectedCertificate?.certificate_name || "",
-      score: selectedCertificate?.score || "",
+      certificate_name: record.certificate_name || "",
+      score: record.score || "",
     });
 
     setIsEditModalOpen(true);
@@ -147,25 +137,19 @@ const TeacherDetail: React.FC = () => {
     getTeacherDetail();
   };
 
-  const handleDeleteClick = (id: number) => {
-    console.log(id)
-    const certificateToDelete = certificates.find((cert) => cert.id === id);
-    console.log(certificateToDelete)
-    if (certificateToDelete) {
-      setRecordSelected(certificateToDelete);
-      setIsDeleteModalOpen(true);
-    }
+  const handleDeleteClick = (record: IGetListCertificate) => {
+    setRecordSelected(record);
+    setIsDeleteModalOpen(true);
   };
 
   const handleDeleteCertificate = () => {
-    if (recordSelected.id) {
+    if (recordSelected && recordSelected.id) {
       showLoading();
-      // Gọi API xóa với ID của chứng chỉ
       deleteCertificate([recordSelected.id]).subscribe({
         next: () => {
           showToast({ type: "success", content: "Xóa thành công!" });
           setIsDeleteModalOpen(false);
-          getTeacherCertificates(); // Tải lại danh sách chứng chỉ
+          getTeacherCertificates();
         },
         error: () => {
           showToast({ type: "error", content: "Xóa thất bại!" });
@@ -215,11 +199,7 @@ const TeacherDetail: React.FC = () => {
       <div className="mt-4">
         <h3 className="font-bold text-lg">Bằng cấp</h3>
         <Table
-          dataSource={teacher.certificate.map((cert, index) => ({
-            id: index,
-            certificate: cert.certificate_name,
-            score_certificate: cert.score,
-          }))}
+          dataSource={certificates}
           columns={columns}
           rowKey="certificate"
           pagination={false}

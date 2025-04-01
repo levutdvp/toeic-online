@@ -150,7 +150,7 @@ const EditExam: React.FC<editExamProps> = ({
               <Input placeholder="Loại đề thi" />
             </Form.Item>
             <Form.Item name="is_Free" label="Miễn phí" valuePropName="checked">
-              <Switch />
+              <Switch disabled />
             </Form.Item>
           </Form>
         </div>

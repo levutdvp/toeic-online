@@ -177,21 +177,18 @@ const UserTablesPage = () => {
       title: "Tên người dùng",
       dataIndex: "username",
       key: "username",
-      width: 200,
       align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: 300,
       align: "center",
     },
     {
       title: "Quyền",
       dataIndex: "role",
       key: "role",
-      width: 300,
       align: "center",
       render: (role: string) => formatRoles(role),
     },
@@ -213,7 +210,6 @@ const UserTablesPage = () => {
       title: "Hành động",
       key: "action",
       align: "center",
-      width: 200,
       render: (_, record) => (
         <Space size="middle">
           <Button size="middle" onClick={() => handleOpenEditModal(record)}>

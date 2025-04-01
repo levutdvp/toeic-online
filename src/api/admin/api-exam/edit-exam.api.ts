@@ -16,8 +16,8 @@ export interface IEditExam {
 export const editExam = (params: IEditExam, id: number) => {
   return apiCall(
     {
-      url: `${API_URL}/api/edit-exam/${id}`,
-      method: "POST",
+      url: `${API_URL}/api/update-exam-section/${id}`,
+      method: "PUT",
       body: params,
     },
     {

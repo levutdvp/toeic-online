@@ -1,15 +1,16 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Upload, Button, Input, Space, Progress } from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import type { UploadProps } from "antd";
-import type { RcFile } from "antd/es/upload";
-import { getExcelExam, IQuestion } from "@/api/admin/api-exam/excel-exam.api";
 import { createQuestion } from "@/api/admin/api-exam/create-question.api";
+import { getExcelExam, IQuestion } from "@/api/admin/api-exam/excel-exam.api";
+import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
+import { getListExam, IGetListTest } from "@/api/client/get-list-test.api";
 import { removeLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
-import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
-import { lastValueFrom } from "rxjs";
 import { convertFileToBase64 } from "@/utils/convertFilesToBase64.util";
+import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import type { UploadProps } from "antd";
+import { Button, Progress, Select, Space, Upload } from "antd";
+import type { RcFile } from "antd/es/upload";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { lastValueFrom } from "rxjs";
 
 const ExcelUploadPart6 = () => {
   const [fileList, setFileList] = useState<RcFile[]>([]);
@@ -27,8 +28,23 @@ const ExcelUploadPart6 = () => {
   });
   const [examCode, setExamCode] = useState("");
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [examList, setExamList] = useState<IGetListTest[]>([]);
   const partNumber = 6;
   const apiSubRef = useRef<any>(null);
+
+  useEffect(() => {
+    const sub = getListExam({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (res) => {
+        removeLoading();
+        setExamList(res.data);
+      },
+      error: () => {
+        showToast({ content: "Lỗi khi tải danh sách đề thi", type: "error" });
+      },
+    });
+
+    return () => sub.unsubscribe();
+  }, []);
 
   const handleUploadExcel = useCallback(() => {
     if (fileList.length === 0) {
@@ -243,12 +259,16 @@ const ExcelUploadPart6 = () => {
           {isUploading ? "Đang xử lý..." : "Gửi và xử lý file"}
         </Button>
 
-        <Input
-          type="text"
-          placeholder="Nhập mã đề thi"
-          style={{ marginBottom: "16px", marginTop: "16px" }}
-          value={examCode}
-          onChange={(e) => setExamCode(e.target.value)}
+        <Select
+          showSearch
+          placeholder="Chọn mã đề thi"
+          value={examCode || null}
+          onChange={(value) => setExamCode(value)}
+          style={{ width: "100%", marginBottom: "16px", marginTop: "16px" }}
+          options={examList.map((exam) => ({
+            label: `${exam.exam_code} - ${exam.exam_name}`,
+            value: exam.exam_code,
+          }))}
         />
 
         {questions.length > 0 && (
