@@ -1,26 +1,49 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Space, Table } from "antd";
-import type { TableProps } from "antd";
-import { initPaging } from "@/consts/paging.const";
-import { TableQueriesRef } from "@/types/pagination.type";
-import { formatGender } from "@/utils/map.util";
 import {
   getListDetailClass,
   IStudentRes,
 } from "@/api/admin/api-classes/get-list-detail-class.api";
-import { useLocation } from "react-router-dom";
+import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
+import { initPaging } from "@/consts/paging.const";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { TableQueriesRef } from "@/types/pagination.type";
+import { getShortDayOfWeek } from "@/utils/getDayOfWeek";
+import { formatGender } from "@/utils/map.util";
+import type { TableProps } from "antd";
+import { Button, Modal, Space, Table } from "antd";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CiEdit } from "react-icons/ci";
+import { MdOutlineDeleteForever } from "react-icons/md";
 import ActionBlockDetailClass from "./action-block-detail-class";
 import AddStudentDetailClass from "./add";
 import EditStudentDetailClass from "./edit";
-import { CiEdit } from "react-icons/ci";
-import { MdOutlineDeleteForever } from "react-icons/md";
-import { showToast } from "@/services/toast";
-import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 
 type TableQueries = TableQueriesRef<IStudentRes>;
 
-const DetailClass = () => {
+const ModalDetailClass = ({
+  onClose,
+  classId,
+  className,
+  classCode,
+  startDate,
+  endDate,
+  startTime,
+  endTime,
+  teacher,
+  days,
+}: {
+  onClose: () => void;
+  classId: number;
+  className: string;
+  classCode: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  teacher: string;
+  days: string[];
+}) => {
   const [studentsDetail, setStudentsDetail] = useState<IStudentRes[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<IStudentRes[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -30,13 +53,19 @@ const DetailClass = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null
   );
-  const location = useLocation();
-  const { classId, className } = location.state || {};
+
+  const daysOfWeek = useMemo(() => {
+    return days.map((day) => {
+      const formatDay = dayjs(day, "YY-MM-DDDD").format("DD/MM/YYYY");
+      return getShortDayOfWeek(formatDay);
+    });
+  }, [days]);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
     pageSize: initPaging.pageSize,
     totalPage: initPaging.totalPage,
+    total: initPaging.total,
   });
 
   const getListStudentsDetail = useCallback(() => {
@@ -198,48 +227,116 @@ const DetailClass = () => {
 
   return (
     <>
-      <ActionBlockDetailClass
-        className={className}
-        onClickAction={onClickAction}
-        selectedRows={selectedRowKeys}
-        getListData={getListStudentsDetail}
-      />
-      <Table<IStudentRes>
-        columns={columns}
-        dataSource={studentsDetail}
-        rowKey="id"
-        rowSelection={rowSelection}
-        pagination={{
-          position: ["bottomCenter"],
-          pageSize: tableQueriesRef.current.pageSize,
-          current: tableQueriesRef.current.current,
-          total: tableQueriesRef.current.total,
-        }}
-        onChange={onChangeTable}
-      />
       <Modal
-        title="Xác nhận xóa"
-        open={isModalOpen}
-        onOk={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        okText="Xóa"
-        cancelText="Hủy bỏ"
-        okButtonProps={{ danger: true }}
+        title="Thông tin lớp học"
+        open={true}
+        onOk={onClose}
+        onCancel={onClose}
+        width={1000}
       >
-        <p>Bạn có chắc chắn muốn xóa?</p>
+        {/* detail class */}
+        <div className="my-5 border-b border-gray-200">
+          <h3 className="text-lg font-bold mb-5">
+            Chi tiết lớp học {className}
+          </h3>
+          <div className="flex items-start">
+            <div className="flex-1">
+              <div className="flex flex-wrap gap-5 mb-4">
+                <div className="min-w-[300px]">
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">Mã lớp học:</div>
+                    <div>{classCode}</div>
+                  </div>
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">Tên lớp học:</div>
+                    <div>{className}</div>
+                  </div>
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">
+                      Số lượng học viên:
+                    </div>
+                    <div>{tableQueriesRef.current.total}</div>
+                  </div>
+                </div>
+
+                <div className="min-w-[300px]">
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">
+                      Thời gian bắt đầu:
+                    </div>
+                    <div>{startDate}</div>
+                  </div>
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">
+                      Thời gian kết thúc:
+                    </div>
+                    <div>{endDate}</div>
+                  </div>
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">Lịch học:</div>
+                    <div>
+                      {startTime} - {endTime} || {daysOfWeek.join(", ")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="min-w-[300px]">
+                  <div className="flex mb-2.5">
+                    <div className="font-bold w-[150px]">Giáo viên:</div>
+                    <div>{teacher}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* action block */}
+        <ActionBlockDetailClass
+          className={className}
+          onClickAction={onClickAction}
+          selectedRows={selectedRowKeys}
+          getListData={getListStudentsDetail}
+        />
+        <Table<IStudentRes>
+          columns={columns}
+          dataSource={studentsDetail}
+          rowKey="id"
+          rowSelection={rowSelection}
+          pagination={{
+            position: ["bottomCenter"],
+            pageSize: tableQueriesRef.current.pageSize,
+            current: tableQueriesRef.current.current,
+            total: tableQueriesRef.current.total,
+          }}
+          onChange={onChangeTable}
+        />
+        <Modal
+          title="Xác nhận xóa"
+          open={isModalOpen}
+          onOk={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          okText="Xóa"
+          cancelText="Hủy bỏ"
+          okButtonProps={{ danger: true }}
+        >
+          <p>Bạn có chắc chắn muốn xóa?</p>
+        </Modal>
+        {
+          <AddStudentDetailClass
+            classId={classId}
+            isOpen={isAddModalOpen}
+            onClose={handleCloseAddModal}
+          />
+        }
+        <EditStudentDetailClass
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          recordSelected={recordSelected}
+        />
       </Modal>
-      <AddStudentDetailClass
-        classId={classId}
-        isOpen={isAddModalOpen}
-        onClose={handleCloseAddModal}
-      />
-      <EditStudentDetailClass
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        recordSelected={recordSelected}
-      />
     </>
   );
 };
 
-export default DetailClass;
+export default ModalDetailClass;

@@ -15,13 +15,39 @@ import { FcViewDetails } from "react-icons/fc";
 import ActionBlockClasses from "./classes/action-block-class";
 import AddClass from "./classes/add";
 import EditClass from "./classes/edit";
-import { useNavigate } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import ModalDetailClass from "./classes/detail";
 
 type TableQueries = TableQueriesRef<IGetListClasses>;
 
+type ModalDetailProps = {
+  open: boolean;
+  classId: number | null;
+  classCode: string;
+  className: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  teacher: string;
+  days: string[];
+};
+
 const ClassTablesPage = () => {
+  const modalDetailInitState: ModalDetailProps = {
+    open: false,
+    classId: null,
+    classCode: "",
+    className: "",
+    startDate: "",
+    endDate: "",
+    startTime: "",
+    endTime: "",
+    teacher: "",
+    days: [],
+  };
+
   const [dataClasses, setDataClasses] = useState<IGetListClasses[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<IGetListClasses[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -30,8 +56,8 @@ const ClassTablesPage = () => {
   const [recordSelected, setRecordSelected] = useState<IGetListClasses>();
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
   const [searchText, setSearchText] = useState<string>("");
-
-  const navigate = useNavigate();
+  const [openModalDetail, setOpenModalDetail] =
+    useState<ModalDetailProps>(modalDetailInitState);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -136,17 +162,26 @@ const ClassTablesPage = () => {
     getListClasses();
   };
 
-  const handleViewDetail = (record: IGetListClasses) => {
-    navigate(`/admin/classes/detail`, {
-      state: { classId: record.id, className: record.class_type },
-    });
-  };
-
   const filteredClasses = dataClasses.filter((cls) =>
     (cls.class_type ? cls.class_type.toLowerCase() : "").includes(
       searchText.toLowerCase()
     )
   );
+
+  const handleOpenDetailModal = (record: IGetListClasses) => {
+    setOpenModalDetail({
+      open: true,
+      classId: record.id ?? null,
+      className: record.class_type,
+      classCode: record.class_code,
+      startDate: record.start_date,
+      endDate: record.end_date,
+      startTime: record.start_time,
+      endTime: record.end_time,
+      teacher: record.teacher,
+      days: record.days,
+    });
+  };
 
   const columns: TableProps<IGetListClasses>["columns"] = [
     {
@@ -233,13 +268,16 @@ const ClassTablesPage = () => {
           >
             <MdOutlineDeleteForever />
           </Button>
-          <Button size="middle" onClick={() => handleViewDetail(record)}>
+          <Button size="middle" onClick={() => handleOpenDetailModal(record)}>
             <FcViewDetails />
           </Button>
         </Space>
       ),
     },
   ];
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { open, ...modalDetailProps } = openModalDetail;
 
   return (
     <>
@@ -269,6 +307,11 @@ const ClassTablesPage = () => {
         }}
         onChange={onChangeTable}
         rowSelection={rowSelection}
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => handleOpenDetailModal(record),
+          };
+        }}
       />
 
       <Modal
@@ -289,6 +332,15 @@ const ClassTablesPage = () => {
         onClose={handleCloseEditModal}
         recordSelected={recordSelected}
       />
+
+      {/* modal detail class */}
+      {openModalDetail.open && !!openModalDetail.classId && (
+        <ModalDetailClass
+          {...modalDetailProps}
+          classId={openModalDetail.classId}
+          onClose={() => setOpenModalDetail(modalDetailInitState)}
+        />
+      )}
     </>
   );
 };

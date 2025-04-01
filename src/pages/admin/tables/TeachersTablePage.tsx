@@ -20,6 +20,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { FcViewDetails } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import ModalTeacherDetail from "./teachers/detail";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -36,6 +37,13 @@ const TeachersTablePage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListTeachers>();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [modalDetail, setModalDetail] = useState<{
+    open: boolean;
+    teacherId: number | null;
+  }>({
+    open: false,
+    teacherId: null,
+  });
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -234,6 +242,13 @@ const TeachersTablePage = () => {
     },
   ];
 
+  const handleOpenDetailModal = (record: IGetListTeachers) => {
+    setModalDetail({
+      open: true,
+      teacherId: record.id ?? null,
+    });
+  };
+
   return (
     <>
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
@@ -262,6 +277,11 @@ const TeachersTablePage = () => {
         dataSource={filteredTeachers}
         rowSelection={rowSelection}
         onChange={onChangeTable}
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => handleOpenDetailModal(record),
+          };
+        }}
       />
 
       <Modal
@@ -282,6 +302,13 @@ const TeachersTablePage = () => {
         onClose={handleCloseEditModal}
         recordSelected={recordSelected}
       />
+
+      {modalDetail.open && !!modalDetail.teacherId && (
+        <ModalTeacherDetail
+          teacherId={modalDetail.teacherId}
+          onClose={() => setModalDetail({ open: false, teacherId: null })}
+        />
+      )}
     </>
   );
 };

@@ -5,12 +5,13 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { clearAccessToken } from "@/services/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth.hook";
 import { useState } from "react";
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const pathname = useLocation();
   const navigate = useNavigate();
   const { userInfo } = useAuth();
   const handleLogout = () => {
@@ -45,7 +46,7 @@ const Header = () => {
       ),
     },
   ];
-
+  console.log("pathname", pathname);
   return (
     <header className="bg-white shadow p-4">
       <div className="no-underline flex justify-between ">
@@ -53,15 +54,22 @@ const Header = () => {
           Lớp TOEIC Thầy Long
         </div>
         <div className="flex space-x-14 items-center">
-          <a href="#" className="text-gray-700 no-underline">
-            Trang chủ
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
+          <Link
+            to="/"
+            className={`font-bold text-gray-700 no-underline hover:text-blue-500 ${
+              pathname.pathname === "/" ? "!text-blue-500 " : ""
+            }`}
+          >
             Thi thử Full Test
-          </a>
-          <a href="#" className="text-gray-700 no-underline">
+          </Link>
+          <Link
+            to="/practice"
+            className={`font-bold text-gray-700 no-underline hover:text-blue-500 ${
+              pathname.pathname.includes("/practice") ? "!text-blue-500" : ""
+            }`}
+          >
             Luyện tập Part
-          </a>
+          </Link>
         </div>
         <div className="flex items-center mr-4">
           <Dropdown menu={{ items }} placement="bottomLeft">
