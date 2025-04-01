@@ -18,6 +18,7 @@ import { MdOutlineDeleteForever } from "react-icons/md";
 import ActionBlockDetailClass from "./action-block-detail-class";
 import AddStudentDetailClass from "./add";
 import EditStudentDetailClass from "./edit";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 type TableQueries = TableQueriesRef<IStudentRes>;
 
@@ -68,6 +69,10 @@ const ModalDetailClass = ({
     total: initPaging.total,
   });
 
+  const { userRoles } = useAuth();
+
+  const teacherPermission = userRoles.some((role) => role === "TEACHER");
+
   const getListStudentsDetail = useCallback(() => {
     showLoading();
     const params = {
@@ -116,6 +121,13 @@ const ModalDetailClass = ({
   };
 
   const showDeleteModal = (id: number) => {
+    if (teacherPermission) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setSelectedStudentId(id);
     setIsModalOpen(true);
   };
@@ -156,6 +168,13 @@ const ModalDetailClass = ({
   };
 
   const handleOpenEditModal = (record: IStudentRes) => {
+    if (teacherPermission) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setRecordSelected(record);
     setIsEditModalOpen(true);
   };
@@ -264,13 +283,13 @@ const ModalDetailClass = ({
                     <div className="font-bold w-[150px]">
                       Thời gian bắt đầu:
                     </div>
-                    <div>{startDate}</div>
+                    <div>{dayjs(startDate).format("DD-MM-YYYY")}</div>
                   </div>
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">
                       Thời gian kết thúc:
                     </div>
-                    <div>{endDate}</div>
+                    <div>{dayjs(endDate).format("DD-MM-YYYY")}</div>
                   </div>
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">Lịch học:</div>
@@ -281,8 +300,8 @@ const ModalDetailClass = ({
                 </div>
 
                 <div className="min-w-[300px]">
-                  <div className="flex mb-2.5">
-                    <div className="font-bold w-[150px]">Giáo viên:</div>
+                  <div className="flex mb-2.5 gap-2.5">
+                    <div className="font-bold ml-2.5">Giáo viên:</div>
                     <div>{teacher}</div>
                   </div>
                 </div>

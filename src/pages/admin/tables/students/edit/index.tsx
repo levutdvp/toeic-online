@@ -89,25 +89,35 @@ const EditStudent: React.FC<editStudentProps> = ({
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 270 }}
+        bodyStyle={{ height: 450 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
-            <Form.Item name="name" rules={validateForm.name}>
-              <Input placeholder="Họ và tên" />
+          <Form layout="vertical" form={form} onFinish={handleEditSubmit}>
+            <Form.Item
+              name="name"
+              rules={validateForm.name}
+              label="Họ và tên"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="dob" rules={validateForm.dob}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Ngày sinh"
-                format={"DD-MM-YYYY"}
-              />
+            <Form.Item
+              name="dob"
+              rules={validateForm.dob}
+              label="Ngày sinh"
+              required
+            >
+              <DatePicker style={{ width: "100%" }} format={"DD-MM-YYYY"} />
             </Form.Item>
 
-            <Form.Item name="gender" rules={validateForm.gender}>
+            <Form.Item
+              name="gender"
+              rules={validateForm.gender}
+              label="Giới tính"
+              required
+            >
               <Select
-                placeholder="Giới tính"
                 options={[
                   { value: "MALE", label: "Nam" },
                   { value: "FEMALE", label: "Nữ" },
@@ -116,16 +126,31 @@ const EditStudent: React.FC<editStudentProps> = ({
               />
             </Form.Item>
 
-            <Form.Item name="phone" rules={validateForm.phone}>
-              <Input placeholder="Số điện thoại" />
+            <Form.Item
+              name="phone"
+              rules={validateForm.phone}
+              label="Số điện thoại"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="email" rules={validateForm.email}>
-              <Input placeholder="Email" />
+            <Form.Item
+              name="email"
+              rules={validateForm.email}
+              label="Email"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="address" rules={validateForm.address}>
-              <Input placeholder="Địa chỉ" />
+            <Form.Item
+              name="address"
+              rules={validateForm.address}
+              label="Địa chỉ"
+              required
+            >
+              <Input />
             </Form.Item>
           </Form>
         </div>

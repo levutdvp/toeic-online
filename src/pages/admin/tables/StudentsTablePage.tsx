@@ -18,6 +18,7 @@ import EditStudent from "./students/edit";
 import { formatGender } from "@/utils/map.util";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -33,14 +34,17 @@ const StudentTablesPage = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null
   );
-  const [searchName, setSearchName] = useState<string>("");
-  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
     pageSize: initPaging.pageSize,
     totalPage: initPaging.totalPage,
   });
+
+  const { userRoles } = useAuth();
+
+  const editPermissions = userRoles.some((role) => role === "TEACHER");
 
   const getListStudents = useCallback(() => {
     showLoading();
@@ -80,6 +84,13 @@ const StudentTablesPage = () => {
   };
 
   const showDeleteModal = (id: number) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setSelectedStudentId(id);
     setIsModalOpen(true);
   };
@@ -131,6 +142,13 @@ const StudentTablesPage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListStudents) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setRecordSelected(record);
     setIsEditModalOpen(true);
   };
@@ -139,15 +157,14 @@ const StudentTablesPage = () => {
     getListStudents();
   };
 
-  const filteredStudents = dataStudents.filter(
-    (student) =>
-      (student.name ? student.name.toLowerCase() : "").includes(
-        searchName.toLowerCase()
-      ) &&
-      (student.email ? student.email.toLowerCase() : "").includes(
-        searchEmail.toLowerCase()
-      )
-  );
+  const filteredStudents = dataStudents.filter((student) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return (
+      (student.name?.toLowerCase() || "").includes(lowerSearchTerm) ||
+      (student.email?.toLowerCase() || "").includes(lowerSearchTerm) ||
+      (student.phone?.toLowerCase() || "").includes(lowerSearchTerm)
+    );
+  });
 
   const columns: TableProps<IGetListStudents>["columns"] = [
     {
@@ -216,18 +233,11 @@ const StudentTablesPage = () => {
     <>
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
         <Input
-          placeholder="Tìm theo tên"
+          placeholder="Tìm theo tên, email hoặc số điện thoại"
           prefix={<SearchOutlined />}
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          style={{ width: 240 }}
-        />
-        <Input
-          placeholder="Tìm theo email"
-          prefix={<SearchOutlined />}
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          style={{ width: 240 }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ width: 300 }}
         />
       </div>
       <ActionBlockStudents

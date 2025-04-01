@@ -11,13 +11,13 @@ import { Button, Input, Modal, Space, Table, TableProps } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
-import { FcViewDetails } from "react-icons/fc";
 import ActionBlockClasses from "./classes/action-block-class";
 import AddClass from "./classes/add";
 import EditClass from "./classes/edit";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import ModalDetailClass from "./classes/detail";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 type TableQueries = TableQueriesRef<IGetListClasses>;
 
@@ -65,6 +65,10 @@ const ClassTablesPage = () => {
     totalPage: initPaging.totalPage,
   });
 
+  const { userRoles } = useAuth();
+
+  const editPermissions = userRoles.some((role) => role === "TEACHER");
+
   const getListClasses = useCallback(() => {
     showLoading();
     const getClassesSub = getClassesList({
@@ -103,6 +107,13 @@ const ClassTablesPage = () => {
   };
 
   const showDeleteModal = (id: number) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setSelectedClassId(id);
     setIsModalOpen(true);
   };
@@ -154,6 +165,13 @@ const ClassTablesPage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListClasses) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setRecordSelected(record);
     setIsEditModalOpen(true);
   };
@@ -268,9 +286,6 @@ const ClassTablesPage = () => {
           >
             <MdOutlineDeleteForever />
           </Button>
-          <Button size="middle" onClick={() => handleOpenDetailModal(record)}>
-            <FcViewDetails />
-          </Button>
         </Space>
       ),
     },
@@ -333,7 +348,6 @@ const ClassTablesPage = () => {
         recordSelected={recordSelected}
       />
 
-      {/* modal detail class */}
       {openModalDetail.open && !!openModalDetail.classId && (
         <ModalDetailClass
           {...modalDetailProps}

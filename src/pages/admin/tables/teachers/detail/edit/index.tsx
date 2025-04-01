@@ -80,18 +80,25 @@ const EditCertificate: React.FC<editCertificateProps> = ({
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 100 }}
+        bodyStyle={{ height: 150 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
+          <Form layout="vertical" form={form} onFinish={handleEditSubmit}>
             <Form.Item
               name="certificate_name"
               rules={validateForm.certificate_name}
+              label="Tên bằng cấp"
+              required
             >
-              <Input placeholder="Tên bằng cấp" />
+              <Input />
             </Form.Item>
-            <Form.Item name="score" rules={validateForm.score}>
-              <InputNumber placeholder="Điểm" style={{ width: "100%" }} />
+            <Form.Item
+              name="score"
+              rules={validateForm.score}
+              label="Điểm"
+              required
+            >
+              <InputNumber style={{ width: "100%" }} />
             </Form.Item>
           </Form>
         </div>

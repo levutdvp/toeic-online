@@ -3,10 +3,12 @@ import { useLocation } from "react-router-dom";
 import "./SideBar.css";
 import SideBarNav from "./SidebarNav";
 import SidebarNavToggle from "./SidebarNavToggle";
-import { appNavs } from "../config";
+import { useAppNavs } from "../config";
 
 const SideBar = () => {
   const [expand, setExpand] = useState(false);
+
+  const appNavs = useAppNavs();
 
   const location = useLocation();
 

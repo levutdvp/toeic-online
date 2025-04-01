@@ -1,6 +1,14 @@
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
-import { Button, DatePicker, Form, Input, Modal, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Select,
+  TimePicker,
+} from "antd";
 import { IAddForm } from "./form.config";
 import React, { useEffect, useState } from "react";
 import { addClass } from "@/api/admin/api-classes/create-class.api";
@@ -73,55 +81,80 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 500 }}
+        bodyStyle={{ height: 760 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
-            <Form.Item name="class_code" rules={validateForm.class_code}>
-              <Input placeholder="Tên lớp học" />
+          <Form layout="vertical" form={form} onFinish={handleAddSubmit}>
+            <Form.Item
+              name="class_code"
+              rules={validateForm.class_code}
+              label="Tên lớp học"
+              required
+            >
+              <Input />
             </Form.Item>
-            <Form.Item name="class_type" rules={validateForm.class_type}>
-              <Input placeholder="Mã lớp học" />
+            <Form.Item
+              name="class_type"
+              rules={validateForm.class_type}
+              label="Mã lớp học"
+              required
+            >
+              <Input />
             </Form.Item>
-            <Form.Item name="start_date" rules={validateForm.start_date}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Ngày bắt đầu"
-              />
+            <Form.Item
+              name="start_date"
+              rules={validateForm.start_date}
+              label="Ngày bắt đầu"
+              required
+            >
+              <DatePicker style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="end_date" rules={validateForm.end_date}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Ngày kết thúc"
-              />
+            <Form.Item
+              name="end_date"
+              rules={validateForm.end_date}
+              label="Ngày kết thúc"
+              required
+            >
+              <DatePicker style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="start_time" rules={validateForm.start_time}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Thời gian bắt đầu"
-              />
+            <Form.Item
+              name="start_time"
+              rules={validateForm.start_time}
+              label="Thời gian bắt đầu"
+              required
+            >
+              <TimePicker style={{ width: "100%" }} format="HH:mm" />
             </Form.Item>
-            <Form.Item name="end_time" rules={validateForm.end_time}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Thời gian kết thúc"
-              />
+            <Form.Item
+              name="end_time"
+              rules={validateForm.end_time}
+              label="Thời gian kết thúc"
+              required
+            >
+              <TimePicker style={{ width: "100%" }} format="HH:mm" />
             </Form.Item>
-            <Form.Item name="days" rules={validateForm.days}>
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder="Lịch học"
-                multiple
-              />
+            <Form.Item
+              name="days"
+              rules={validateForm.days}
+              label="Lịch học"
+              required
+            >
+              <DatePicker style={{ width: "100%" }} multiple />
             </Form.Item>
             <Form.Item
               name="number_of_students"
               rules={validateForm.number_of_students}
+              label="Số lượng học viên"
+              required
             >
-              <Input placeholder="Số lượng học viên" />
+              <Input />
             </Form.Item>
-            <Form.Item name="teacher" rules={validateForm.teacher}>
-              <Select placeholder="Giáo viên phụ trách" allowClear>
+            <Form.Item
+              name="teacher"
+              rules={validateForm.teacher}
+              label="Giáo viên phụ trách"
+            >
+              <Select allowClear>
                 {teachers.map((teacher) => (
                   <Select.Option key={teacher.id} value={teacher.id}>
                     {teacher.name}

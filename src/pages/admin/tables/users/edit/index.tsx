@@ -79,21 +79,35 @@ const EditUser: React.FC<editUserProps> = ({
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 110 }}
+        bodyStyle={{ height: 200 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
-            <Form.Item name="name" rules={validateForm.username}>
-              <Input placeholder="Tên người dùng" />
+          <Form layout="vertical" form={form} onFinish={handleEditSubmit}>
+            <Form.Item
+              name="name"
+              rules={validateForm.username}
+              label="Tên người dùng"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="email" rules={validateForm.email}>
-              <Input placeholder="Email" disabled/>
+            <Form.Item
+              name="email"
+              rules={validateForm.email}
+              label="Email"
+              required
+            >
+              <Input disabled />
             </Form.Item>
 
-            <Form.Item name="role" rules={validateForm.role}>
+            <Form.Item
+              name="role"
+              rules={validateForm.role}
+              label="Quyền"
+              required
+            >
               <Select
-                placeholder="Quyền"
                 options={[
                   { value: "STUDENT", label: "Học sinh" },
                   { value: "TEACHER", label: "Giáo viên" },

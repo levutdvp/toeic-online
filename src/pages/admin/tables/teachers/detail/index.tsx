@@ -1,9 +1,9 @@
-import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
 import { deleteCertificate } from "@/api/admin/api-teachers/detail-teacher/delete-certificate.api";
 import {
   getCertificateList,
   IGetListCertificate,
 } from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
+import { uploadAvatarRoleAdmin } from "@/api/admin/api-teachers/detail-teacher/upload-avatart-admin.api";
 import {
   getTeachersList,
   ICertificate,
@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AddCertificate from "./add";
 import EditCertificate from "./edit";
+import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
 
 interface IProps {
   teacherId: number;
@@ -215,14 +216,46 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
 
     setUploading(true);
 
-    uploadFile({ imageFile: file }).then((res) => {
-      console.log(res);
-    });
+    try {
+      const res: any = await uploadFile({ imageFile: file });
+
+      if (res.image_url) {
+        uploadAvatarRoleAdmin({
+          id: teacherId,
+          image_link: res.image_url,
+        }).subscribe({
+          next: () => {
+            showToast({ type: "success", content: "Cập nhật thành công!" });
+            getTeacherDetail();
+          },
+          error: () => {
+            showToast({ type: "error", content: "Cập nhật thất bại!" });
+          },
+          complete: () => {
+            setUploading(false);
+          },
+        });
+      } else {
+        showToast({ type: "error", content: "Tải ảnh lên thất bại!" });
+        setUploading(false);
+      }
+    } catch (error) {
+      console.error(error);
+      showToast({ type: "error", content: "Đã xảy ra lỗi!" });
+      setUploading(false);
+    }
   };
 
   return (
     <>
-      <Modal open={true} onCancel={onClose} onOk={onClose} width={800}>
+      <Modal
+        open={true}
+        onCancel={onClose}
+        onOk={onClose}
+        width={800}
+        cancelText="Hủy"
+        okText="Xác nhận"
+      >
         <div className="flex items-center space-x-10 gap-8">
           <div
             className="relative group cursor-pointer"

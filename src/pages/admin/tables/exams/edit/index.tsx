@@ -94,60 +94,80 @@ const EditExam: React.FC<editExamProps> = ({
           </Button>,
         ]}
         width={500}
-        bodyStyle={{ height: 450 }}
+        bodyStyle={{ height: 700 }}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleEditSubmit}>
-            <Form.Item name="exam_code" rules={validateForm.exam_code}>
-              <Input placeholder="Mã đề thi" disabled />
+          <Form layout="vertical" form={form} onFinish={handleEditSubmit}>
+            <Form.Item
+              name="exam_code"
+              rules={validateForm.exam_code}
+              label="Mã đề thi"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="exam_name" rules={validateForm.exam_name}>
-              <Input placeholder="Tên đề thi" />
+            <Form.Item
+              name="exam_name"
+              rules={validateForm.exam_name}
+              label="Tên đề thi"
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="section_name" rules={validateForm.section_name}>
-              <Input placeholder="Tên phần thi" />
+            <Form.Item
+              name="section_name"
+              rules={validateForm.section_name}
+              label="Tên phần thi "
+              required
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item name="part_number" rules={validateForm.part_number}>
-              <InputNumber
-                min={1}
-                max={7}
-                style={{ width: "100%" }}
-                placeholder="Phần thi"
-              />
+            <Form.Item
+              name="part_number"
+              rules={validateForm.part_number}
+              label="Phần thi"
+              required
+            >
+              <InputNumber min={1} max={7} style={{ width: "100%" }} />
             </Form.Item>
 
             <Form.Item
               name="question_count"
               rules={validateForm.question_count}
+              label="Số câu hỏi"
+              required
             >
-              <InputNumber
-                min={1}
-                style={{ width: "100%" }}
-                placeholder="Số câu hỏi"
-              />
+              <InputNumber min={1} style={{ width: "100%" }} />
             </Form.Item>
 
-            <Form.Item name="duration" rules={validateForm.duration}>
-              <InputNumber
-                min={1}
-                style={{ width: "100%" }}
-                placeholder="Thời gian làm bài"
-              />
+            <Form.Item
+              name="duration"
+              rules={validateForm.duration}
+              label="Thời gian làm bài"
+              required
+            >
+              <InputNumber min={1} style={{ width: "100%" }} />
             </Form.Item>
 
-            <Form.Item name="max_score" rules={validateForm.max_score}>
-              <InputNumber
-                min={1}
-                style={{ width: "100%" }}
-                placeholder="Điểm tối đa đạt được"
-              />
+            <Form.Item
+              name="max_score"
+              rules={validateForm.max_score}
+              label="Điểm tối đa đạt được"
+              required
+            >
+              <InputNumber min={1} style={{ width: "100%" }} />
             </Form.Item>
 
-            <Form.Item name="type" rules={validateForm.type}>
-              <Input placeholder="Loại đề thi" />
+            <Form.Item
+              name="type"
+              rules={validateForm.type}
+              label="Loại đề thi"
+              required
+            >
+              <Input />
             </Form.Item>
             <Form.Item name="is_Free" label="Miễn phí" valuePropName="checked">
               <Switch disabled />

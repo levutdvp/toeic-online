@@ -223,7 +223,7 @@ const ExcelUploadPart7 = () => {
           placeholder="Chọn mã đề thi"
           value={examCode || null}
           onChange={(value) => setExamCode(value)}
-          style={{ width: "100%", marginBottom: "16px", marginTop: "16px" }}
+          style={{ width: "100%", marginBottom: "16px" }}
           options={examList.map((exam) => ({
             label: `${exam.exam_code} - ${exam.exam_name}`,
             value: exam.exam_code,

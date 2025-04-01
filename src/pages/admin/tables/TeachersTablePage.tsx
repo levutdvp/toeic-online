@@ -1,26 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Input, Modal, Space, Table } from "antd";
-import type { TableProps } from "antd";
+import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
 import {
   getTeachersList,
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
+import { initPaging } from "@/consts/paging.const";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { formatGender } from "@/utils/map.util";
+import { SearchOutlined } from "@ant-design/icons";
+import type { TableProps } from "antd";
+import { Button, Input, Modal, Space, Table } from "antd";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { TableQueriesRef } from "../../../types/pagination.type";
-import { initPaging } from "@/consts/paging.const";
 import ActionBlockTeachers from "./teachers/action-block-teacher";
 import AddTeacher from "./teachers/add";
-import { showToast } from "@/services/toast";
-import { deleteTeacher } from "@/api/admin/api-teachers/delete-teacher.api";
-import EditTeacher from "./teachers/edit";
-import { formatGender } from "@/utils/map.util";
-import { SearchOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
-import { FcViewDetails } from "react-icons/fc";
-import { useNavigate } from "react-router-dom";
 import ModalTeacherDetail from "./teachers/detail";
+import EditTeacher from "./teachers/edit";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -51,7 +50,10 @@ const TeachersTablePage = () => {
     totalPage: initPaging.totalPage,
   });
 
-  const navigate = useNavigate();
+  const { userRoles, userInfo } = useAuth();
+
+  const editPermissions = userRoles.some((role) => role === "TEACHER");
+
   const getListTeachers = useCallback(() => {
     showLoading();
     const getTeachersSub = getTeachersList({
@@ -90,6 +92,13 @@ const TeachersTablePage = () => {
   };
 
   const showDeleteModal = (id: number) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setSelectedTeacherId(id);
     setIsModalOpen(true);
   };
@@ -141,16 +150,19 @@ const TeachersTablePage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListTeachers) => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setRecordSelected(record);
     setIsEditModalOpen(true);
   };
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     getListTeachers();
-  };
-
-  const handleViewDetails = (record: IGetListTeachers) => {
-    navigate(`/admin/users-teacher/${record.id}`);
   };
 
   const filteredTeachers = dataTeachers.filter((teacher) => {
@@ -203,18 +215,6 @@ const TeachersTablePage = () => {
       key: "address",
       align: "center",
     },
-    // {
-    //   title: "Bằng cấp",
-    //   dataIndex: "certificate",
-    //   key: "certificate",
-    //   align: "center",
-    //   render: (certificates: ICertificate[]) =>
-    //     certificates?.length
-    //       ? certificates
-    //           .map((cert) => `${cert.certificate_name} - ${cert.score}`)
-    //           .join(", ")
-    //       : "Chưa có",
-    // },
     {
       title: "Hành động",
       key: "action",
@@ -232,9 +232,6 @@ const TeachersTablePage = () => {
               disabled={record.id === 1}
             >
               <MdOutlineDeleteForever />
-            </Button>
-            <Button size="middle" onClick={() => handleViewDetails(record)}>
-              <FcViewDetails />
             </Button>
           </Space>
         );
@@ -279,7 +276,17 @@ const TeachersTablePage = () => {
         onChange={onChangeTable}
         onRow={(record) => {
           return {
-            onDoubleClick: () => handleOpenDetailModal(record),
+            onDoubleClick: () => {
+              if (userRoles.includes("ADMIN")) {
+                handleOpenDetailModal(record);
+              } else if (
+                userRoles.includes("TEACHER") &&
+                (record.id === userInfo?.id ||
+                  record.name === userInfo?.fullName)
+              ) {
+                handleOpenDetailModal(record);
+              }
+            },
           };
         }}
       />

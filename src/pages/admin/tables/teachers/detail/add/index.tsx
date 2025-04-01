@@ -68,15 +68,22 @@ const AddCertificate: React.FC<addTeacherProps> = ({
         width={500}
       >
         <div className="mt-5">
-          <Form layout="horizontal" form={form} onFinish={handleAddSubmit}>
+          <Form layout="vertical" form={form} onFinish={handleAddSubmit}>
             <Form.Item
               name="certificate_name"
               rules={validateForm.certificate_name}
+              label="Tên bằng cấp"
+              required
             >
-              <Input placeholder="Tên bằng cấp" />
+              <Input />
             </Form.Item>
-            <Form.Item name="score" rules={validateForm.score}>
-              <InputNumber placeholder="Điểm" style={{ width: "100%" }} />
+            <Form.Item
+              name="score"
+              rules={validateForm.score}
+              label="Điểm"
+              required
+            >
+              <InputNumber style={{ width: "100%" }} />
             </Form.Item>
           </Form>
         </div>

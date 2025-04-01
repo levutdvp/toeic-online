@@ -1,10 +1,10 @@
-import { Button, Modal, Space } from "antd";
-import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { useCallback, useState } from "react";
+import { deleteUser } from "@/api/admin/api-users/delete-user.api";
+import { IGetListUsers } from "@/api/admin/api-users/get-list-userInfo.api";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
-import { IGetListUsers } from "@/api/admin/api-users/get-list-userInfo.api";
-import { deleteUser } from "@/api/admin/api-users/delete-user.api";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Button, Modal, Space } from "antd";
+import { useCallback, useState } from "react";
 
 interface IActionBlock {
   onClickAction: (action?: any) => void;
@@ -13,16 +13,12 @@ interface IActionBlock {
 }
 
 export default function ActionBlockUsers({
-  onClickAction,
   getListData,
   selectedRows,
 }: IActionBlock) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const showDeleteModal = () => {
     setIsDeleteModalOpen(true);
-  };
-  const onAdd = () => {
-    onClickAction("add");
   };
 
   const deleteDataItems = useCallback(
@@ -62,13 +58,6 @@ export default function ActionBlockUsers({
         <div>Danh sách tài khoản</div>
         <div>
           <Space size={12}>
-            <Button
-              icon={<PlusCircleOutlined />}
-              type="primary"
-              onClick={onAdd}
-            >
-              Thêm mới
-            </Button>
             <Button
               danger
               icon={<DeleteOutlined />}

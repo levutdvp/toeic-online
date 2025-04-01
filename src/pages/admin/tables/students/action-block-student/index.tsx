@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { removeLoading, showLoading } from "@/services/loading";
 import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 import { showToast } from "@/services/toast";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 interface IActionBlock {
   onClickAction: (action?: any) => void;
@@ -18,10 +19,28 @@ export default function ActionBlockStudents({
   selectedRows,
 }: IActionBlock) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
+  const { userRoles } = useAuth();
+
+  const editPermissions = userRoles.some((role) => role === "TEACHER");
   const showDeleteModal = () => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setIsDeleteModalOpen(true);
   };
   const onAdd = () => {
+    if (editPermissions) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     onClickAction("add");
   };
 

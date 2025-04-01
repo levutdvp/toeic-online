@@ -5,6 +5,7 @@ import { removeLoading, showLoading } from "@/services/loading";
 import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
 import { showToast } from "@/services/toast";
 import { IStudentRes } from "@/api/admin/api-classes/get-list-detail-class.api";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 interface IActionBlock {
   className: string;
@@ -19,10 +20,28 @@ export default function ActionBlockDetailClass({
   selectedRows,
 }: IActionBlock) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
+  const { userRoles } = useAuth();
+
+  const teacherPermission = userRoles.some((role) => role === "TEACHER");
   const showDeleteModal = () => {
+    if (teacherPermission) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     setIsDeleteModalOpen(true);
   };
   const onAdd = () => {
+    if (teacherPermission) {
+      showToast({
+        type: "error",
+        content: "Bạn không có quyền thực hiện chức năng này!",
+      });
+      return;
+    }
     onClickAction("add");
   };
 
@@ -60,7 +79,6 @@ export default function ActionBlockDetailClass({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        {/* <div>Chi tiết lớp học {className}</div> */}
         <div>
           <Space size={12}>
             <Button

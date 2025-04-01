@@ -46,7 +46,6 @@ const Header = () => {
       ),
     },
   ];
-  console.log("pathname", pathname);
   return (
     <header className="bg-white shadow p-4">
       <div className="no-underline flex justify-between ">
