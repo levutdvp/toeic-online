@@ -22,7 +22,7 @@ const AddExam: React.FC<addExamsProps> = ({ isOpen, onClose }) => {
       question_count: values.question_count,
       max_score: values.max_score,
       type: values.type,
-      is_Free: values.is_Free,
+      is_Free: false,
     };
 
     showLoading();

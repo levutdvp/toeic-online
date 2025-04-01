@@ -104,7 +104,7 @@ const EditExam: React.FC<editExamProps> = ({
               label="Mã đề thi"
               required
             >
-              <Input />
+              <Input disabled/>
             </Form.Item>
 
             <Form.Item
