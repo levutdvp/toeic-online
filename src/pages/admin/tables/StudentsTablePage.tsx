@@ -19,6 +19,7 @@ import { formatGender } from "@/utils/map.util";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useAuth } from "@/hooks/use-auth.hook";
+import ModalStudentDetail from "./students/detail";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -35,6 +36,13 @@ const StudentTablesPage = () => {
     null
   );
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [modalDetail, setModalDetail] = useState<{
+    open: boolean;
+    studentId: number | null;
+  }>({
+    open: false,
+    studentId: null,
+  });
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -157,6 +165,13 @@ const StudentTablesPage = () => {
     getListStudents();
   };
 
+  const handleOpenDetailModal = (record: IGetListStudents) => {
+    setModalDetail({
+      open: true,
+      studentId: record.id ?? null,
+    });
+  };
+
   const filteredStudents = dataStudents.filter((student) => {
     const lowerSearchTerm = searchTerm.toLowerCase();
     return (
@@ -257,6 +272,13 @@ const StudentTablesPage = () => {
           total: tableQueriesRef.current.total,
         }}
         onChange={onChangeTable}
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => {
+              handleOpenDetailModal(record);
+            },
+          };
+        }}
       />
       <Modal
         title="Xác nhận xóa"
@@ -276,6 +298,13 @@ const StudentTablesPage = () => {
         onClose={handleCloseEditModal}
         recordSelected={recordSelected}
       />
+
+      {modalDetail.open && !!modalDetail.studentId && (
+        <ModalStudentDetail
+          studentId={modalDetail.studentId}
+          onClose={() => setModalDetail({ open: false, studentId: null })}
+        />
+      )}
     </>
   );
 };

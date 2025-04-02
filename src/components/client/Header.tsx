@@ -1,19 +1,35 @@
-import { Dropdown, Modal, Space } from "antd";
+import { editStudent } from "@/api/admin/api-students/edit-student.api";
+import { useAuth } from "@/hooks/use-auth.hook";
+import { clearAccessToken } from "@/services/auth";
+import { showToast } from "@/services/toast";
 import {
   ContactsOutlined,
   DownOutlined,
+  EditOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { clearAccessToken } from "@/services/auth";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth.hook";
+import {
+  Button,
+  DatePicker,
+  Dropdown,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+} from "antd";
+import dayjs from "dayjs";
 import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [form] = Form.useForm();
   const pathname = useLocation();
   const navigate = useNavigate();
-  const { userInfo } = useAuth();
+  const { userInfo, syncDataWithServer } = useAuth();
+
   const handleLogout = () => {
     clearAccessToken();
     navigate("/auth/login");
@@ -21,11 +37,70 @@ const Header = () => {
 
   const showModal = () => {
     setIsModalOpen(true);
+    setIsEditing(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setIsEditing(false);
   };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    form.setFieldsValue({
+      fullName: userInfo?.fullName,
+      dob: userInfo?.dob ? dayjs(userInfo.dob) : null,
+      gender: userInfo?.gender,
+      email: userInfo?.email,
+      phone: userInfo?.phone,
+      address: userInfo?.address,
+    });
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      if (!userInfo?.id) {
+        showToast({ type: "error", content: "Không tìm thấy ID người dùng" });
+        return;
+      }
+
+      const editStudentSub = editStudent(
+        {
+          name: values.fullName,
+          dob: values.dob.format("YYYY-MM-DD"),
+          gender: values.gender,
+          email: values.email,
+          phone: values.phone,
+          address: values.address,
+        },
+        userInfo.id
+      ).subscribe({
+        next: () => {
+          showToast({
+            type: "success",
+            content: "Cập nhật thông tin thành công",
+          });
+          setIsEditing(false);
+          if (syncDataWithServer) {
+            syncDataWithServer();
+          }
+        },
+        error: (error) => {
+          console.error("Lỗi khi cập nhật thông tin:", error);
+          showToast({ type: "error", content: "Cập nhật thông tin thất bại" });
+        },
+      });
+
+      editStudentSub.add(); // Đảm bảo unsubscribe khi component unmount
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      showToast({
+        type: "error",
+        content: "Có lỗi xảy ra khi kết nối với máy chủ",
+      });
+    }
+  };
+
   const items = [
     {
       key: "1",
@@ -88,17 +163,116 @@ const Header = () => {
         title="Thông tin tài khoản"
         open={isModalOpen}
         onCancel={handleCancel}
-        footer={null}
+        footer={
+          isEditing
+            ? null
+            : [
+                <Button
+                  key="edit"
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={handleEdit}
+                >
+                  Chỉnh sửa
+                </Button>,
+              ]
+        }
       >
-        <p>
-          <strong>Tên người dùng:</strong> {userInfo?.username}
-        </p>
-        <p>
-          <strong>Tên đầy đủ:</strong> {userInfo?.fullName}
-        </p>
-        <p>
-          <strong>Email:</strong> {userInfo?.email}
-        </p>
+        {isEditing ? (
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            initialValues={{
+              fullName: userInfo?.fullName,
+              dob: userInfo?.dob ? dayjs(userInfo.dob) : null,
+              gender: userInfo?.gender,
+              email: userInfo?.email,
+              phone: userInfo?.phone,
+              address: userInfo?.address,
+            }}
+          >
+            <Form.Item
+              name="fullName"
+              label="Họ và tên"
+              rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="dob"
+              label="Ngày sinh"
+              rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
+            >
+              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item
+              name="gender"
+              label="Giới tính"
+              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+            >
+              <Select>
+                <Select.Option value="MALE">Nam</Select.Option>
+                <Select.Option value="FEMALE">Nữ</Select.Option>
+                <Select.Option value="OTHER">Khác</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                { required: true, message: "Vui lòng nhập email!" },
+                { type: "email", message: "Email không hợp lệ!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="phone"
+              label="Số điện thoại"
+              rules={[
+                { required: true, message: "Vui lòng nhập số điện thoại!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item name="address" label="Địa chỉ">
+              <Input.TextArea rows={3} />
+            </Form.Item>
+            <Form.Item className="flex justify-end">
+              <Button onClick={() => setIsEditing(false)} className="mr-2">
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Lưu
+              </Button>
+            </Form.Item>
+          </Form>
+        ) : (
+          <>
+            <p>
+              <strong>Tên người dùng:</strong> {userInfo?.username}
+            </p>
+            <p>
+              <strong>Tên đầy đủ:</strong> {userInfo?.fullName}
+            </p>
+            <p>
+              <strong>Ngày sinh:</strong> {userInfo?.dob}
+            </p>
+            <p>
+              <strong>Giới tính:</strong> {userInfo?.gender}
+            </p>
+            <p>
+              <strong>Email:</strong> {userInfo?.email}
+            </p>
+            <p>
+              <strong>Số điện thoại:</strong> {userInfo?.phone}
+            </p>
+            <p>
+              <strong>Địa chỉ:</strong> {userInfo?.address}
+            </p>
+          </>
+        )}
       </Modal>
     </header>
   );

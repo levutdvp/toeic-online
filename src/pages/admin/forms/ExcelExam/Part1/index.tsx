@@ -32,14 +32,30 @@ const ExcelUploadPart1 = () => {
   const partNumber = 1;
   const apiSubRef = useRef<any>(null);
 
+  console.log("examCode", examCode);
+
   useEffect(() => {
     const sub = getListExam({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res) => {
         removeLoading();
-        setExamList(res.data);
+        if (res && res.data && Array.isArray(res.data)) {
+          setExamList(res.data);
+          console.log("Đã tải danh sách đề thi:", res.data.length, "items");
+        } else {
+          console.error("Dữ liệu không đúng định dạng:", res);
+          showToast({
+            content: "Dữ liệu đề thi không đúng định dạng",
+            type: "error",
+          });
+        }
       },
-      error: () => {
+      error: (err) => {
+        console.error("Lỗi khi tải danh sách đề thi:", err);
         showToast({ content: "Lỗi khi tải danh sách đề thi", type: "error" });
+        removeLoading();
+      },
+      complete: () => {
+        removeLoading();
       },
     });
 
@@ -126,10 +142,21 @@ const ExcelUploadPart1 = () => {
     if (type === "audio") updatedList[index].audio_url = base64;
     else updatedList[index].image_url = base64;
     setMediaList(updatedList);
-    const updatedFileNames = { ...fileNames };
+
+    const updatedFileNames = {
+      audio_file_name: [...fileNames.audio_file_name],
+      image_file_name: [...fileNames.image_file_name],
+    };
+
     if (type === "audio") {
+      while (updatedFileNames.audio_file_name.length <= index) {
+        updatedFileNames.audio_file_name.push("");
+      }
       updatedFileNames.audio_file_name[index] = file.name;
     } else {
+      while (updatedFileNames.image_file_name.length <= index) {
+        updatedFileNames.image_file_name.push("");
+      }
       updatedFileNames.image_file_name[index] = file.name;
     }
 
@@ -262,13 +289,19 @@ const ExcelUploadPart1 = () => {
         <Select
           showSearch
           placeholder="Chọn mã đề thi"
-          value={examCode || null}
-          onChange={(value) => setExamCode(value)}
+          // value={examCode || undefined}
+          onChange={(value) => {
+            setExamCode(value.split("@@")[1]);
+          }}
           style={{ width: "100%", marginBottom: "16px" }}
-          options={examList.map((exam) => ({
-            label: `${exam.exam_code} - ${exam.exam_name}`,
-            value: exam.exam_code,
-          }))}
+          // optionFilterProp="label"
+          options={examList.map((exam, index) => {
+            return {
+              label: `${exam.exam_name} (${exam.exam_code})`,
+              value: `${index}@@${exam.exam_code}`,
+            };
+          })}
+          notFoundContent="Không tìm thấy đề thi"
         />
 
         {questions.length > 0 && (

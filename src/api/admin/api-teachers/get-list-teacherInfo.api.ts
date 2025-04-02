@@ -5,6 +5,9 @@ export interface ICertificate {
   id?: number;
   certificate_name: string;
   score: string;
+  issued_by: string;
+  issue_date: string;
+  expiry_date: string;
 }
 export interface IGetListTeachers {
   id?: number;

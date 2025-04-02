@@ -1,148 +1,144 @@
-import { addStudent } from "@/api/admin/api-students/add-student.api";
-import { removeLoading, showLoading } from "@/services/loading";
-import { showToast } from "@/services/toast";
-import { Button, Form, Modal, Select } from "antd";
-import dayjs from "dayjs";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { IAddForm } from "./form.config";
+import { addStudentToClass } from "@/api/admin/api-classes/add-student-to-class.api";
 import {
   getStudentsList,
   IGetListStudents,
 } from "@/api/admin/api-students/get-list-studentInfo.api";
-import { TableQueriesRef } from "@/types/pagination.type";
-import { initPaging } from "@/consts/paging.const";
+import { showToast } from "@/services/toast";
+import { Button, Form, Modal, Select } from "antd";
+import { useEffect, useState } from "react";
 
-interface addStudentProps {
+interface AddStudentDetailClassProps {
   classId: number;
   isOpen: boolean;
   onClose: () => void;
 }
 
-type TableQueries = TableQueriesRef<IGetListStudents>;
-const AddStudentDetailClass: React.FC<addStudentProps> = ({
+const AddStudentDetailClass = ({
   classId,
   isOpen,
   onClose,
-}) => {
+}: AddStudentDetailClassProps) => {
+  const [loading, setLoading] = useState(false);
+  const [students, setStudents] = useState<IGetListStudents[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState(false);
   const [form] = Form.useForm();
-  const [dataStudents, setDataStudents] = useState<IGetListStudents[]>([]);
-
-  const tableQueriesRef = useRef<TableQueries>({
-    current: initPaging.pageCurrent,
-    pageSize: initPaging.pageSize,
-    totalPage: initPaging.totalPage,
-  });
-
-  console.log(dataStudents);
-
-  const getListStudents = useCallback(() => {
-    showLoading();
-    const getStudentsSub = getStudentsList({
-      pageNumber: tableQueriesRef.current.current,
-      pageSize: tableQueriesRef.current.pageSize,
-    }).subscribe({
-      next: (res) => {
-        setDataStudents(res.data);
-        tableQueriesRef.current = {
-          ...tableQueriesRef.current,
-          current: res.meta.pageCurrent,
-          pageSize: res.meta.pageSize,
-          totalPage: res.meta.totalPage,
-          total: res.meta.total,
-        };
-        removeLoading();
-      },
-      error: () => {
-        removeLoading();
-      },
-    });
-    getStudentsSub.add();
-  }, []);
 
   useEffect(() => {
-    getListStudents();
-  }, [getListStudents]);
+    const fetchStudents = () => {
+      try {
+        setLoadingStudents(true);
+        const params = {
+          pageNumber: 1,
+          pageSize: 100,
+        };
 
-  const handleAddSubmit = (values: IAddForm) => {
-    const selectedStudent = dataStudents.find(
-      (student) => student.name === values.name
-    );
+        const subscription = getStudentsList(params).subscribe({
+          next: (response) => {
+            setStudents(response.data || []);
+            setLoadingStudents(false);
+          },
+          error: (error) => {
+            console.error("Lỗi khi lấy danh sách học sinh:", error);
+            showToast({
+              type: "error",
+              content: "Không thể tải danh sách học sinh",
+            });
+            setLoadingStudents(false);
+          },
+        });
 
-    if (!selectedStudent) {
-      showToast({ content: "Không tìm thấy học sinh", type: "error" });
-      return;
-    }
-    const params = {
-      class_id: classId,
-      name: selectedStudent.name,
-      dob:
-        selectedStudent.dob && dayjs(selectedStudent.dob).format("YYYY-MM-DD"),
-      gender: selectedStudent.gender,
-      phone: selectedStudent.phone,
-      email: selectedStudent.email,
-      address: selectedStudent.address,
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách học sinh:", error);
+        showToast({
+          type: "error",
+          content: "Không thể tải danh sách học sinh",
+        });
+        setLoadingStudents(false);
+      }
     };
 
-    showLoading();
-    const addStudents = addStudent(params).subscribe({
-      next: () => {
-        removeLoading();
-        showToast({ content: "Thêm mới học sinh thành công" });
-        form.resetFields();
-        onClose();
-      },
-      error: () => removeLoading(),
-    });
+    if (isOpen) {
+      const subscription = fetchStudents();
+      return () => {
+        if (subscription) {
+          subscription();
+        }
+      };
+    }
+  }, [isOpen]);
 
-    addStudents.add();
-  };
+  const handleSubmit = (values: { user_id: string }) => {
+    try {
+      setLoading(true);
+      const subscription = addStudentToClass({
+        user_id: values.user_id,
+        class_id: classId.toString(),
+      }).subscribe({
+        next: () => {
+          showToast({
+            type: "success",
+            content: "Thêm học sinh vào lớp thành công!",
+          });
+          form.resetFields();
+          onClose();
+          setLoading(false);
+        },
+        error: (error) => {
+          console.error("Lỗi khi thêm học sinh:", error);
+          setLoading(false);
+        },
+      });
 
-  const handleClose = () => {
-    form.resetFields();
-    onClose();
+      return () => subscription.unsubscribe();
+    } catch (error) {
+      console.error("Lỗi khi thêm học sinh:", error);
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <Modal
-        title={"Thêm mới học sinh"}
-        open={isOpen}
-        onOk={form.submit}
-        onCancel={handleClose}
-        footer={[
-          <Button
-            style={{ marginTop: "50px" }}
-            key="Submit"
-            type="primary"
-            onClick={form.submit}
-          >
-            Thêm
-          </Button>,
-          <Button key="Cancel" onClick={handleClose}>
-            Hủy bỏ
-          </Button>,
-        ]}
-        width={500}
-        bodyStyle={{ height: "30px" }}
-      >
-        <div className="mt-5">
-          <Form layout="vertical" form={form} onFinish={handleAddSubmit}>
-            <Form.Item
-              name="name"
-              label="Chọn học sinh"
-              rules={[{ required: true, message: "Vui lòng chọn học sinh" }]}
-            >
-              <Select
-                options={dataStudents.map((student) => ({
-                  value: student.name,
-                  label: student.name,
-                }))}
-              />
-            </Form.Item>
-          </Form>
-        </div>
-      </Modal>
-    </>
+    <Modal
+      title="Thêm Học Sinh Vào Lớp"
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+    >
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item
+          name="user_id"
+          label="Chọn Học Sinh"
+          rules={[{ required: true, message: "Vui lòng chọn học sinh!" }]}
+        >
+          <Select
+            placeholder="Chọn học sinh"
+            loading={loadingStudents}
+            showSearch
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              (option?.label?.toString().toLowerCase() || "").includes(
+                input.toLowerCase()
+              )
+            }
+            options={students.map((student) => ({
+              value: student.id?.toString(),
+              label: `${student.name} (${student.email})`,
+            }))}
+          />
+        </Form.Item>
+
+        <Form.Item className="mb-0">
+          <div className="flex justify-end space-x-4">
+            <Button onClick={onClose} className="mr-2">
+              Hủy
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Thêm Học Sinh
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

@@ -10,6 +10,7 @@ export interface IGetListStudents {
   phone: string;
   email: string;
   address: string;
+  avatar: string;
 }
 
 export interface IParams {

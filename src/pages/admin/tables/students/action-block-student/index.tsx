@@ -78,7 +78,7 @@ export default function ActionBlockStudents({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>Quản lí học sinh</div>
+        <div>Quản lí học viên</div>
         <div>
           <Space size={12}>
             <Button

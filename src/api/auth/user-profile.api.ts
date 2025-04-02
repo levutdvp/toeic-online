@@ -11,6 +11,10 @@ export interface IUserProfile {
   role: UserRole[];
   isAdmin: boolean;
   isClient: boolean;
+  phone: string;
+  dob: string;
+  address: string;
+  gender: string;
 }
 
 export const getUserProfile = () => {

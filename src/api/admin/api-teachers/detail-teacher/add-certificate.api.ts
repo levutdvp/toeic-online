@@ -5,6 +5,9 @@ export interface IAddCertificate {
   user_id: string;
   certificate_name: string;
   score: number;
+  issued_by: string;
+  issue_date: string;
+  expiry_date: string;
 }
 
 export const addCertificate = (params: IAddCertificate) => {

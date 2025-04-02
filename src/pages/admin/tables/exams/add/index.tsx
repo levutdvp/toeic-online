@@ -1,6 +1,6 @@
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
-import { Button, Form, Input, InputNumber, Modal, Switch } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import { IAddForm, validateForm } from "./form.config";
 import React from "react";
 import { addExam } from "@/api/admin/api-exam/create-exam.api";
@@ -93,7 +93,11 @@ const AddExam: React.FC<addExamsProps> = ({ isOpen, onClose }) => {
               label="Tên phần thi "
               required
             >
-              <Input />
+              <Select>
+                <Select.Option value="Listening">Listening</Select.Option>
+                <Select.Option value="Reading">Reading</Select.Option>
+                <Select.Option value="Full">Full</Select.Option>
+              </Select>
             </Form.Item>
 
             <Form.Item
@@ -102,7 +106,7 @@ const AddExam: React.FC<addExamsProps> = ({ isOpen, onClose }) => {
               label="Phần thi"
               required
             >
-              <InputNumber min={1} max={7} style={{ width: "100%" }} />
+              <InputNumber min={0} max={7} style={{ width: "100%" }} />
             </Form.Item>
 
             <Form.Item

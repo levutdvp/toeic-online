@@ -36,8 +36,12 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
   const [openModalAdd, setOpenModalAdd] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<ICertificate>({
+    id: undefined,
     certificate_name: "",
     score: "",
+    issued_by: "",
+    issue_date: "",
+    expiry_date: "",
   });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [certificates, setCertificates] = useState<IGetListCertificate[]>([]);
@@ -117,7 +121,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
       dataIndex: "issue_date",
       key: "issue_date",
       render: (issuedDate) => {
-        return <p>{issuedDate ?? "-"}</p>;
+        return <p>{dayjs(issuedDate).format("DD-MM-YYYY") ?? "-"}</p>;
       },
     },
 
@@ -127,7 +131,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
       dataIndex: "expiry_date",
       key: "expiry_date",
       render: (expiredDate) => {
-        return <p>{expiredDate ?? "-"}</p>;
+        return <p>{dayjs(expiredDate).format("DD-MM-YYYY") ?? "-"}</p>;
       },
     },
     {
@@ -166,12 +170,17 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
 
   const handleOpenEditModal = (record: IGetListCertificate) => {
     setRecordSelected({
+      id: record.id || undefined,
       certificate_name: record.certificate_name || "",
       score: record.score || "",
+      issued_by: record.issued_by || "",
+      issue_date: dayjs(record.issue_date).format("YYYY-MM-DD") || "",
+      expiry_date: dayjs(record.expiry_date).format("YYYY-MM-DD") || "",
     });
 
     setIsEditModalOpen(true);
   };
+
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
     getTeacherDetail();
@@ -225,11 +234,17 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
           image_link: res.image_url,
         }).subscribe({
           next: () => {
-            showToast({ type: "success", content: "Cập nhật thành công!" });
+            showToast({
+              type: "success",
+              content: "Cập nhật ảnh đại diện thành công!",
+            });
             getTeacherDetail();
           },
           error: () => {
-            showToast({ type: "error", content: "Cập nhật thất bại!" });
+            showToast({
+              type: "error",
+              content: "Cập nhật ảnh đại diện thất bại!",
+            });
           },
           complete: () => {
             setUploading(false);
@@ -334,6 +349,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
             isOpen={isEditModalOpen}
             onClose={handleCloseEditModal}
             recordSelected={recordSelected}
+            getTeacherCertificates={getTeacherCertificates}
           />
         </div>
       </Modal>

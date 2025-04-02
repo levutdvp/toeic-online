@@ -50,7 +50,7 @@ export const useAppNavs = () => {
             },
             {
               eventKey: "students",
-              title: "Quản lí học sinh",
+              title: "Quản lí học viên",
               to: "/admin/users-student",
             },
           ]
@@ -67,7 +67,7 @@ export const useAppNavs = () => {
             },
             {
               eventKey: "students",
-              title: "Quản lí học sinh",
+              title: "Quản lí học viên",
               to: "/admin/users-student",
             },
           ],
@@ -78,20 +78,24 @@ export const useAppNavs = () => {
       title: "Quản lí lớp học",
       to: "/admin/classes",
     },
-    {
-      eventKey: "exams",
-      icon: <Icon as={MdModeEditOutline} />,
-      title: "Quản lí đề thi",
-      to: "/admin/exams",
-      children: [
-        { eventKey: "part1", title: "Part 1", to: "/admin/exams/part1" },
-        { eventKey: "part2", title: "Part 2", to: "/admin/exams/part2" },
-        { eventKey: "part3", title: "Part 3", to: "/admin/exams/part3" },
-        { eventKey: "part4", title: "Part 4", to: "/admin/exams/part4" },
-        { eventKey: "part5", title: "Part 5", to: "/admin/exams/part5" },
-        { eventKey: "part6", title: "Part 6", to: "/admin/exams/part6" },
-        { eventKey: "part7", title: "Part 7", to: "/admin/exams/part7" },
-      ],
-    },
+    ...(userRoles.includes("TEACHER")
+      ? []
+      : [
+          {
+            eventKey: "exams",
+            icon: <Icon as={MdModeEditOutline} />,
+            title: "Quản lí đề thi",
+            to: "/admin/exams",
+            children: [
+              { eventKey: "part1", title: "Part 1", to: "/admin/exams/part1" },
+              { eventKey: "part2", title: "Part 2", to: "/admin/exams/part2" },
+              { eventKey: "part3", title: "Part 3", to: "/admin/exams/part3" },
+              { eventKey: "part4", title: "Part 4", to: "/admin/exams/part4" },
+              { eventKey: "part5", title: "Part 5", to: "/admin/exams/part5" },
+              { eventKey: "part6", title: "Part 6", to: "/admin/exams/part6" },
+              { eventKey: "part7", title: "Part 7", to: "/admin/exams/part7" },
+            ],
+          },
+        ]),
   ];
 };
