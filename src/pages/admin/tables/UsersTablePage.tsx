@@ -1,23 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { removeLoading, showLoading } from "@/services/loading";
-import { Button, Modal, Select, Space, Table, Switch, Input } from "antd";
-import type { TableProps } from "antd";
+import { deleteUser } from "@/api/admin/api-users/delete-user.api";
 import {
   getUsersList,
   IGetListUsers,
 } from "@/api/admin/api-users/get-list-userInfo.api";
-import { CiEdit } from "react-icons/ci";
-import { MdOutlineDeleteForever } from "react-icons/md";
-import { TableQueriesRef } from "@/types/pagination.type";
-import { initPaging } from "@/consts/paging.const";
-import { showToast } from "@/services/toast";
-import { deleteUser } from "@/api/admin/api-users/delete-user.api";
-import ActionBlockUsers from "./users/action-block-user";
-import AddUser from "./users/add";
-import EditUser from "./users/edit";
 import { editStatusUser } from "@/api/admin/api-users/update-status-user.api";
+import { initPaging } from "@/consts/paging.const";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { TableQueriesRef } from "@/types/pagination.type";
 import { formatRoles } from "@/utils/map.util";
 import { SearchOutlined } from "@ant-design/icons";
+import type { TableProps } from "antd";
+import { Button, Input, Modal, Select, Space, Switch, Table } from "antd";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import ActionBlockUsers from "./users/action-block-user";
+import AddUser from "./users/add";
 
 type TableQueries = TableQueriesRef<IGetListUsers>;
 
@@ -27,8 +25,6 @@ const UserTablesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [recordSelected, setRecordSelected] = useState<IGetListUsers>();
   const [searchText, setSearchText] = useState<string>("");
   const [filterRole, setFilterRole] = useState<
     "ADMIN" | "STUDENT" | "TEACHER" | null
@@ -157,15 +153,6 @@ const UserTablesPage = () => {
     getListUsers();
   };
 
-  const handleOpenEditModal = (record: IGetListUsers) => {
-    setRecordSelected(record);
-    setIsEditModalOpen(true);
-  };
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-    getListUsers();
-  };
-
   const filteredUsers = dataUsers.filter((user) =>
     (user.username ? user.username.toLowerCase() : "").includes(
       searchText.toLowerCase()
@@ -212,9 +199,9 @@ const UserTablesPage = () => {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
+          {/* <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
-          </Button>
+          </Button> */}
           <Button
             size="middle"
             danger
@@ -285,11 +272,11 @@ const UserTablesPage = () => {
       </Modal>
 
       <AddUser isOpen={isAddModalOpen} onClose={handleCloseAddModal} />
-      <EditUser
+      {/* <EditUser
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         recordSelected={recordSelected}
-      />
+      /> */}
     </>
   );
 };

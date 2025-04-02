@@ -17,7 +17,7 @@ export interface ICreateClass {
 export const addClass = (params: ICreateClass) => {
   return apiCall(
     {
-      url: `${API_URL}/api/create-class`,
+      url: `${API_URL}/api/class`,
       method: "POST",
       body: params,
     },
