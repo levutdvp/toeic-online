@@ -7,7 +7,6 @@ import { initPaging } from "@/consts/paging.const";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { TableQueriesRef } from "@/types/pagination.type";
-import { getShortDayOfWeek } from "@/utils/getDayOfWeek";
 import { formatGender } from "@/utils/map.util";
 import type { TableProps } from "antd";
 import { Button, Modal, Space, Table } from "antd";
@@ -56,10 +55,7 @@ const ModalDetailClass = ({
   );
 
   const daysOfWeek = useMemo(() => {
-    return days.map((day) => {
-      const formatDay = dayjs(day, "YY-MM-DDDD").format("DD/MM/YYYY");
-      return getShortDayOfWeek(formatDay);
-    });
+    return days;
   }, [days]);
 
   const tableQueriesRef = useRef<TableQueries>({
@@ -294,7 +290,21 @@ const ModalDetailClass = ({
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">Lịch học:</div>
                     <div>
-                      {startTime} - {endTime} || {daysOfWeek.join(", ")}
+                      {startTime} - {endTime} ||{" "}
+                      {daysOfWeek
+                        .map((day) => {
+                          const dayMapping: Record<string, string> = {
+                            T2: "Thứ 2",
+                            T3: "Thứ 3",
+                            T4: "Thứ 4",
+                            T5: "Thứ 5",
+                            T6: "Thứ 6",
+                            T7: "Thứ 7",
+                            CN: "Chủ nhật",
+                          };
+                          return dayMapping[day] || day;
+                        })
+                        .join(", ")}
                     </div>
                   </div>
                 </div>
