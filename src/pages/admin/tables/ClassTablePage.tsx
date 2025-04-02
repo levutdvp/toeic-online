@@ -7,7 +7,7 @@ import { initPaging } from "@/consts/paging.const";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { TableQueriesRef } from "@/types/pagination.type";
-import { Button, Input, Modal, Space, Table, TableProps } from "antd";
+import { Button, Input, Modal, Space, Table, TableProps, Tag } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
@@ -201,17 +201,39 @@ const ClassTablesPage = () => {
     });
   };
 
+  // Hàm biến đổi các giá trị thứ thành các màu tag khác nhau
+  const getDayTagColor = (day: string) => {
+    switch (day) {
+      case "T2":
+        return "blue";
+      case "T3":
+        return "green";
+      case "T4":
+        return "purple";
+      case "T5":
+        return "cyan";
+      case "T6":
+        return "magenta";
+      case "T7":
+        return "orange";
+      case "CN":
+        return "red";
+      default:
+        return "default";
+    }
+  };
+
   const columns: TableProps<IGetListClasses>["columns"] = [
     {
       title: "Tên lớp",
-      dataIndex: "class_type",
-      key: "class_type",
+      dataIndex: "class_code",
+      key: "class_code",
       align: "center",
     },
     {
       title: "Mã lớp",
-      dataIndex: "class_code",
-      key: "class_code",
+      dataIndex: "class_type",
+      key: "class_type",
       align: "center",
     },
     {
@@ -250,11 +272,13 @@ const ClassTablesPage = () => {
       key: "days",
       align: "center",
       render: (days: string[]) => (
-        <div>
+        <Space size={[0, 8]} wrap>
           {days.map((day, idx) => (
-            <div key={idx}>{day}</div>
+            <Tag color={getDayTagColor(day)} key={idx}>
+              {day}
+            </Tag>
           ))}
-        </div>
+        </Space>
       ),
     },
     {

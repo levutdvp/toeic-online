@@ -262,13 +262,17 @@ const ExcelUploadPart2 = () => {
         <Select
           showSearch
           placeholder="Chọn mã đề thi"
-          value={examCode || null}
-          onChange={(value) => setExamCode(value)}
+          onChange={(value) => {
+            setExamCode(value.split("@@")[1]);
+          }}
           style={{ width: "100%", marginBottom: "16px" }}
-          options={examList.map((exam) => ({
-            label: `${exam.exam_code} - ${exam.exam_name}`,
-            value: exam.exam_code,
-          }))}
+          options={examList.map((exam, index) => {
+            return {
+              label: `${exam.exam_name} (${exam.exam_code})`,
+              value: `${index}@@${exam.exam_code}`,
+            };
+          })}
+          notFoundContent="Không tìm thấy đề thi"
         />
 
         {questions.length > 0 && (

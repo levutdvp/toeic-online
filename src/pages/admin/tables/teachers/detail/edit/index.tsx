@@ -22,8 +22,6 @@ const EditCertificate: React.FC<editCertificateProps> = ({
 }) => {
   const [form] = Form.useForm();
 
-  console.log(recordSelected);
-
   const initialValues = useMemo(() => {
     if (!recordSelected) return {};
 

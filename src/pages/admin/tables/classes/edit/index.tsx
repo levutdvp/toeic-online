@@ -55,9 +55,7 @@ const EditClass: React.FC<editClassProps> = ({
         recordSelected.start_time && dayjs(recordSelected.start_time, "HH:mm"),
       end_time:
         recordSelected.end_time && dayjs(recordSelected.end_time, "HH:mm"),
-      days:
-        recordSelected.days &&
-        recordSelected.days.map((day: string) => dayjs(day, "yyyy-MM-dd")),
+      days: recordSelected.days,
       number_of_students: recordSelected.number_of_students,
       teacher: recordSelected.teacher,
     };
@@ -75,7 +73,7 @@ const EditClass: React.FC<editClassProps> = ({
       end_date: dayjs(values.end_date).format("YYYY-MM-DD"),
       start_time: dayjs(values.start_time).format("HH:mm"),
       end_time: dayjs(values.end_time).format("HH:mm"),
-      days: values.days.map((day: string) => dayjs(day).format("DD-MM-YYYY")),
+      days: values.days,
       number_of_students: values.number_of_students,
       teacher: values.teacher,
     };
@@ -101,6 +99,17 @@ const EditClass: React.FC<editClassProps> = ({
     form.resetFields();
     onClose();
   };
+
+  // Thêm options cho các ngày trong tuần
+  const dayOptions = [
+    { value: "T2", label: "Thứ 2" },
+    { value: "T3", label: "Thứ 3" },
+    { value: "T4", label: "Thứ 4" },
+    { value: "T5", label: "Thứ 5" },
+    { value: "T6", label: "Thứ 6" },
+    { value: "T7", label: "Thứ 7" },
+    { value: "CN", label: "Chủ nhật" },
+  ];
 
   return (
     <>
@@ -136,7 +145,11 @@ const EditClass: React.FC<editClassProps> = ({
               label="Mã lớp học"
               required
             >
-              <Input />
+              <Select placeholder="Chọn mã lớp học">
+                <Select.Option value="Beginner">Beginner</Select.Option>
+                <Select.Option value="Toeic A">Toeic A</Select.Option>
+                <Select.Option value="Toeic B">Toeic B</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               name="start_date"
@@ -144,7 +157,7 @@ const EditClass: React.FC<editClassProps> = ({
               label="Ngày bắt đầu"
               required
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
               name="end_date"
@@ -152,7 +165,7 @@ const EditClass: React.FC<editClassProps> = ({
               label="Ngày kết thúc"
               required
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
               name="start_time"
@@ -172,11 +185,15 @@ const EditClass: React.FC<editClassProps> = ({
             </Form.Item>
             <Form.Item
               name="days"
-              rules={validateForm.days}
               label="Lịch học"
-              required
+              rules={[{ required: true, message: "Vui lòng chọn lịch học!" }]}
             >
-              <DatePicker style={{ width: "100%" }} multiple />
+              <Select
+                mode="multiple"
+                placeholder="Chọn các ngày học trong tuần"
+                options={dayOptions}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
             <Form.Item
               name="number_of_students"

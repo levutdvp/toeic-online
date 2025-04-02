@@ -1,3 +1,8 @@
+import { addClass } from "@/api/admin/api-classes/create-class.api";
+import {
+  getTeachersList,
+  IGetListTeachers,
+} from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import {
@@ -9,14 +14,8 @@ import {
   Select,
   TimePicker,
 } from "antd";
-import { IAddForm } from "./form.config";
 import React, { useEffect, useState } from "react";
-import { addClass } from "@/api/admin/api-classes/create-class.api";
-import { validateForm } from "./form.config";
-import {
-  getTeachersList,
-  IGetListTeachers,
-} from "@/api/admin/api-teachers/get-list-teacherInfo.api";
+import { IAddForm, validateForm } from "./form.config";
 import dayjs from "dayjs";
 
 interface addClassProps {
@@ -42,11 +41,11 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
     const params = {
       class_code: values.class_code,
       class_type: values.class_type,
-      start_date: values.start_date,
-      end_date: values.end_date,
-      start_time: values.start_time,
-      end_time: values.end_time,
-      days: values.days.map((day: string) => dayjs(day).format("YYYY-MM-DD")),
+      start_date: dayjs(values.start_date).format("YYYY-MM-DD"),
+      end_date: dayjs(values.end_date).format("YYYY-MM-DD"),
+      start_time: dayjs(values.start_time).format("HH:mm"),
+      end_time: dayjs(values.end_time).format("HH:mm"),
+      days: values.days,
       number_of_students: values.number_of_students,
       teacher: values.teacher,
     };
@@ -64,6 +63,16 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
 
     addClasses.add();
   };
+
+  const dayOptions = [
+    { value: "T2", label: "Thứ 2" },
+    { value: "T3", label: "Thứ 3" },
+    { value: "T4", label: "Thứ 4" },
+    { value: "T5", label: "Thứ 5" },
+    { value: "T6", label: "Thứ 6" },
+    { value: "T7", label: "Thứ 7" },
+    { value: "CN", label: "Chủ nhật" },
+  ];
 
   return (
     <>
@@ -99,7 +108,11 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
               label="Mã lớp học"
               required
             >
-              <Input />
+              <Select placeholder="Chọn mã lớp học">
+                <Select.Option value="Beginner">Beginner</Select.Option>
+                <Select.Option value="Toeic A">Toeic A</Select.Option>
+                <Select.Option value="Toeic B">Toeic B</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               name="start_date"
@@ -107,7 +120,7 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
               label="Ngày bắt đầu"
               required
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
               name="end_date"
@@ -115,7 +128,7 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
               label="Ngày kết thúc"
               required
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
             </Form.Item>
             <Form.Item
               name="start_time"
@@ -135,11 +148,15 @@ const AddClass: React.FC<addClassProps> = ({ isOpen, onClose }) => {
             </Form.Item>
             <Form.Item
               name="days"
-              rules={validateForm.days}
               label="Lịch học"
-              required
+              rules={[{ required: true, message: "Vui lòng chọn lịch học!" }]}
             >
-              <DatePicker style={{ width: "100%" }} multiple />
+              <Select
+                mode="multiple"
+                placeholder="Chọn các ngày học trong tuần"
+                options={dayOptions}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
             <Form.Item
               name="number_of_students"

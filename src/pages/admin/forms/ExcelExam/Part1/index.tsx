@@ -32,8 +32,6 @@ const ExcelUploadPart1 = () => {
   const partNumber = 1;
   const apiSubRef = useRef<any>(null);
 
-  console.log("examCode", examCode);
-
   useEffect(() => {
     const sub = getListExam({ pageNumber: 1, pageSize: 100 }).subscribe({
       next: (res) => {
