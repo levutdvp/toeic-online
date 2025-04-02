@@ -25,7 +25,12 @@ export default function ExamLayout() {
   const [isSubmitModalVisible, setIsSubmitModalVisible] =
     useState<boolean>(false);
 
-  const { userInfo } = useAuth();
+  const { userInfo, syncDataWithServer } = useAuth();
+  
+  useEffect(() => {
+    syncDataWithServer();
+  }, [syncDataWithServer]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,7 +100,6 @@ export default function ExamLayout() {
 
   const handleSubmitTest = useCallback(() => {
     showLoading();
-
     const formattedData = {
       user_id: userInfo?.id,
       exam_code: testData.exam_code,
@@ -129,7 +133,7 @@ export default function ExamLayout() {
         removeLoading();
       },
     });
-  }, [testData, questions, selectedAnswers]);
+  }, [testData, questions, selectedAnswers, userInfo]);
 
   const handleOpenSubmitModal = () => {
     setIsSubmitModalVisible(true);
