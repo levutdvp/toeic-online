@@ -111,7 +111,6 @@ const AddStudentDetailClass = ({
           rules={[{ required: true, message: "Vui lòng chọn học sinh!" }]}
         >
           <Select
-            placeholder="Chọn học sinh"
             loading={loadingStudents}
             showSearch
             optionFilterProp="label"

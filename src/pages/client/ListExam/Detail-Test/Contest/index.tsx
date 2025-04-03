@@ -117,7 +117,6 @@ export default function ExamLayout() {
     }
 
     showLoading();
-
     const formattedData = {
       user_id: userInfo.id,
       exam_code: testData.exam_code,
@@ -151,7 +150,7 @@ export default function ExamLayout() {
         removeLoading();
       },
     });
-  }, [testData, questions, selectedAnswers, userInfo, navigate]);
+  }, [testData, questions, selectedAnswers]);
 
   if (!testData) {
     return null;

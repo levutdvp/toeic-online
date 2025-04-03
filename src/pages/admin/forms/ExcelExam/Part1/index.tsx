@@ -38,7 +38,6 @@ const ExcelUploadPart1 = () => {
         removeLoading();
         if (res && res.data && Array.isArray(res.data)) {
           setExamList(res.data);
-          console.log("Đã tải danh sách đề thi:", res.data.length, "items");
         } else {
           console.error("Dữ liệu không đúng định dạng:", res);
           showToast({

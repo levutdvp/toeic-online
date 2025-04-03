@@ -193,6 +193,8 @@ const ModalDetailClass = ({
       dataIndex: "birth_date",
       key: "birth_date",
       align: "center",
+      render: (birth_date) =>
+        birth_date ? dayjs(birth_date).format("DD-MM-YYYY") : "-",
     },
     {
       title: "Giới tính",
