@@ -7,26 +7,41 @@ import { submitTest } from "@/api/client/submit-answer.api";
 import { useAuth } from "@/hooks/use-auth.hook";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
-import { Button, Modal, Radio } from "antd";
+import { Button, Modal, Radio, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CiCircleInfo } from "react-icons/ci";
 
 export default function ExamLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const testData = location.state as IGetListTest;
+
+  useEffect(() => {
+    if (!testData) {
+      showToast({
+        type: "error",
+        content: "Không tìm thấy thông tin bài thi!",
+      });
+      navigate("/");
+      return;
+    }
+  }, [testData, navigate]);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<
     Record<number, string | null>
   >({});
-  const location = useLocation();
-  const testData = location.state as IGetListTest;
-  const [timeLeft, setTimeLeft] = useState<number>(testData.duration * 60);
+  const [timeLeft, setTimeLeft] = useState<number>(
+    (testData?.duration || 0) * 60
+  );
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] =
     useState<boolean>(false);
+  const [playbackRate, setPlaybackRate] = useState<number>(1);
 
   const { userInfo } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -40,37 +55,39 @@ export default function ExamLayout() {
   }, [timeLeft]);
 
   const fetchQuestions = useCallback(() => {
-    showLoading();
+    if (!testData?.exam_code || !testData?.part_number) {
+      return;
+    }
 
+    showLoading();
     getListQuestionTest(
       testData.exam_code,
       Number(testData.part_number)
     ).subscribe({
       next: (res) => {
         setQuestions(res.questions);
+        console.log("Questions loaded:", res.questions);
         removeLoading();
-
         setSelectedAnswers({});
       },
-      error: () => {
+      error: (error) => {
+        console.error("Error loading questions:", error);
         removeLoading();
+        showToast({ type: "error", content: "Không thể tải câu hỏi!" });
       },
     });
-  }, []);
+  }, [testData]);
 
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
 
   const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
+    const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return [
-      hrs.toString().padStart(2, "0"),
-      mins.toString().padStart(2, "0"),
-      secs.toString().padStart(2, "0"),
-    ].join(":");
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -81,10 +98,10 @@ export default function ExamLayout() {
     ) as HTMLAudioElement;
     if (audioElement && currentQuestion?.audio_url) {
       audioElement.src = currentQuestion.audio_url;
+      audioElement.playbackRate = playbackRate;
       audioElement.load();
-      audioElement.play();
     }
-  }, [currentQuestionIndex, currentQuestion?.audio_url]);
+  }, [currentQuestionIndex, currentQuestion?.audio_url, playbackRate]);
 
   const handleSelectAnswer = (value: string) => {
     setSelectedAnswers((prev) => ({
@@ -94,10 +111,15 @@ export default function ExamLayout() {
   };
 
   const handleSubmitTest = useCallback(() => {
+    if (!testData?.exam_code || !userInfo?.id) {
+      showToast({ type: "error", content: "Thiếu thông tin để nộp bài!" });
+      return;
+    }
+
     showLoading();
 
     const formattedData = {
-      user_id: userInfo?.id,
+      user_id: userInfo.id,
       exam_code: testData.exam_code,
       parts: [
         {
@@ -129,128 +151,160 @@ export default function ExamLayout() {
         removeLoading();
       },
     });
-  }, [testData, questions, selectedAnswers]);
+  }, [testData, questions, selectedAnswers, userInfo, navigate]);
 
-  const handleOpenSubmitModal = () => {
-    setIsSubmitModalVisible(true);
-  };
+  if (!testData) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="flex justify-between items-center bg-gray-800 text-white p-4">
-        <h1 className="font-bold text-lg">Lớp TOEIC Thầy Long</h1>
-        <div className="text-lg font-semibold">
-          Question {currentQuestionIndex + 1} of {questions.length}
+    <div className="flex flex-col h-screen bg-gray-100">
+      <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">
+            Listening: Question {currentQuestionIndex + 1} of {questions.length}
+          </h1>
         </div>
         <div className="flex items-center gap-4">
-          <Button size="large" shape="round">
+          <Button variant="solid" size="large" shape="round">
             {currentQuestionIndex + 1}/{questions.length}
           </Button>
-          <Button
-            type="default"
-            size="large"
-            color="red"
-            variant="solid"
-            shape="round"
-          >
+          <Button color="red" variant="solid" size="large" shape="round">
             Time: {formatTime(timeLeft)}
           </Button>
           <Button
             type="primary"
-            shape="round"
+            className="text-white"
             size="large"
-            onClick={handleOpenSubmitModal}
+            shape="round"
+            onClick={() => setIsSubmitModalVisible(true)}
           >
             Nộp bài
           </Button>
         </div>
       </header>
 
-      <main className="flex flex-1 overflow-hidden">
-        <div className="w-1/3 border-r p-4 space-y-4 overflow-y-auto">
-          <h2 className="font-bold">Question {currentQuestionIndex + 1}</h2>
-          {currentQuestion?.audio_url && (
-            <audio id="audioElement" controls autoPlay className="w-full">
-              <source src={currentQuestion.audio_url} type="audio/mp3" />
-              Your browser does not support the audio element.
-            </audio>
-          )}
-          {currentQuestion?.image_url && (
-            <div className="text-center">
-              <img
-                src={currentQuestion.image_url}
-                className="mx-auto w-2/3 h-auto"
-              />
-            </div>
-          )}
+      <div className="flex flex-1 p-4 gap-4">
+        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold mb-2">
+              Question {currentQuestionIndex + 1}
+            </h2>
+            {currentQuestion?.audio_url && (
+              <div className="mb-4">
+                <audio
+                  id="audioElement"
+                  controls
+                  className="w-full"
+                  src={currentQuestion.audio_url}
+                >
+                  Your browser does not support the audio element.
+                </audio>
+                <div className="mt-2 flex gap-2">
+                  <Button onClick={() => setPlaybackRate(0.75)}>0.75x</Button>
+                  <Button onClick={() => setPlaybackRate(1)}>1x</Button>
+                  <Button onClick={() => setPlaybackRate(1.25)}>1.25x</Button>
+                  <Button onClick={() => setPlaybackRate(1.5)}>1.5x</Button>
+                </div>
+              </div>
+            )}
+            {currentQuestion?.image_url && (
+              <div className="mb-4">
+                <img
+                  src={currentQuestion.image_url}
+                  alt="Question"
+                  className="max-w-full h-auto rounded-lg"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="w-1/3 border-r p-4 overflow-y-auto">
-          <h2 className="text-xl font-bold mb-4">
-            Question {currentQuestionIndex + 1}:{" "}
-            {currentQuestion?.question_text}
+        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Question {currentQuestionIndex + 1}
           </h2>
+          <p className="mb-4">{currentQuestion?.question_text}</p>
           <Radio.Group
-            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
             value={selectedAnswers[currentQuestionIndex] || null}
             onChange={(e) => handleSelectAnswer(e.target.value)}
+            className="w-full"
           >
-            {currentQuestion &&
-              (Number(testData.part_number) === 2
-                ? ["A", "B", "C"]
-                : ["A", "B", "C", "D"]
-              ).map((option) => (
-                <label
-                  key={option}
-                  className="border border-gray-300 px-4 py-3 rounded flex items-center h-14 hover:border-black cursor-pointer transition-colors"
-                >
-                  <Radio value={option} className="pointer-events-none" />
-                  <span className="ml-3 text-base">({option}) </span>
-                </label>
-              ))}
+            <Space direction="vertical" size="middle" className="w-full">
+              {currentQuestion &&
+                ["A", "B", "C", "D"].map((option) => {
+                  const optionKey =
+                    `option_${option.toLowerCase()}` as keyof IQuestion;
+                  const optionText = currentQuestion[optionKey];
+
+                  return (
+                    <Radio
+                      key={option}
+                      value={option}
+                      className={`
+                      !w-full !p-2 !rounded-lg !transition-all !duration-200 !border-gray-500 !bg-white !hover:bg-gray-50`}
+                    >
+                      <span className="text-base">
+                        ({option}) {optionText}
+                      </span>
+                    </Radio>
+                  );
+                })}
+            </Space>
           </Radio.Group>
         </div>
 
-        <div className="w-1/3 p-4 overflow-y-auto flex flex-col space-y-4">
-          <h3 className="font-bold">Part {testData.part_number}</h3>
-          <div className="grid grid-cols-6 gap-2">
-            {questions.map((_, index) => {
-              const isAnswered = !!selectedAnswers[index];
-              const isCurrent = index === currentQuestionIndex;
+        <div className="w-1/4 bg-white rounded-lg shadow-md p-6">
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Đánh dấu</h3>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+              <span>Câu hỏi đã hoàn thành</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm mt-1">
+              <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+              <span>Câu hỏi hiện tại</span>
+            </div>
+          </div>
 
-              return (
-                <Button
-                  key={index}
-                  onClick={() => setCurrentQuestionIndex(index)}
-                  style={{
-                    border: "1px solid",
-                    borderColor: isCurrent
-                      ? "#91D5FF"
-                      : isAnswered
-                      ? "#B7EB8F"
-                      : "gray",
-                    backgroundColor: isCurrent
-                      ? "#E6F7FF"
-                      : isAnswered
-                      ? "#F6FFED"
-                      : "white",
-                    color: "black",
-                    transition: "border-color 0.2s ease-in-out",
-                  }}
-                >
-                  {index + 1}
-                </Button>
-              );
-            })}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Part {testData.part_number}</h3>
+            <div className="grid grid-cols-5 gap-2">
+              {questions.map((_, index) => {
+                const isAnswered = !!selectedAnswers[index];
+                const isCurrent = index === currentQuestionIndex;
+                return (
+                  <Button
+                    key={index}
+                    onClick={() => setCurrentQuestionIndex(index)}
+                    style={{
+                      border: isCurrent
+                        ? "1px solid #1890ff"
+                        : isAnswered
+                        ? "1px solid #52c41a"
+                        : "1px solid #d9d9d9",
+                      backgroundColor: isCurrent
+                        ? "#e6f7ff"
+                        : isAnswered
+                        ? "#f0fff4"
+                        : "white",
+                    }}
+                  >
+                    {index + 1}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </main>
+      </div>
 
-      <footer className="flex justify-center gap-7 p-4 bg-white border-t">
+      <footer className="bg-white p-4 flex justify-center gap-4 shadow-md">
         <Button
           onClick={() =>
             setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))
           }
+          disabled={currentQuestionIndex === 0}
         >
           Câu trước
         </Button>
@@ -260,6 +314,7 @@ export default function ExamLayout() {
               Math.min(prev + 1, questions.length - 1)
             )
           }
+          disabled={currentQuestionIndex === questions.length - 1}
         >
           Câu tiếp
         </Button>

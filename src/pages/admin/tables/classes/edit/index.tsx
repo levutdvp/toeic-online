@@ -46,6 +46,10 @@ const EditClass: React.FC<editClassProps> = ({
   const initialValues = useMemo(() => {
     if (!recordSelected) return;
 
+    const teacherId = recordSelected.teacher
+      ? teachers.find((t) => t.name === recordSelected.teacher)?.id
+      : undefined;
+
     return {
       class_code: recordSelected.class_code,
       class_type: recordSelected.class_type,
@@ -57,9 +61,9 @@ const EditClass: React.FC<editClassProps> = ({
         recordSelected.end_time && dayjs(recordSelected.end_time, "HH:mm"),
       days: recordSelected.days,
       number_of_students: recordSelected.number_of_students,
-      teacher: recordSelected.teacher,
+      teacher: teacherId,
     };
-  }, [recordSelected]);
+  }, [recordSelected, teachers]);
 
   useEffect(() => {
     form.setFieldsValue(initialValues);
@@ -100,7 +104,6 @@ const EditClass: React.FC<editClassProps> = ({
     onClose();
   };
 
-  // Thêm options cho các ngày trong tuần
   const dayOptions = [
     { value: "T2", label: "Thứ 2" },
     { value: "T3", label: "Thứ 3" },

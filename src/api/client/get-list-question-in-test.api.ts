@@ -35,10 +35,7 @@ export interface IGetListQuestionTest {
 }
 
 export const getListQuestionTest = (exam_code: string, part_number: number) => {
-  return apiCall<{
-    exam_section: IExamSection;
-    questions: IQuestion[][];
-  }>(
+  return apiCall<IQuestion[]>(
     {
       url: `${API_URL}/api/exam-sections/${exam_code}/${part_number}/questions`,
       method: "GET",
@@ -48,8 +45,7 @@ export const getListQuestionTest = (exam_code: string, part_number: number) => {
     }
   ).pipe(
     map((res) => ({
-      exam_section: res.data.exam_section,
-      questions: res.data.questions.flat(),
+      questions: res.data,
     }))
   );
 };
