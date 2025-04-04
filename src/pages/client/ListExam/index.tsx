@@ -1,11 +1,12 @@
+import { getTestFull } from "@/api/client/get-list-test-full.api";
 import { getListExam, IGetListTest } from "@/api/client/get-list-test.api";
+import { IGetListTestFull } from "@/api/client/get-list-test-full.api";
 import { initPaging } from "@/consts/paging.const";
 import { removeLoading } from "@/services/loading";
 import { TableQueriesRef } from "@/types/pagination.type";
+import { Pagination } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Pagination } from "antd";
-import { getTestFull } from "@/api/client/get-list-test-full.api";
 import { Observable } from "rxjs";
 
 type TableQueries = TableQueriesRef<IGetListTest>;
@@ -86,13 +87,6 @@ const TestCard: React.FC<IGetListTest> = ({
   );
 };
 
-const transformTestData = (data: any[]): IGetListTest[] => {
-  return data.map((item) => ({
-    ...item,
-    isFree: item.isFree === 0,
-  }));
-};
-
 const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
   const [testData, setTestData] = useState<IGetListTest[]>([]);
   const tableQueriesRef = useRef<TableQueries>({
@@ -111,7 +105,16 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
       }) as Observable<any>
     ).subscribe({
       next: (res) => {
-        const transformedData = transformTestData(res.data);
+        const transformedData = isPractice
+          ? res.data.map((item: IGetListTest) => ({
+              ...item,
+              is_Free: Boolean(item.is_Free),
+            }))
+          : res.data.map((item: IGetListTestFull) => ({
+              ...item,
+              is_Free: Boolean(item.isFree),
+              type: "Thi thử",
+            }));
         setTestData(transformedData);
         tableQueriesRef.current = {
           ...tableQueriesRef.current,
@@ -145,7 +148,7 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
           <TestCard
             key={index}
             {...test}
-            type={isPractice ? "Luyện tập" : "Thi thử"}
+            type={isPractice ? "Luyện tập" : test.type}
           />
         ))}
       </div>

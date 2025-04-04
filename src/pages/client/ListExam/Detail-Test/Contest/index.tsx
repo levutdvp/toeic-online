@@ -19,10 +19,6 @@ export default function ExamLayout() {
 
   useEffect(() => {
     if (!testData) {
-      showToast({
-        type: "error",
-        content: "Không tìm thấy thông tin bài thi!",
-      });
       navigate("/");
       return;
     }
@@ -55,10 +51,9 @@ export default function ExamLayout() {
   }, [timeLeft]);
 
   const fetchQuestions = useCallback(() => {
-    if (!testData?.exam_code || !testData?.part_number) {
+    if (!testData?.exam_code) {
       return;
     }
-
     showLoading();
     getListQuestionTest(
       testData.exam_code,
@@ -66,12 +61,10 @@ export default function ExamLayout() {
     ).subscribe({
       next: (res) => {
         setQuestions(res.questions);
-        console.log("Questions loaded:", res.questions);
         removeLoading();
         setSelectedAnswers({});
       },
-      error: (error) => {
-        console.error("Error loading questions:", error);
+      error: () => {
         removeLoading();
         showToast({ type: "error", content: "Không thể tải câu hỏi!" });
       },
@@ -80,7 +73,7 @@ export default function ExamLayout() {
 
   useEffect(() => {
     fetchQuestions();
-  }, [fetchQuestions]);
+  }, [fetchQuestions, testData]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

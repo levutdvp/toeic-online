@@ -4,12 +4,13 @@ import queryString from "query-string";
 
 export interface IGetListTestFull {
   id?: number;
-  title: string;
+  exam_code: string;
+  exam_name: string;
   duration: number;
-  parts: number;
-  questions: number;
-  maxScore: number;
-  label: string;
+  part_number: string;
+  section_name: string;
+  question_count: number;
+  max_score: number;
   isFree?: boolean;
 }
 
