@@ -71,7 +71,7 @@ const EditStudentDetailClass: React.FC<editStudentProps> = ({
   return (
     <>
       <Modal
-        title={"Cập nhật thông tin học sinh"}
+        title={"Cập nhật thông tin học viên"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}

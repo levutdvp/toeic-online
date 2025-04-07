@@ -9,7 +9,7 @@ export interface IEditForm {
 }
 
 export const validateForm: TFormRules<IEditForm> = {
-  certificate_name: [{ required: true, message: "Vui lòng nhập tên bằng cấp" }],
+  certificate_name: [{ required: true, message: "Vui lòng nhập tên chứng chỉ" }],
   score: [{ required: true, message: "vui lòng nhập điểm" }],
   issued_by: [
     { required: true, message: "vui lòng nhập tên tổ chức cấp bằng" },

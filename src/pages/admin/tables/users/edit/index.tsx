@@ -109,7 +109,7 @@ const EditUser: React.FC<editUserProps> = ({
             >
               <Select
                 options={[
-                  { value: "STUDENT", label: "Học sinh" },
+                  { value: "STUDENT", label: "Học viên" },
                   { value: "TEACHER", label: "Giáo viên" },
                 ]}
               />

@@ -67,7 +67,7 @@ const ModalDetailClass = ({
 
   const { userRoles } = useAuth();
 
-  const teacherPermission = userRoles.some((role) => role === "TEACHER");
+  const isTeacher = userRoles.some((role) => role === "TEACHER");
 
   const getListStudentsDetail = useCallback(() => {
     showLoading();
@@ -117,7 +117,7 @@ const ModalDetailClass = ({
   };
 
   const showDeleteModal = (id: number) => {
-    if (teacherPermission) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -164,7 +164,7 @@ const ModalDetailClass = ({
   };
 
   const handleOpenEditModal = (record: IStudentRes) => {
-    if (teacherPermission) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -221,11 +221,11 @@ const ModalDetailClass = ({
       key: "address",
       align: "center",
     },
-    {
+    ...(isTeacher ? [] : [{
       title: "Hành động",
       key: "action",
-      align: "center",
-      render: (_, record) => (
+      align: "center" as const,
+      render: (_: unknown, record: IStudentRes) => (
         <Space size="middle">
           <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
@@ -239,7 +239,7 @@ const ModalDetailClass = ({
           </Button>
         </Space>
       ),
-    },
+    }]),
   ];
 
   return (
@@ -250,6 +250,7 @@ const ModalDetailClass = ({
         onOk={onClose}
         onCancel={onClose}
         width={1000}
+        footer={false}
       >
         {/* detail class */}
         <div className="my-5 border-b border-gray-200">

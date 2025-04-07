@@ -35,7 +35,7 @@ const ModalStudentDetail = ({ studentId, onClose }: Props) => {
       error: () => {
         showToast({
           type: "error",
-          content: "Lấy thông tin học sinh thất bại!",
+          content: "Lấy thông tin học viên thất bại!",
         });
         removeLoading();
       },
@@ -102,8 +102,7 @@ const ModalStudentDetail = ({ studentId, onClose }: Props) => {
       onCancel={onClose}
       onOk={onClose}
       width={600}
-      cancelText="Hủy"
-      okText="Xác nhận"
+      footer={false}
     >
       <div className="flex items-center space-x-10 gap-8">
         <div className="relative cursor-pointer" onClick={handleAvatarClick}>

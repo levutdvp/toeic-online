@@ -154,16 +154,6 @@ const EditTeacher: React.FC<editTeacherProps> = ({
             >
               <Input />
             </Form.Item>
-            {/* <Form.Item name="certificates" rules={validateForm.certificates}>
-                     <Input
-                       placeholder="Bằng cấp"
-                       onChange={(e) => {
-                         form.setFieldsValue({
-                           certificates: e.target.value.split(","),
-                         });
-                       }}
-                     />
-                   </Form.Item> */}
           </Form>
         </div>
       </Modal>

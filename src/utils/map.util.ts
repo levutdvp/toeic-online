@@ -5,7 +5,7 @@ export const formatGender = (gender: string) => {
 export const formatRoles = (role: string): string => {
   switch (role) {
     case "STUDENT":
-      return "Học sinh";
+      return "Học viên";
     case "TEACHER":
       return "Giáo viên";
     case "ADMIN":

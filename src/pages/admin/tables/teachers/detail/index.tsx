@@ -76,7 +76,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
         error: () => {
           showToast({
             type: "error",
-            content: "Lấy danh sách bằng cấp thất bại!",
+            content: "Lấy danh sách chứng chỉ thất bại!",
           });
           removeLoading();
         },
@@ -93,7 +93,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
 
   const columns: ColumnsType<IGetListCertificate> = [
     {
-      title: "Bằng cấp",
+      title: "Tên chứng chỉ",
       dataIndex: "certificate_name",
       key: "certificate_name",
       align: "center",
@@ -268,8 +268,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
         onCancel={onClose}
         onOk={onClose}
         width={800}
-        cancelText="Hủy"
-        okText="Xác nhận"
+        footer={false}
       >
         <div className="flex items-center space-x-10 gap-8">
           <div
@@ -330,7 +329,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
         </div>
 
         <div className="mt-4">
-          <h3 className="font-bold text-lg">Bằng cấp</h3>
+          <h3 className="font-bold text-lg">Chứng chỉ</h3>
           <Table
             dataSource={certificates}
             columns={columns}
@@ -342,7 +341,7 @@ const ModalTeacherDetail: React.FC<IProps> = ({ teacherId, onClose }) => {
             className="mt-2"
             onClick={handleAddCertificate}
           >
-            Thêm bằng cấp
+            Thêm chứng chỉ
           </Button>
 
           <EditCertificate

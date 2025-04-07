@@ -5,6 +5,7 @@ import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { IGetListClasses } from "@/api/admin/api-classes/get-list-class.api";
 import { deleteClass } from "@/api/admin/api-classes/delete-class.api";
+import { useAuth } from "@/hooks/use-auth.hook";
 
 interface IActionBlock {
   onClickAction: (action?: any) => void;
@@ -24,6 +25,10 @@ export default function ActionBlockClasses({
   const onAdd = () => {
     onClickAction("add");
   };
+
+  const { userRoles } = useAuth();
+
+  const isTeacher = userRoles.some((role) => role === "TEACHER");
 
   const deleteDataItems = useCallback(
     (listsId: Array<number>) => {
@@ -60,25 +65,27 @@ export default function ActionBlockClasses({
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
         <div>Quản lí lớp học</div>
-        <div>
-          <Space size={12}>
-            <Button
-              icon={<PlusCircleOutlined />}
-              type="primary"
-              onClick={onAdd}
-            >
-              Thêm
-            </Button>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              onClick={showDeleteModal}
-              disabled={!selectedRows.length}
-            >
-              Xóa
-            </Button>
-          </Space>
-        </div>
+        {!isTeacher && (
+          <div>
+            <Space size={12}>
+              <Button
+                icon={<PlusCircleOutlined />}
+                type="primary"
+                onClick={onAdd}
+              >
+                Thêm
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={showDeleteModal}
+                disabled={!selectedRows.length}
+              >
+                Xóa
+              </Button>
+            </Space>
+          </div>
+        )}
       </div>
       <div>
         <Modal

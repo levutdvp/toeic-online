@@ -38,7 +38,7 @@ const AddCertificate: React.FC<addTeacherProps> = ({
     const addCertificates = addCertificate(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Thêm bằng cấp thành công" });
+        showToast({ content: "Thêm chứng chỉ thành công" });
         form.resetFields();
         onClose();
         getTeacherCertificates();
@@ -57,7 +57,7 @@ const AddCertificate: React.FC<addTeacherProps> = ({
   return (
     <>
       <Modal
-        title={"Thêm mới bằng cấp"}
+        title={"Thêm mới chứng chỉ"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}
@@ -76,7 +76,7 @@ const AddCertificate: React.FC<addTeacherProps> = ({
             <Form.Item
               name="certificate_name"
               rules={validateForm.certificate_name}
-              label="Tên bằng cấp"
+              label="Tên chứng chỉ"
               required
             >
               <Input />

@@ -8,7 +8,7 @@ import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { TableQueriesRef } from "@/types/pagination.type";
 import { Button, Input, Modal, Space, Table, TableProps, Tag } from "antd";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import ActionBlockClasses from "./classes/action-block-class";
@@ -65,9 +65,10 @@ const ClassTablesPage = () => {
     totalPage: initPaging.totalPage,
   });
 
-  const { userRoles } = useAuth();
+  const { userRoles, userInfo } = useAuth();
 
-  const editPermissions = userRoles.some((role) => role === "TEACHER");
+  const isTeacher = userRoles.some((role) => role === "TEACHER");
+  const isAdmin = userRoles.some((role) => role === "ADMIN");
 
   const getListClasses = useCallback(() => {
     showLoading();
@@ -76,7 +77,15 @@ const ClassTablesPage = () => {
       pageSize: tableQueriesRef.current.pageSize,
     }).subscribe({
       next: (res) => {
-        setDataClasses(res.data);
+        // Filter classes based on teacher's name if user is a teacher
+        let filteredData = res.data;
+        if (isTeacher && !isAdmin && userInfo) {
+          filteredData = res.data.filter(
+            (cls) => cls.teacher === userInfo.fullName
+          );
+        }
+        
+        setDataClasses(filteredData);
         tableQueriesRef.current = {
           ...tableQueriesRef.current,
           current: res.meta.pageCurrent,
@@ -91,7 +100,7 @@ const ClassTablesPage = () => {
       },
     });
     getClassesSub.add();
-  }, []);
+  }, [isTeacher, isAdmin, userInfo]);
 
   useEffect(() => {
     getListClasses();
@@ -107,7 +116,7 @@ const ClassTablesPage = () => {
   };
 
   const showDeleteModal = (id: number) => {
-    if (editPermissions) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -165,7 +174,7 @@ const ClassTablesPage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListClasses) => {
-    if (editPermissions) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -223,97 +232,107 @@ const ClassTablesPage = () => {
     }
   };
 
-  const columns: TableProps<IGetListClasses>["columns"] = [
-    {
-      title: "Tên lớp",
-      dataIndex: "class_code",
-      key: "class_code",
-      align: "center",
-    },
-    {
-      title: "Mã lớp",
-      dataIndex: "class_type",
-      key: "class_type",
-      align: "center",
-    },
-    {
-      title: "Ngày bắt đầu",
-      dataIndex: "start_date",
-      key: "start_date",
-      align: "center",
-      render: (start_date: string) => {
-        return start_date ? dayjs(start_date).format("DD-MM-YYYY") : "";
+  const columns: TableProps<IGetListClasses>["columns"] = useMemo(() => {
+    const baseColumns = [
+      {
+        title: "Tên lớp",
+        dataIndex: "class_code",
+        key: "class_code",
+        align: "center" as const,
       },
-    },
-    {
-      title: "Ngày kết thúc",
-      dataIndex: "end_date",
-      key: "end_date",
-      align: "center",
-      render: (end_date: string) => {
-        return end_date ? dayjs(end_date).format("DD-MM-YYYY") : "";
+      {
+        title: "Mã lớp",
+        dataIndex: "class_type",
+        key: "class_type",
+        align: "center" as const,
       },
-    },
-    {
-      title: "Thời gian bắt đầu",
-      dataIndex: "start_time",
-      key: "start_time",
-      align: "center",
-    },
-    {
-      title: "Thời gian kết thúc",
-      dataIndex: "end_time",
-      key: "end_time",
-      align: "center",
-    },
-    {
-      title: "Lịch học",
-      dataIndex: "days",
-      key: "days",
-      align: "center",
-      render: (days: string[]) => (
-        <Space size={[0, 8]} wrap>
-          {days.map((day, idx) => (
-            <Tag color={getDayTagColor(day)} key={idx}>
-              {day}
-            </Tag>
-          ))}
-        </Space>
-      ),
-    },
-    {
-      title: "Số lượng học viên",
-      dataIndex: "number_of_students",
-      key: "number_of_students",
-      align: "center",
-    },
-    {
-      title: "Giáo viên phụ trách",
-      dataIndex: "teacher",
-      key: "teacher",
-      align: "center",
-    },
-    {
-      title: "Hành động",
-      key: "action",
-      align: "center",
-      width: 200,
-      render: (_, record) => (
-        <Space size="middle">
-          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
-            <CiEdit />
-          </Button>
-          <Button
-            size="middle"
-            danger
-            onClick={() => showDeleteModal(record.id!)}
-          >
-            <MdOutlineDeleteForever />
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+      {
+        title: "Ngày bắt đầu",
+        dataIndex: "start_date",
+        key: "start_date",
+        align: "center" as const,
+        render: (start_date: string) => {
+          return start_date ? dayjs(start_date).format("DD-MM-YYYY") : "";
+        },
+      },
+      {
+        title: "Ngày kết thúc",
+        dataIndex: "end_date",
+        key: "end_date",
+        align: "center" as const,
+        render: (end_date: string) => {
+          return end_date ? dayjs(end_date).format("DD-MM-YYYY") : "";
+        },
+      },
+      {
+        title: "Thời gian bắt đầu",
+        dataIndex: "start_time",
+        key: "start_time",
+        align: "center" as const,
+      },
+      {
+        title: "Thời gian kết thúc",
+        dataIndex: "end_time",
+        key: "end_time",
+        align: "center" as const,
+      },
+      {
+        title: "Lịch học",
+        dataIndex: "days",
+        key: "days",
+        align: "center" as const,
+        render: (days: string[]) => (
+          <Space size={[0, 8]} wrap>
+            {days.map((day, idx) => (
+              <Tag color={getDayTagColor(day)} key={idx}>
+                {day}
+              </Tag>
+            ))}
+          </Space>
+        ),
+      },
+      {
+        title: "Số lượng học viên",
+        dataIndex: "number_of_students",
+        key: "number_of_students",
+        align: "center" as const,
+      },
+      {
+        title: "Giáo viên phụ trách",
+        dataIndex: "teacher",
+        key: "teacher",
+        align: "center" as const,
+      },
+    ];
+
+    if (isAdmin) {
+      return [
+        ...baseColumns,
+        {
+          title: "Hành động",
+          key: "action",
+          align: "center" as const,
+          width: 200,
+          render: (_: unknown, record: IGetListClasses) => (
+            <Space size="middle">
+              <Button size="middle" onClick={() => handleOpenEditModal(record)}>
+                <CiEdit />
+              </Button>
+              <Button
+                size="middle"
+                danger
+                onClick={() => showDeleteModal(record.id!)}
+              >
+                <MdOutlineDeleteForever />
+              </Button>
+            </Space>
+          ),
+        },
+      ];
+    }
+
+    return baseColumns;
+  }, [isAdmin]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { open, ...modalDetailProps } = openModalDetail;

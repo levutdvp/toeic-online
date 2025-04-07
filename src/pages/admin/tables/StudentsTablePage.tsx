@@ -52,7 +52,7 @@ const StudentTablesPage = () => {
 
   const { userRoles } = useAuth();
 
-  const teacherPermissions = userRoles.some((role) => role === "TEACHER");
+  const isTeacher = userRoles.some((role) => role === "TEACHER");
 
   const getListStudents = useCallback(() => {
     showLoading();
@@ -92,7 +92,7 @@ const StudentTablesPage = () => {
   };
 
   const showDeleteModal = (id: number) => {
-    if (teacherPermissions) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -150,7 +150,7 @@ const StudentTablesPage = () => {
   };
 
   const handleOpenEditModal = (record: IGetListStudents) => {
-    if (teacherPermissions) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -186,14 +186,12 @@ const StudentTablesPage = () => {
       title: "Họ và tên",
       dataIndex: "name",
       key: "name",
-      width: 200,
       align: "center",
     },
     {
       title: "Ngày sinh",
       dataIndex: "dob",
       key: "dob",
-      width: 200,
       align: "center",
       render: (dob: string) => {
         return dob ? dayjs(dob).format("DD-MM-YYYY") : "";
@@ -203,7 +201,6 @@ const StudentTablesPage = () => {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
-      width: 200,
       align: "center",
       render: (gender) => gender && formatGender(gender),
     },
@@ -211,23 +208,21 @@ const StudentTablesPage = () => {
       title: "Số điện thoại",
       dataIndex: "phone",
       key: "phone",
-      width: 250,
       align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: 300,
       align: "center",
     },
     { title: "Địa chỉ", dataIndex: "address", key: "address", align: "center" },
     {
       title: "Hành động",
       key: "action",
-      align: "center",
-      width: 200,
-      render: (_, record) => (
+      align: "center" as const,
+      hidden: isTeacher,
+      render: (_: unknown, record: IGetListStudents) => (
         <Space size="middle">
           <Button size="middle" onClick={() => handleOpenEditModal(record)}>
             <CiEdit />
@@ -236,7 +231,6 @@ const StudentTablesPage = () => {
             size="middle"
             danger
             onClick={() => showDeleteModal(record.id!)}
-            disabled={record.id === 1}
           >
             <MdOutlineDeleteForever />
           </Button>
@@ -261,7 +255,7 @@ const StudentTablesPage = () => {
         getListData={getListStudents}
       />
       <Table<IGetListStudents>
-        columns={columns}
+        columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredStudents}
         rowKey="id"
         rowSelection={rowSelection}
@@ -275,7 +269,7 @@ const StudentTablesPage = () => {
         onRow={(record) => {
           return {
             onDoubleClick: () => {
-              if (!teacherPermissions) {
+              if (!isTeacher) {
                 handleOpenDetailModal(record);
               }
             },

@@ -65,7 +65,7 @@ const AddUser: React.FC<addUserProps> = ({ isOpen, onClose }) => {
               <Select
                 placeholder="Quyền"
                 options={[
-                  { value: "STUDENT", label: "Học sinh" },
+                  { value: "STUDENT", label: "Học viên" },
                   { value: "TEACHER", label: "Giáo viên" },
                 ]}
               />

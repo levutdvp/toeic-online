@@ -1,9 +1,8 @@
-import Filter from "@/components/client/Filter";
-import ListExam from "../ListExam";
 import { useAuth } from "@/hooks/use-auth.hook";
-import { useLocation, useNavigate } from "react-router-dom";
-import { PageWrapper } from "../PageWrapper";
 import { useEffect, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import ListExam from "../ListExam";
+import { PageWrapper } from "../PageWrapper";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -27,7 +26,6 @@ const HomePage = () => {
   return (
     <>
       <PageWrapper>
-        <Filter />
         <ListExam isPractice={isPractice} />
       </PageWrapper>
     </>

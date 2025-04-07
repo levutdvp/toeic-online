@@ -77,7 +77,7 @@ const EditCertificate: React.FC<editCertificateProps> = ({
   return (
     <>
       <Modal
-        title={"Cập nhật thông tin bằng cấp"}
+        title={"Cập nhật thông tin chứng chỉ"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}
@@ -96,7 +96,7 @@ const EditCertificate: React.FC<editCertificateProps> = ({
             <Form.Item
               name="certificate_name"
               rules={validateForm.certificate_name}
-              label="Tên bằng cấp"
+              label="Tên chứng chỉ"
               required
             >
               <Input />

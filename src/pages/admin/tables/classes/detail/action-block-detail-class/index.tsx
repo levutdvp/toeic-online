@@ -23,9 +23,9 @@ export default function ActionBlockDetailClass({
 
   const { userRoles } = useAuth();
 
-  const teacherPermission = userRoles.some((role) => role === "TEACHER");
+  const isTeacher = userRoles.some((role) => role === "TEACHER");
   const showDeleteModal = () => {
-    if (teacherPermission) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -35,7 +35,7 @@ export default function ActionBlockDetailClass({
     setIsDeleteModalOpen(true);
   };
   const onAdd = () => {
-    if (teacherPermission) {
+    if (isTeacher) {
       showToast({
         type: "error",
         content: "Bạn không có quyền thực hiện chức năng này!",
@@ -79,25 +79,27 @@ export default function ActionBlockDetailClass({
   return (
     <div>
       <div className="flex justify-between font-bold text-lg mt-5">
-        <div>
-          <Space size={12}>
-            <Button
-              icon={<PlusCircleOutlined />}
-              type="primary"
-              onClick={onAdd}
-            >
-              Thêm
-            </Button>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              onClick={showDeleteModal}
-              disabled={!selectedRows.length}
-            >
-              Xóa
-            </Button>
-          </Space>
-        </div>
+      {!isTeacher && (
+          <div>
+            <Space size={12}>
+              <Button
+                icon={<PlusCircleOutlined />}
+                type="primary"
+                onClick={onAdd}
+              >
+                Thêm
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={showDeleteModal}
+                disabled={!selectedRows.length}
+              >
+                Xóa
+              </Button>
+            </Space>
+          </div>
+        )}
       </div>
       <div>
         <Modal

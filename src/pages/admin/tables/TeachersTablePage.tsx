@@ -4,6 +4,7 @@ import {
   IGetListTeachers,
 } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
 import { initPaging } from "@/consts/paging.const";
+import { useAuth } from "@/hooks/use-auth.hook";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { formatGender } from "@/utils/map.util";
@@ -19,7 +20,6 @@ import ActionBlockTeachers from "./teachers/action-block-teacher";
 import AddTeacher from "./teachers/add";
 import ModalTeacherDetail from "./teachers/detail";
 import EditTeacher from "./teachers/edit";
-import { useAuth } from "@/hooks/use-auth.hook";
 
 type TableQueries = TableQueriesRef<IGetListTeachers>;
 
@@ -50,9 +50,10 @@ const TeachersTablePage = () => {
     totalPage: initPaging.totalPage,
   });
 
-  const { userRoles, userInfo } = useAuth();
+  const { userRoles } = useAuth();
 
   const teacherPermissions = userRoles.some((role) => role === "TEACHER");
+  const isAdmin = userRoles.includes("ADMIN");
 
   const getListTeachers = useCallback(() => {
     showLoading();
@@ -181,6 +182,15 @@ const TeachersTablePage = () => {
     );
   });
 
+  const handleRowDoubleClick = (record: IGetListTeachers) => {
+    if (isAdmin) {
+      setModalDetail({
+        open: true,
+        teacherId: record.id || null,
+      });
+    }
+  };
+
   const columns: TableProps<IGetListTeachers>["columns"] = [
     {
       title: "Họ và tên",
@@ -246,13 +256,6 @@ const TeachersTablePage = () => {
     },
   ];
 
-  const handleOpenDetailModal = (record: IGetListTeachers) => {
-    setModalDetail({
-      open: true,
-      teacherId: record.id ?? null,
-    });
-  };
-
   return (
     <>
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
@@ -281,21 +284,9 @@ const TeachersTablePage = () => {
         dataSource={filteredTeachers}
         rowSelection={rowSelection}
         onChange={onChangeTable}
-        onRow={(record) => {
-          return {
-            onDoubleClick: () => {
-              if (userRoles.includes("ADMIN")) {
-                handleOpenDetailModal(record);
-              } else if (
-                userRoles.includes("TEACHER") &&
-                (record.id === userInfo?.id ||
-                  record.name === userInfo?.fullName)
-              ) {
-                handleOpenDetailModal(record);
-              }
-            },
-          };
-        }}
+        onRow={(record) => ({
+          onDoubleClick: () => handleRowDoubleClick(record),
+        })}
       />
 
       <Modal

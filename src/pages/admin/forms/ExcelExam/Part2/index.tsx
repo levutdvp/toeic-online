@@ -52,6 +52,11 @@ const ExcelUploadPart2 = () => {
       return;
     }
 
+    if (!examCode) {
+      showToast({ content: "Vui lòng chọn mã đề thi", type: "error" });
+      return;
+    }
+
     const file = fileList[0];
     setIsUploading(true);
 
@@ -259,6 +264,7 @@ const ExcelUploadPart2 = () => {
         >
           {isUploading ? "Đang xử lý..." : "Gửi và xử lý file"}
         </Button>
+
         <Select
           showSearch
           placeholder="Chọn mã đề thi"
@@ -273,6 +279,7 @@ const ExcelUploadPart2 = () => {
             };
           })}
           notFoundContent="Không tìm thấy đề thi"
+          status={!examCode && fileList.length > 0 ? "error" : undefined}
         />
 
         {questions.length > 0 && (

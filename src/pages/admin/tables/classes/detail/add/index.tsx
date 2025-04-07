@@ -38,10 +38,10 @@ const AddStudentDetailClass = ({
             setLoadingStudents(false);
           },
           error: (error) => {
-            console.error("Lỗi khi lấy danh sách học sinh:", error);
+            console.error("Lỗi khi lấy danh sách học viên:", error);
             showToast({
               type: "error",
-              content: "Không thể tải danh sách học sinh",
+              content: "Không thể tải danh sách học viên",
             });
             setLoadingStudents(false);
           },
@@ -49,10 +49,10 @@ const AddStudentDetailClass = ({
 
         return () => subscription.unsubscribe();
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách học sinh:", error);
+        console.error("Lỗi khi lấy danh sách học viên:", error);
         showToast({
           type: "error",
-          content: "Không thể tải danh sách học sinh",
+          content: "Không thể tải danh sách học viên",
         });
         setLoadingStudents(false);
       }
@@ -78,28 +78,28 @@ const AddStudentDetailClass = ({
         next: () => {
           showToast({
             type: "success",
-            content: "Thêm học sinh vào lớp thành công!",
+            content: "Thêm học viên vào lớp thành công!",
           });
           form.resetFields();
           onClose();
           setLoading(false);
         },
         error: (error) => {
-          console.error("Lỗi khi thêm học sinh:", error);
+          console.error("Lỗi khi thêm học viên:", error);
           setLoading(false);
         },
       });
 
       return () => subscription.unsubscribe();
     } catch (error) {
-      console.error("Lỗi khi thêm học sinh:", error);
+      console.error("Lỗi khi thêm học viên:", error);
       setLoading(false);
     }
   };
 
   return (
     <Modal
-      title="Thêm Học Sinh Vào Lớp"
+      title="Thêm Học Viên Vào Lớp"
       open={isOpen}
       onCancel={onClose}
       footer={null}
@@ -107,8 +107,8 @@ const AddStudentDetailClass = ({
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
           name="user_id"
-          label="Chọn Học Sinh"
-          rules={[{ required: true, message: "Vui lòng chọn học sinh!" }]}
+          label="Chọn Học Viên"
+          rules={[{ required: true, message: "Vui lòng chọn học viên!" }]}
         >
           <Select
             loading={loadingStudents}
@@ -132,7 +132,7 @@ const AddStudentDetailClass = ({
               Hủy
             </Button>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Thêm Học Sinh
+              Thêm Học Viên
             </Button>
           </div>
         </Form.Item>

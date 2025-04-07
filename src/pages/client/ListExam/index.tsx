@@ -4,7 +4,7 @@ import { IGetListTestFull } from "@/api/client/get-list-test-full.api";
 import { initPaging } from "@/consts/paging.const";
 import { removeLoading } from "@/services/loading";
 import { TableQueriesRef } from "@/types/pagination.type";
-import { Pagination } from "antd";
+import { Pagination, Input, Button } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Observable } from "rxjs";
@@ -89,6 +89,9 @@ const TestCard: React.FC<IGetListTest> = ({
 
 const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
   const [testData, setTestData] = useState<IGetListTest[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [allTestData, setAllTestData] = useState<IGetListTest[]>([]);
+  const [selectedPart, setSelectedPart] = useState<number | null>(null);
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
     pageSize: initPaging.pageSize,
@@ -116,6 +119,7 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
               type: "Thi thử",
             }));
         setTestData(transformedData);
+        setAllTestData(transformedData);
         tableQueriesRef.current = {
           ...tableQueriesRef.current,
           current: res.meta.pageCurrent,
@@ -135,6 +139,36 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
     getListTest();
   }, [getListTest]);
 
+  const filterData = useCallback(() => {
+    let filteredData = [...allTestData];
+    
+    // Filter by search term
+    if (searchTerm) {
+      filteredData = filteredData.filter((test) =>
+        test.exam_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filter by part
+    if (selectedPart !== null) {
+      filteredData = filteredData.filter((test) => Number(test.part_number) === selectedPart);
+    }
+    
+    setTestData(filteredData);
+  }, [searchTerm, selectedPart, allTestData]);
+
+  useEffect(() => {
+    filterData();
+  }, [searchTerm, selectedPart, filterData]);
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handlePartSelect = (part: number) => {
+    setSelectedPart(part === selectedPart ? null : part);
+  };
+
   const handlePageChange = (page: number, pageSize?: number) => {
     tableQueriesRef.current.current = page;
     if (pageSize) tableQueriesRef.current.pageSize = pageSize;
@@ -142,26 +176,73 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
   };
 
   return (
-    <div className="p-5 mr-[200px] ml-[200px]">
-      <div className="grid grid-cols-2 gap-6 place-items-center">
-        {testData.map((test, index) => (
-          <TestCard
-            key={index}
-            {...test}
-            type={isPractice ? "Luyện tập" : test.type}
-          />
-        ))}
+    <>
+      <div>
+        <div className="bg-[#F5F5F7] p-6 rounded-lg mb-6">
+          <h2 className="text-2xl font-bold mb-4 mr-[200px] ml-[200px]">
+            Tổng hợp đề thi
+          </h2>
+          {isPractice && (
+            <div className="flex gap-2 mb-4 mr-[200px] ml-[200px]">
+              {[1, 2, 3, 4, 5, 6, 7].map((part) => (
+                <Button
+                  key={part}
+                  type={selectedPart === part ? "primary" : "default"}
+                  onClick={() => handlePartSelect(part)}
+                  className={selectedPart === part ? "bg-blue-500" : ""}
+                  shape="round"
+                >
+                  Part {part}
+                </Button>
+              ))}
+              <Button
+                type={selectedPart === null ? "primary" : "default"}
+                onClick={() => setSelectedPart(null)}
+                className={selectedPart === null ? "bg-blue-500" : ""}
+                shape="round"
+              >
+                Tất cả
+              </Button>
+            </div>
+          )}
+          <div className="flex gap-2">s
+            <Input
+              placeholder="Nhập tên đề muốn tìm..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="!max-w-[800px] !ml-[200px]"
+            />
+            <Button
+              type="primary"
+              className="bg-gray-800"
+              onClick={() => handleSearch(searchTerm)}
+            >
+              Tìm kiếm
+            </Button>
+          </div>
+        </div>
       </div>
+      <div className="p-5 mr-[200px] ml-[200px]">
+        <div className="grid grid-cols-2 gap-6">
+          {testData.map((test, index) => (
+            <TestCard
+              key={index}
+              {...test}
+              type={isPractice ? "Luyện tập" : test.type}
+            />
+          ))}
+        </div>
 
-      <div className="flex justify-center mt-6">
-        <Pagination
-          current={tableQueriesRef.current.current}
-          pageSize={tableQueriesRef.current.pageSize}
-          total={tableQueriesRef.current.total}
-          onChange={handlePageChange}
-        />
+        <div className="flex justify-center mt-6">
+          <Pagination
+            current={tableQueriesRef.current.current}
+            pageSize={tableQueriesRef.current.pageSize}
+            total={tableQueriesRef.current.total}
+            onChange={handlePageChange}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

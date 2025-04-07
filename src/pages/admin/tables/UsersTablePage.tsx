@@ -235,7 +235,7 @@ const UserTablesPage = () => {
           }}
           options={[
             { label: "Admin", value: "ADMIN" },
-            { label: "Học sinh", value: "STUDENT" },
+            { label: "Học viên", value: "STUDENT" },
             { label: "Giáo viên", value: "TEACHER" },
           ]}
         />

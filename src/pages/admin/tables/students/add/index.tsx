@@ -27,7 +27,7 @@ const AddStudent: React.FC<addStudentProps> = ({ isOpen, onClose }) => {
     const addStudents = addStudent(params).subscribe({
       next: () => {
         removeLoading();
-        showToast({ content: "Thêm mới học sinh thành công" });
+        showToast({ content: "Thêm mới học viên thành công" });
         form.resetFields();
         onClose();
       },
@@ -45,7 +45,7 @@ const AddStudent: React.FC<addStudentProps> = ({ isOpen, onClose }) => {
   return (
     <>
       <Modal
-        title={"Thêm mới học sinh"}
+        title={"Thêm mới học viên"}
         open={isOpen}
         onOk={form.submit}
         onCancel={handleClose}

@@ -65,6 +65,11 @@ const ExcelUploadPart1 = () => {
       return;
     }
 
+    if (!examCode) {
+      showToast({ content: "Vui lòng chọn mã đề thi", type: "error" });
+      return;
+    }
+
     const file = fileList[0];
     setIsUploading(true);
 
@@ -278,7 +283,7 @@ const ExcelUploadPart1 = () => {
           loading={isUploading}
           onClick={handleUploadExcel}
           className="w-full mb-4"
-          disabled={fileList.length === 0}
+          disabled={fileList.length === 0 || !examCode}
         >
           {isUploading ? "Đang xử lý..." : "Gửi và xử lý file"}
         </Button>
@@ -286,12 +291,10 @@ const ExcelUploadPart1 = () => {
         <Select
           showSearch
           placeholder="Chọn mã đề thi"
-          // value={examCode || undefined}
           onChange={(value) => {
             setExamCode(value.split("@@")[1]);
           }}
           style={{ width: "100%", marginBottom: "16px" }}
-          // optionFilterProp="label"
           options={examList.map((exam, index) => {
             return {
               label: `${exam.exam_name} (${exam.exam_code})`,
@@ -299,6 +302,7 @@ const ExcelUploadPart1 = () => {
             };
           })}
           notFoundContent="Không tìm thấy đề thi"
+          status={!examCode && fileList.length > 0 ? "error" : undefined}
         />
 
         {questions.length > 0 && (

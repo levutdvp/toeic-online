@@ -4,6 +4,7 @@ import {
   MdDashboard,
   MdModeEditOutline,
   MdAccountCircle,
+  MdPerson,
 } from "react-icons/md";
 import { useAuth } from "@/hooks/use-auth.hook";
 import { showToast } from "@/services/toast";
@@ -17,7 +18,7 @@ export const baseConfig = {
 };
 
 export const useAppNavs = () => {
-  const { userRoles } = useAuth();
+  const { userRoles, userInfo } = useAuth();
 
   const handleRestrictedAccess = () => {
     showToast({
@@ -27,6 +28,16 @@ export const useAppNavs = () => {
   };
 
   return [
+    ...(userRoles.includes("TEACHER")
+      ? [
+          {
+            eventKey: "profile",
+            icon: <Icon as={MdPerson} />,
+            title: "Thông tin cá nhân",
+            to: userInfo?.id ? `/admin/teachers/${userInfo.id}` : "#",
+          },
+        ]
+      : []),
     {
       eventKey: "dashboard",
       icon: <Icon as={MdDashboard} />,
@@ -43,11 +54,6 @@ export const useAppNavs = () => {
         : undefined,
       children: userRoles.includes("TEACHER")
         ? [
-            {
-              eventKey: "teachers",
-              title: "Quản lí giáo viên",
-              to: "/admin/users-teacher",
-            },
             {
               eventKey: "students",
               title: "Quản lí học viên",
