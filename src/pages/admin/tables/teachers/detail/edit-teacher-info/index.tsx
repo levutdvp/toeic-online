@@ -99,16 +99,14 @@ const EditTeacherInfo: React.FC<EditTeacherInfoProps> = ({
     >
       <div className="mt-5">
         <Form layout="vertical" form={form} onFinish={handleEditSubmit}>
-          <Form.Item name="name" rules={validateForm.name} label="Tên" required>
-            <Input />
+          <Form.Item name="name" label="Tên" >
+            <Input disabled/>
           </Form.Item>
           <Form.Item
             name="gender"
-            rules={validateForm.gender}
             label="Giới tính"
-            required
           >
-            <Select>
+            <Select disabled>
               <Select.Option value="MALE">Nam</Select.Option>
               <Select.Option value="FEMALE">Nữ</Select.Option>
               <Select.Option value="OTHER">Khác</Select.Option>
@@ -116,11 +114,9 @@ const EditTeacherInfo: React.FC<EditTeacherInfoProps> = ({
           </Form.Item>
           <Form.Item
             name="dob"
-            rules={validateForm.dob}
             label="Ngày sinh"
-            required
           >
-            <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" />
+            <DatePicker style={{ width: "100%" }} format="DD-MM-YYYY" disabled/>
           </Form.Item>
           <Form.Item
             name="phone"

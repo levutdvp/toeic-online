@@ -205,23 +205,20 @@ const Header = () => {
             <Form.Item
               name="fullName"
               label="Họ và tên"
-              rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
             >
-              <Input />
+              <Input disabled/>
             </Form.Item>
             <Form.Item
               name="dob"
               label="Ngày sinh"
-              rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
             >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} disabled/>
             </Form.Item>
             <Form.Item
               name="gender"
               label="Giới tính"
-              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
             >
-              <Select>
+              <Select disabled>
                 <Select.Option value="MALE">Nam</Select.Option>
                 <Select.Option value="FEMALE">Nữ</Select.Option>
                 <Select.Option value="OTHER">Khác</Select.Option>
