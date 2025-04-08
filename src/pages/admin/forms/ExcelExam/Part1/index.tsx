@@ -293,7 +293,6 @@ const ExcelUploadPart1 = () => {
           placeholder="Chọn mã đề thi"
           onChange={(value) => {
             const selectedExamCode = value.split("@@")[1];
-            console.log("Selected exam code:", selectedExamCode);
             setExamCode(selectedExamCode);
           }}
           style={{ width: "100%", marginBottom: "16px" }}

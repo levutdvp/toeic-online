@@ -1,31 +1,44 @@
-import { getTeachersList, IGetListTeachers } from "@/api/admin/api-teachers/get-list-teacherInfo.api";
-import { getCertificateList, IGetListCertificate } from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
+import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
 import { deleteCertificate } from "@/api/admin/api-teachers/detail-teacher/delete-certificate.api";
-import { uploadAvatarRoleAdmin } from "@/api/admin/api-teachers/detail-teacher/upload-avatart-admin.api";
+import {
+  getCertificateList,
+  IGetListCertificate,
+} from "@/api/admin/api-teachers/detail-teacher/get-list-certificate.api";
 import { uploadAvatarRoleTeacher } from "@/api/admin/api-teachers/detail-teacher/upload-avatar-teacher.api";
-import { showLoading, removeLoading } from "@/services/loading";
-import { showToast } from "@/services/toast";
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { Button, Card, Space, Table, Modal, Avatar } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import { formatGender, convertToInteger } from "@/utils/map.util";
-import dayjs from "dayjs";
+import { uploadAvatarRoleAdmin } from "@/api/admin/api-teachers/detail-teacher/upload-avatart-admin.api";
+import {
+  getTeachersList,
+  IGetListTeachers,
+} from "@/api/admin/api-teachers/get-list-teacherInfo.api";
+import { useAuth } from "@/hooks/use-auth.hook";
 import AddCertificate from "@/pages/admin/tables/teachers/detail/add";
 import EditCertificate from "@/pages/admin/tables/teachers/detail/edit";
-import { uploadFile } from "@/api/admin/api-exam/upload-file.api";
+import EditTeacherInfo from "@/pages/admin/tables/teachers/detail/edit-teacher-info";
+import { removeLoading, showLoading } from "@/services/loading";
+import { showToast } from "@/services/toast";
+import { convertToInteger, formatGender } from "@/utils/map.util";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { Avatar, Button, Card, Modal, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useAuth } from "@/hooks/use-auth.hook";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const TeacherDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { userRoles } = useAuth();
   const [teacher, setTeacher] = useState<IGetListTeachers | null>(null);
   const [certificates, setCertificates] = useState<IGetListCertificate[]>([]);
   const [openModalAdd, setOpenModalAdd] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isEditTeacherInfoModalOpen, setIsEditTeacherInfoModalOpen] =
+    useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
   const [recordSelected, setRecordSelected] = useState<IGetListCertificate>({
     id: undefined,
@@ -219,8 +232,10 @@ const TeacherDetailPage = () => {
 
       if (res.image_url) {
         const isAdmin = userRoles.includes("ADMIN");
-        const uploadAvatar = isAdmin ? uploadAvatarRoleAdmin : uploadAvatarRoleTeacher;
-        
+        const uploadAvatar = isAdmin
+          ? uploadAvatarRoleAdmin
+          : uploadAvatarRoleTeacher;
+
         uploadAvatar({
           id: Number(id),
           image_link: res.image_url,
@@ -258,14 +273,6 @@ const TeacherDetailPage = () => {
   return (
     <div style={{ padding: "20px" }}>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={() => navigate(-1)}
-        >
-          Quay lại
-        </Button>
-
         <Card>
           <div className="flex items-center space-x-10 gap-8">
             <div
@@ -309,7 +316,15 @@ const TeacherDetailPage = () => {
           </div>
 
           <div className="mt-4">
-            <h3 className="font-bold text-lg mb-2">Thông tin liên hệ</h3>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-bold text-lg">Thông tin liên hệ</h3>
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => setIsEditTeacherInfoModalOpen(true)}
+              >
+                Sửa thông tin
+              </Button>
+            </div>
             <div className="flex gap-24">
               <div className="flex flex-col gap-2">
                 <p className="mb-2">
@@ -358,6 +373,13 @@ const TeacherDetailPage = () => {
         getTeacherCertificates={getTeacherCertificates}
       />
 
+      <EditTeacherInfo
+        isOpen={isEditTeacherInfoModalOpen}
+        onClose={() => setIsEditTeacherInfoModalOpen(false)}
+        teacher={teacher}
+        getTeacherDetail={getTeacherDetail}
+      />
+
       <Modal
         title="Xác nhận xóa"
         open={isDeleteModalOpen}
@@ -373,4 +395,4 @@ const TeacherDetailPage = () => {
   );
 };
 
-export default TeacherDetailPage; 
+export default TeacherDetailPage;

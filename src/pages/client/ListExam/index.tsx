@@ -141,19 +141,21 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
 
   const filterData = useCallback(() => {
     let filteredData = [...allTestData];
-    
+
     // Filter by search term
     if (searchTerm) {
       filteredData = filteredData.filter((test) =>
         test.exam_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Filter by part
     if (selectedPart !== null) {
-      filteredData = filteredData.filter((test) => Number(test.part_number) === selectedPart);
+      filteredData = filteredData.filter(
+        (test) => Number(test.part_number) === selectedPart
+      );
     }
-    
+
     setTestData(filteredData);
   }, [searchTerm, selectedPart, allTestData]);
 
@@ -205,7 +207,7 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
               </Button>
             </div>
           )}
-          <div className="flex gap-2">s
+          <div className="flex gap-2">
             <Input
               placeholder="Nhập tên đề muốn tìm..."
               value={searchTerm}

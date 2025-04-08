@@ -8,13 +8,14 @@ import {
 } from "react-icons/md";
 import { useAuth } from "@/hooks/use-auth.hook";
 import { showToast } from "@/services/toast";
+import logo from "@/assets/logo.jpg";
 
 export const baseConfig = {
   titleSuffix: "",
   search: true,
   header: true,
-  headerText: "Logo",
   footer: true,
+  logo: <img src={logo} alt="logo" />,
 };
 
 export const useAppNavs = () => {

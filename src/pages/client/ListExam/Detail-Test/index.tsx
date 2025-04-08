@@ -63,7 +63,7 @@ const TestDetail = () => {
                   được các thầy cô cung cấp trên lớp học.
                 </p>
                 <p>
-                  Ngoài ra bạn có thể sử dụng tài khoản do Lớp TOEIC thầy Long
+                  Ngoài ra bạn có thể sử dụng tài khoản do Master English Center
                   cung cấp để làm bài!
                 </p>
               </div>
@@ -72,14 +72,6 @@ const TestDetail = () => {
             className="mt-4 mb-6 bg-yellow-50 border-yellow-200 text-yellow-700"
           />
           <div className="flex justify-center gap-4 mt-4">
-            {/* <Button
-              shape="round"
-              type="primary"
-              size="large"
-              icon={<BiSolidEdit />}
-            >
-              Bắt đầu thi thử
-            </Button> */}
             <Button
               shape="round"
               size="large"

@@ -7,6 +7,7 @@ import {
   DownOutlined,
   EditOutlined,
   LogoutOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -91,7 +92,7 @@ const Header = () => {
         },
       });
 
-      editStudentSub.add(); // Đảm bảo unsubscribe khi component unmount
+      editStudentSub.add();
     } catch (error) {
       console.error("Lỗi khi gọi API:", error);
       showToast({
@@ -114,6 +115,15 @@ const Header = () => {
     {
       key: "2",
       label: (
+        <Link to="/exam-history" className="text-inherit">
+          <HistoryOutlined className="mr-2" />
+          Lịch sử làm bài
+        </Link>
+      ),
+    },
+    {
+      key: "3",
+      label: (
         <div onClick={handleLogout}>
           <LogoutOutlined className="mr-2" />
           Logout
@@ -125,7 +135,7 @@ const Header = () => {
     <header className="bg-white shadow p-4">
       <div className="no-underline flex justify-between ">
         <div className="text-lg font-bold flex items-center">
-          Lớp TOEIC Thầy Long
+          Master English Center
         </div>
         <div className="flex space-x-14 items-center">
           <Link

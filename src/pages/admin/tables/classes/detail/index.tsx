@@ -18,6 +18,7 @@ import ActionBlockDetailClass from "./action-block-detail-class";
 import AddStudentDetailClass from "./add";
 import EditStudentDetailClass from "./edit";
 import { useAuth } from "@/hooks/use-auth.hook";
+import ModalStudentDetail from "@/pages/admin/tables/students/detail";
 
 type TableQueries = TableQueriesRef<IStudentRes>;
 
@@ -49,10 +50,10 @@ const ModalDetailClass = ({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [recordSelected, setRecordSelected] = useState<IStudentRes>();
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
     null
   );
+  const [recordSelected, setRecordSelected] = useState<IStudentRes>();
 
   const daysOfWeek = useMemo(() => {
     return days;
@@ -179,6 +180,14 @@ const ModalDetailClass = ({
     getListStudentsDetail();
   };
 
+  const handleRowDoubleClick = (record: IStudentRes) => {
+    setSelectedStudentId(record.id!);
+  };
+
+  const handleCloseStudentDetailModal = () => {
+    setSelectedStudentId(null);
+  };
+
   const columns: TableProps<IStudentRes>["columns"] = [
     {
       title: "Họ và tên",
@@ -221,25 +230,32 @@ const ModalDetailClass = ({
       key: "address",
       align: "center",
     },
-    ...(isTeacher ? [] : [{
-      title: "Hành động",
-      key: "action",
-      align: "center" as const,
-      render: (_: unknown, record: IStudentRes) => (
-        <Space size="middle">
-          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
-            <CiEdit />
-          </Button>
-          <Button
-            size="middle"
-            danger
-            onClick={() => showDeleteModal(record.id!)}
-          >
-            <MdOutlineDeleteForever />
-          </Button>
-        </Space>
-      ),
-    }]),
+    ...(isTeacher
+      ? []
+      : [
+          {
+            title: "Hành động",
+            key: "action",
+            align: "center" as const,
+            render: (_: unknown, record: IStudentRes) => (
+              <Space size="middle">
+                <Button
+                  size="middle"
+                  onClick={() => handleOpenEditModal(record)}
+                >
+                  <CiEdit />
+                </Button>
+                <Button
+                  size="middle"
+                  danger
+                  onClick={() => showDeleteModal(record.id!)}
+                >
+                  <MdOutlineDeleteForever />
+                </Button>
+              </Space>
+            ),
+          },
+        ]),
   ];
 
   return (
@@ -335,6 +351,9 @@ const ModalDetailClass = ({
           dataSource={studentsDetail}
           rowKey="id"
           rowSelection={rowSelection}
+          onRow={(record) => ({
+            onDoubleClick: () => handleRowDoubleClick(record),
+          })}
           pagination={{
             position: ["bottomCenter"],
             pageSize: tableQueriesRef.current.pageSize,
@@ -366,6 +385,12 @@ const ModalDetailClass = ({
           onClose={handleCloseEditModal}
           recordSelected={recordSelected}
         />
+        {selectedStudentId && (
+          <ModalStudentDetail
+            studentId={selectedStudentId}
+            onClose={handleCloseStudentDetailModal}
+          />
+        )}
       </Modal>
     </>
   );

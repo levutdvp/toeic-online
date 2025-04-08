@@ -1,9 +1,8 @@
-import "./Header.css";
 import { Flex } from "@aws-amplify/ui-react";
 import { Link } from "react-router-dom";
 import Logo from "../Logo";
+import "./Header.css";
 import HeaderNav from "./HeaderNav";
-import { baseConfig } from "../config";
 
 const Header = () => {
   return (
@@ -21,7 +20,6 @@ const Header = () => {
               <Logo />
             </Link>
           </div>
-          <span>{baseConfig.headerText}</span>
         </div>
 
         <div className="header-right">

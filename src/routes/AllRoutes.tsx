@@ -25,6 +25,8 @@ import ExamTablePage from "@/pages/admin/tables/ExamTablePage";
 import ExamResultPage from "@/pages/client/ListExam/Detail-Test/Contest/ExamResult";
 import TeachersTablePage from "@/pages/admin/tables/TeachersTablePage";
 import TeacherDetailPage from "@/pages/admin/teachers/TeacherDetailPage";
+import ExamHistory from "@/pages/ExamHistory";
+import ExamHistoryDetail from "@/pages/ExamHistoryDetail";
 
 export const AllRoutes = () => {
   const router = createBrowserRouter([
@@ -98,6 +100,14 @@ export const AllRoutes = () => {
         { path: "exams/part7", element: <ExcelUploadPart7 /> },
         { path: "profile", element: <Profile /> },
       ],
+    },
+    {
+      path: "/exam-history",
+      element: <ExamHistory />,
+    },
+    {
+      path: "/exam-history-detail",
+      element: <ExamHistoryDetail />,
     },
   ]);
   return <RouterProvider router={router} />;

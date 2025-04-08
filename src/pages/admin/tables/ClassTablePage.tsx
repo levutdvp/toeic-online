@@ -235,17 +235,16 @@ const ClassTablesPage = () => {
   const columns: TableProps<IGetListClasses>["columns"] = useMemo(() => {
     const baseColumns = [
       {
+        title: "Mã lớp",
+        dataIndex: "class_type",
+        key: "class_type",
+        align: "center" as const,      },
+      {
         title: "Tên lớp",
         dataIndex: "class_code",
         key: "class_code",
         align: "center" as const,
-      },
-      {
-        title: "Mã lớp",
-        dataIndex: "class_type",
-        key: "class_type",
-        align: "center" as const,
-      },
+      },  
       {
         title: "Ngày bắt đầu",
         dataIndex: "start_date",

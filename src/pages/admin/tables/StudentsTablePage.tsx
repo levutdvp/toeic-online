@@ -8,6 +8,7 @@ import { Button, Input, Modal, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDeleteForever } from "react-icons/md";
+import { GoHistory } from "react-icons/go";
 import { initPaging } from "@/consts/paging.const";
 import { TableQueriesRef } from "@/types/pagination.type";
 import { deleteStudent } from "@/api/admin/api-students/delete-student.api";
@@ -20,6 +21,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useAuth } from "@/hooks/use-auth.hook";
 import ModalStudentDetail from "./students/detail";
+import ExamHistoryModal from "./students/exam-history";
 
 type TableQueries = TableQueriesRef<IGetListStudents>;
 
@@ -43,6 +45,10 @@ const StudentTablesPage = () => {
     open: false,
     studentId: null,
   });
+  const [isExamHistoryModalOpen, setIsExamHistoryModalOpen] =
+    useState<boolean>(false);
+  const [selectedStudentIdForHistory, setSelectedStudentIdForHistory] =
+    useState<number | null>(null);
 
   const tableQueriesRef = useRef<TableQueries>({
     current: initPaging.pageCurrent,
@@ -172,6 +178,16 @@ const StudentTablesPage = () => {
     });
   };
 
+  const handleOpenExamHistory = (record: IGetListStudents) => {
+    setSelectedStudentIdForHistory(record.id ?? null);
+    setIsExamHistoryModalOpen(true);
+  };
+
+  const handleCloseExamHistory = () => {
+    setIsExamHistoryModalOpen(false);
+    setSelectedStudentIdForHistory(null);
+  };
+
   const filteredStudents = dataStudents.filter((student) => {
     const lowerSearchTerm = searchTerm.toLowerCase();
     return (
@@ -221,18 +237,24 @@ const StudentTablesPage = () => {
       title: "Hành động",
       key: "action",
       align: "center" as const,
-      hidden: isTeacher,
       render: (_: unknown, record: IGetListStudents) => (
         <Space size="middle">
-          <Button size="middle" onClick={() => handleOpenEditModal(record)}>
-            <CiEdit />
-          </Button>
-          <Button
-            size="middle"
-            danger
-            onClick={() => showDeleteModal(record.id!)}
-          >
-            <MdOutlineDeleteForever />
+          {!isTeacher && (
+            <>
+              <Button size="middle" onClick={() => handleOpenEditModal(record)}>
+                <CiEdit />
+              </Button>
+              <Button
+                size="middle"
+                danger
+                onClick={() => showDeleteModal(record.id!)}
+              >
+                <MdOutlineDeleteForever />
+              </Button>
+            </>
+          )}
+          <Button size="middle" onClick={() => handleOpenExamHistory(record)}>
+            <GoHistory />
           </Button>
         </Space>
       ),
@@ -269,9 +291,7 @@ const StudentTablesPage = () => {
         onRow={(record) => {
           return {
             onDoubleClick: () => {
-              if (!isTeacher) {
-                handleOpenDetailModal(record);
-              }
+              handleOpenDetailModal(record);
             },
           };
         }}
@@ -299,6 +319,14 @@ const StudentTablesPage = () => {
         <ModalStudentDetail
           studentId={modalDetail.studentId}
           onClose={() => setModalDetail({ open: false, studentId: null })}
+        />
+      )}
+
+      {isExamHistoryModalOpen && selectedStudentIdForHistory && (
+        <ExamHistoryModal
+          isOpen={isExamHistoryModalOpen}
+          onClose={handleCloseExamHistory}
+          studentId={selectedStudentIdForHistory}
         />
       )}
     </>
