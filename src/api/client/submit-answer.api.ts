@@ -2,6 +2,7 @@ import { API_URL } from "@/consts/common.const";
 import { apiCall } from "@/services/api-call";
 
 export interface IAnswer {
+  question_number: number;
   user_answer: string;
   correct_answer: string;
 }

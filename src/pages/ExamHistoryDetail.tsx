@@ -29,7 +29,6 @@ const ExamHistoryDetail: React.FC = () => {
     {}
   );
 
-  console.log(questions);
   const [selectedQuestion, setSelectedQuestion] =
     useState<IExamHistoryDetailResponse | null>(null);
 

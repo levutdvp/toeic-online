@@ -271,7 +271,7 @@ const ModalDetailClass = ({
         {/* detail class */}
         <div className="my-5 border-b border-gray-200">
           <h3 className="text-lg font-bold mb-5">
-            Chi tiết lớp học {className}
+            Chi tiết lớp học {classCode}
           </h3>
           <div className="flex items-start">
             <div className="flex-1">
@@ -279,11 +279,11 @@ const ModalDetailClass = ({
                 <div className="min-w-[300px]">
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">Mã lớp học:</div>
-                    <div>{classCode}</div>
+                    <div>{className}</div>
                   </div>
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">Tên lớp học:</div>
-                    <div>{className}</div>
+                    <div>{classCode}</div>
                   </div>
                   <div className="flex mb-2.5">
                     <div className="font-bold w-[150px]">

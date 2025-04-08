@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getStudentsList,
   IGetListStudents,
@@ -58,7 +58,13 @@ const StudentTablesPage = () => {
 
   const { userRoles } = useAuth();
 
-  const isTeacher = userRoles.some((role) => role === "TEACHER");
+  const isTeacher = useMemo(() => {
+    return userRoles.some((role) => role === "TEACHER");
+  }, [userRoles]);
+
+  const isAdmin = useMemo(() => {
+    return userRoles.some((role) => role === "ADMIN");
+  }, [userRoles]);
 
   const getListStudents = useCallback(() => {
     showLoading();
@@ -86,7 +92,7 @@ const StudentTablesPage = () => {
 
   useEffect(() => {
     getListStudents();
-  }, [getListStudents]);
+  }, []);
 
   const rowSelection = {
     onChange: (_: any, selectedRowKeys: IGetListStudents[]) => {
@@ -239,7 +245,7 @@ const StudentTablesPage = () => {
       align: "center" as const,
       render: (_: unknown, record: IGetListStudents) => (
         <Space size="middle">
-          {!isTeacher && (
+          {isAdmin && (
             <>
               <Button size="middle" onClick={() => handleOpenEditModal(record)}>
                 <CiEdit />
@@ -277,6 +283,8 @@ const StudentTablesPage = () => {
         getListData={getListStudents}
       />
       <Table<IGetListStudents>
+        id="students-table"
+        key="students-table"
         columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredStudents}
         rowKey="id"

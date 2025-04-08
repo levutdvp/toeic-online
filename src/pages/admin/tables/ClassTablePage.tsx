@@ -78,21 +78,25 @@ const ClassTablesPage = () => {
     }).subscribe({
       next: (res) => {
         // Filter classes based on teacher's name if user is a teacher
-        let filteredData = res.data;
-        if (isTeacher && !isAdmin && userInfo) {
-          filteredData = res.data.filter(
+        if (!userInfo) {
+          removeLoading();
+          return;
+        }
+
+        if (isTeacher && !isAdmin) {
+          const filteredData = res.data.filter(
             (cls) => cls.teacher === userInfo.fullName
           );
+          setDataClasses(filteredData);
+          tableQueriesRef.current = {
+            ...tableQueriesRef.current,
+            current: res.meta.pageCurrent,
+            pageSize: res.meta.pageSize,
+            totalPage: res.meta.totalPage,
+            total: res.meta.total,
+          };
         }
-        
-        setDataClasses(filteredData);
-        tableQueriesRef.current = {
-          ...tableQueriesRef.current,
-          current: res.meta.pageCurrent,
-          pageSize: res.meta.pageSize,
-          totalPage: res.meta.totalPage,
-          total: res.meta.total,
-        };
+
         removeLoading();
       },
       error: () => {
@@ -103,8 +107,9 @@ const ClassTablesPage = () => {
   }, [isTeacher, isAdmin, userInfo]);
 
   useEffect(() => {
+    if (!userInfo) return;
     getListClasses();
-  }, [getListClasses]);
+  }, [userInfo]);
 
   const rowSelection = {
     onChange: (_: any, selectedRowKeys: IGetListClasses[]) => {
@@ -238,13 +243,14 @@ const ClassTablesPage = () => {
         title: "Mã lớp",
         dataIndex: "class_type",
         key: "class_type",
-        align: "center" as const,      },
+        align: "center" as const,
+      },
       {
         title: "Tên lớp",
         dataIndex: "class_code",
         key: "class_code",
         align: "center" as const,
-      },  
+      },
       {
         title: "Ngày bắt đầu",
         dataIndex: "start_date",
@@ -353,6 +359,8 @@ const ClassTablesPage = () => {
         getListData={getListClasses}
       />
       <Table<IGetListClasses>
+        id="classes-table"
+        key="classes-table"
         columns={columns}
         dataSource={filteredClasses}
         rowKey="id"

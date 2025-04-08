@@ -2,13 +2,14 @@ import {
   getListQuestionTest,
   IQuestion,
 } from "@/api/client/get-list-question-in-test.api";
+import { getListQuestionTestFull } from "@/api/client/get-list-question-test-full.api";
 import { IGetListTest } from "@/api/client/get-list-test.api";
 import { submitTest } from "@/api/client/submit-answer.api";
 import { useAuth } from "@/hooks/use-auth.hook";
 import { removeLoading, showLoading } from "@/services/loading";
 import { showToast } from "@/services/toast";
 import { Button, Modal, Radio, Space } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CiCircleInfo } from "react-icons/ci";
 
@@ -39,6 +40,11 @@ export default function ExamLayout() {
 
   const { userInfo } = useAuth();
 
+  const currentQuestion = useMemo(
+    () => questions[currentQuestionIndex],
+    [questions, currentQuestionIndex]
+  );
+
   useEffect(() => {
     if (timeLeft <= 0) {
       setIsModalVisible(true);
@@ -55,20 +61,63 @@ export default function ExamLayout() {
       return;
     }
     showLoading();
-    getListQuestionTest(
-      testData.exam_code,
-      Number(testData.part_number)
-    ).subscribe({
-      next: (res) => {
-        setQuestions(res.questions);
-        removeLoading();
-        setSelectedAnswers({});
-      },
-      error: () => {
-        removeLoading();
-        showToast({ type: "error", content: "Không thể tải câu hỏi!" });
-      },
-    });
+
+    if (Number(testData.part_number) === 0) {
+      getListQuestionTestFull(testData.exam_code).subscribe({
+        next: (res) => {
+          const allQuestions: IQuestion[] = [];
+          const partCounts: Record<string, number> = {};
+
+          Object.entries(res.questions).forEach(
+            ([partNumber, partQuestions]) => {
+              if (Array.isArray(partQuestions)) {
+                const questionsWithPart = partQuestions.map((q) => ({
+                  ...q,
+                  part_number: partNumber,
+                }));
+                allQuestions.push(...questionsWithPart);
+                partCounts[partNumber] = partQuestions.length;
+              }
+            }
+          );
+
+          setQuestions(allQuestions);
+          removeLoading();
+          setSelectedAnswers({});
+        },
+        error: () => {
+          removeLoading();
+          showToast({ type: "error", content: "Không thể tải câu hỏi!" });
+        },
+      });
+    } else {
+      getListQuestionTest(
+        testData.exam_code,
+        Number(testData.part_number)
+      ).subscribe({
+        next: (res) => {
+          const allQuestions: IQuestion[] = [];
+          const partCounts: Record<string, number> = {};
+
+          Object.entries(res.questions).forEach(
+            ([partNumber, partQuestions]) => {
+              if (Array.isArray(partQuestions)) {
+                allQuestions.push(...partQuestions);
+                partCounts[partNumber] = partQuestions.length;
+              }
+            }
+          );
+
+          setQuestions(allQuestions);
+          removeLoading();
+          setSelectedAnswers({});
+        },
+        error: () => {
+          removeLoading();
+          showToast({ type: "error", content: "Không thể tải câu hỏi!" });
+        },
+      });
+    }
   }, [testData]);
 
   useEffect(() => {
@@ -83,8 +132,6 @@ export default function ExamLayout() {
       .padStart(2, "0")}`;
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
-
   useEffect(() => {
     const audioElement = document.getElementById(
       "audioElement"
@@ -95,6 +142,16 @@ export default function ExamLayout() {
       audioElement.load();
     }
   }, [currentQuestionIndex, currentQuestion?.audio_url, playbackRate]);
+
+  const handleQuestionClick = (index: number) => {
+    setCurrentQuestionIndex(index);
+    const audioElement = document.getElementById(
+      "audioElement"
+    ) as HTMLAudioElement;
+    if (audioElement) {
+      audioElement.pause();
+    }
+  };
 
   const handleSelectAnswer = (value: string) => {
     setSelectedAnswers((prev) => ({
@@ -110,19 +167,47 @@ export default function ExamLayout() {
     }
 
     showLoading();
-    const formattedData = {
-      user_id: userInfo.id,
-      exam_code: testData.exam_code,
-      parts: [
-        {
-          part_number: Number(testData.part_number),
-          answers: questions.map((q, index) => ({
-            user_answer: selectedAnswers[index] || "",
-            correct_answer: q.correct_answer,
-          })),
-        },
-      ],
-    };
+    let formattedData;
+
+    if (Number(testData.part_number) === 0) {
+      // Group questions by part number for full test
+      const questionsByPart = questions.reduce((acc, question, index) => {
+        const partNumber = Number(question.part_number);
+        if (!acc[partNumber]) {
+          acc[partNumber] = [];
+        }
+        acc[partNumber].push({
+          question_number: question.question_number,
+          user_answer: selectedAnswers[index] || "",
+          correct_answer: question.correct_answer,
+        });
+        return acc;
+      }, {} as Record<number, Array<{ question_number: number; user_answer: string; correct_answer: string }>>);
+
+      formattedData = {
+        user_id: userInfo.id,
+        exam_code: testData.exam_code,
+        parts: Object.entries(questionsByPart).map(([partNumber, answers]) => ({
+          part_number: Number(partNumber),
+          answers,
+        })),
+      };
+    } else {
+      formattedData = {
+        user_id: userInfo.id,
+        exam_code: testData.exam_code,
+        parts: [
+          {
+            part_number: Number(testData.part_number),
+            answers: questions.map((q, index) => ({
+              question_number: q.question_number,
+              user_answer: selectedAnswers[index] || "",
+              correct_answer: q.correct_answer,
+            })),
+          },
+        ],
+      };
+    }
 
     submitTest(formattedData).subscribe({
       next: (res) => {
@@ -154,7 +239,28 @@ export default function ExamLayout() {
       <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <h1 className="text-xl font-bold">
-            Listening: Question {currentQuestionIndex + 1} of {questions.length}
+            {Number(testData.part_number) === 0 ? (
+              <div>
+                Full Test:{" "}
+                {currentQuestion
+                  ? `Part ${currentQuestion.part_number} - Question ${currentQuestion.question_number}`
+                  : "Loading..."}
+                {/* <div className="text-sm mt-1">
+                  {Object.entries(questionsPerPart).map(([part, count]) => {
+                    const completed = getCompletedQuestionsPerPart()[part] || 0;
+                    return (
+                      <span key={part} className="mr-4">
+                        Part {part}: {completed}/{count} questions
+                      </span>
+                    );
+                  })}
+                </div> */}
+              </div>
+            ) : (
+              `Part ${testData.part_number}: Question ${
+                currentQuestionIndex + 1
+              } of ${questions.length}`
+            )}
           </h1>
         </div>
         <div className="flex items-center gap-4">
@@ -259,34 +365,70 @@ export default function ExamLayout() {
             </div>
           </div>
 
-          <div className="mb-4">
-            <h3 className="font-bold mb-2">Part {testData.part_number}</h3>
-            <div className="grid grid-cols-5 gap-2">
-              {questions.map((_, index) => {
-                const isAnswered = !!selectedAnswers[index];
-                const isCurrent = index === currentQuestionIndex;
-                return (
-                  <Button
-                    key={index}
-                    onClick={() => setCurrentQuestionIndex(index)}
-                    style={{
-                      border: isCurrent
-                        ? "1px solid #1890ff"
-                        : isAnswered
-                        ? "1px solid #52c41a"
-                        : "1px solid #d9d9d9",
-                      backgroundColor: isCurrent
-                        ? "#e6f7ff"
-                        : isAnswered
-                        ? "#f0fff4"
-                        : "white",
-                    }}
-                  >
-                    {index + 1}
-                  </Button>
-                );
-              })}
-            </div>
+          <div className="h-[calc(100vh-300px)] overflow-y-auto">
+            {["1", "2", "3", "4", "5", "6", "7"].map((part) => {
+              // Only show the current part when testing a specific part
+              if (
+                Number(testData.part_number) !== 0 &&
+                String(testData.part_number) !== part
+              ) {
+                return null;
+              }
+
+              const partQuestions = Array.isArray(questions)
+                ? questions.filter((q) => String(q.part_number) === part)
+                : [];
+
+              if (partQuestions.length === 0) {
+                return null;
+              }
+
+              return (
+                <div key={part} className="mb-6">
+                  <h3 className="font-bold mb-3 sticky top-0 bg-white py-2 z-10">
+                    Part {part}
+                  </h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {partQuestions.map((question) => {
+                      // For full test, calculate global index based on all questions
+                      const globalIndex =
+                        Number(testData.part_number) === 0
+                          ? questions.findIndex(
+                              (q) =>
+                                q.part_number === question.part_number &&
+                                q.question_number === question.question_number
+                            )
+                          : questions.findIndex((q) => q.id === question.id);
+
+                      // Check if the answer exists and is not an empty string
+                      const isAnswered =
+                        selectedAnswers[globalIndex] &&
+                        selectedAnswers[globalIndex].trim() !== "";
+                      const isCurrent = globalIndex === currentQuestionIndex;
+
+                      return (
+                        <Button
+                          key={
+                            question.id ||
+                            `${question.part_number}-${question.question_number}`
+                          }
+                          onClick={() => handleQuestionClick(globalIndex)}
+                          className={`h-10 ${
+                            isCurrent
+                              ? "border !border-blue-500 !bg-blue-50"
+                              : isAnswered
+                              ? "border !border-green-500 !bg-green-50"
+                              : "border !border-gray-300"
+                          }`}
+                        >
+                          {question.question_number}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
