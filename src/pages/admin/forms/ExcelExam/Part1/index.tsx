@@ -99,7 +99,7 @@ const ExcelUploadPart1 = () => {
     });
 
     apiSubRef.current.add();
-  }, [fileList]);
+  }, [fileList, examCode]);
 
   useEffect(() => {
     return () => {
@@ -292,7 +292,9 @@ const ExcelUploadPart1 = () => {
           showSearch
           placeholder="Chọn mã đề thi"
           onChange={(value) => {
-            setExamCode(value.split("@@")[1]);
+            const selectedExamCode = value.split("@@")[1];
+            console.log("Selected exam code:", selectedExamCode);
+            setExamCode(selectedExamCode);
           }}
           style={{ width: "100%", marginBottom: "16px" }}
           options={examList.map((exam, index) => {

@@ -86,7 +86,7 @@ const ExcelUploadPart3 = () => {
     });
 
     apiSubRef.current.add();
-  }, [fileList]);
+  }, [fileList, examCode]);
 
   useEffect(() => {
     return () => {
