@@ -62,7 +62,10 @@ const TestCard: React.FC<IGetListTest> = ({
               Thời gian: <b>{duration}</b> phút
             </p>
             <p>
-              Phần thi: <b>Part {part_number}</b>
+              Phần thi:{" "}
+              <b>
+                {Number(part_number) === 0 ? "Full" : `Part ${part_number}`}
+              </b>
             </p>
           </div>
           <div>
