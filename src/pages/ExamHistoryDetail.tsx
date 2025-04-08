@@ -202,7 +202,9 @@ const ExamHistoryDetail: React.FC = () => {
                 {selectedQuestion.explanation && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                     <h4 className="font-semibold mb-2">Giải thích:</h4>
-                    <p>{selectedQuestion.explanation}</p>
+                    <div className="whitespace-pre-line">
+                      {selectedQuestion.explanation}
+                    </div>
                   </div>
                 )}
               </div>
@@ -217,7 +219,6 @@ const ExamHistoryDetail: React.FC = () => {
         {/* Question Navigation */}
         <div className="col-span-3">
           <Card className="shadow-md">
-            <h3 className="text-lg font-bold mb-4">Danh sách câu hỏi</h3>
             <div className="grid grid-cols-5 gap-2 max-h-[600px] overflow-y-auto">
               {Object.entries(questions).map(([part, partQuestions]) => (
                 <React.Fragment key={part}>
