@@ -217,13 +217,6 @@ const ListExam: React.FC<{ isPractice: boolean }> = ({ isPractice }) => {
               onChange={(e) => handleSearch(e.target.value)}
               className="!max-w-[800px] !ml-[200px]"
             />
-            <Button
-              type="primary"
-              className="bg-gray-800"
-              onClick={() => handleSearch(searchTerm)}
-            >
-              Tìm kiếm
-            </Button>
           </div>
         </div>
       </div>
