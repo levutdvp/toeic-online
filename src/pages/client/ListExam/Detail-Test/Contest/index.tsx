@@ -36,7 +36,6 @@ export default function ExamLayout() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isSubmitModalVisible, setIsSubmitModalVisible] =
     useState<boolean>(false);
-  const [playbackRate, setPlaybackRate] = useState<number>(1);
 
   const { userInfo } = useAuth();
 
@@ -138,10 +137,9 @@ export default function ExamLayout() {
     ) as HTMLAudioElement;
     if (audioElement && currentQuestion?.audio_url) {
       audioElement.src = currentQuestion.audio_url;
-      audioElement.playbackRate = playbackRate;
       audioElement.load();
     }
-  }, [currentQuestionIndex, currentQuestion?.audio_url, playbackRate]);
+  }, [currentQuestionIndex, currentQuestion?.audio_url]);
 
   const handleQuestionClick = (index: number) => {
     setCurrentQuestionIndex(index);
@@ -298,12 +296,6 @@ export default function ExamLayout() {
                 >
                   Your browser does not support the audio element.
                 </audio>
-                <div className="mt-2 flex gap-2">
-                  <Button onClick={() => setPlaybackRate(0.75)}>0.75x</Button>
-                  <Button onClick={() => setPlaybackRate(1)}>1x</Button>
-                  <Button onClick={() => setPlaybackRate(1.25)}>1.25x</Button>
-                  <Button onClick={() => setPlaybackRate(1.5)}>1.5x</Button>
-                </div>
               </div>
             )}
             {currentQuestion?.image_url && (
